@@ -51,8 +51,7 @@ public abstract class BaseImageService<E, D> extends BaseCrudService<E, D> {
 
                 File file = Paths.get(imgPath, fileName).toFile();
                 if (file.exists()) {
-                    boolean deleted = file.delete();
-                    if (deleted) {
+                    if (file.delete()) {
                         log.info("[deleteImageFiles] 이미지 파일 삭제 성공 - fileName={}, path={}",
                                 fileName, file.getAbsolutePath());
                     } else {

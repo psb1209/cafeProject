@@ -1,25 +1,3 @@
-# DB 설정
-    서버 포트 : 9006
-    DB명 : cafeProject
-    DB 사용자 : cafeProjectUser
-    비밀번호 : 1234
-
-## MariaDB에서 root로 로그인한 후 다음 작업 실행:
-    create database cafeProject;
-    create user 'cafeProjectUser'@'localhost' identified by '1234';
-    grant all privileges on cafeProject.* to 'cafeProjectUser'@'localhost';
-    flush privileges;
-
-## application.properties 설정을 다음과 같이 세팅:
-    server.port=9006
-
-    # mariaDB
-    spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
-    spring.datasource.url=jdbc:mariadb://localhost:3306/cafeProject
-    spring.datasource.username=cafeProjectUser
-    spring.datasource.password=1234
-
-
 # base 폴더에 대해
     Entity, DTO, Service, Controller의 기본 골격을 모아 둔 패키지입니다.
     extends를 통해 상속해서 사용할 수도 있고, 그대로 복사해서 수정하여 사용하셔도 됩니다.
@@ -36,7 +14,10 @@
     id         : 고유번호입니다.
     createDate : 생성일시입니다.
     memberId   : Member 엔티티의 고유번호입니다. Member 엔티티 그 자체가 아닙니다.
+    username   : 화면 표시용 작성자 이름입니다. 일반적으로 Member.username을 복사해 담습니다.
     그 외의 필드(subject, content 등)는 각 DTO에서 직접 정의해서 사용해 주세요.
+    ※ username은 입력/수정용이 아니라 출력용으로 사용하는 것을 권장합니다.
+       작성자 변경 등은 memberId를 기준으로 처리해주세요.
 
     기본으로 제공되는 toEntity, toDTO, updateEntity는 단순 필드 이름 매핑만 처리합니다.
     Member와 같은 연관 엔티티를 DTO와 매핑하고 싶다면,
@@ -44,7 +25,7 @@
 
     (자동 매핑을 위해 DTO에 바로 Member 엔티티 필드를 추가할 수도 있지만,
     DTO에 엔티티를 직접 넣는 방식은 권장하지 않으며,
-    가급적 엔티티의 id(Long, Integer) 값만 들고 다니는 것을 추천드립니다.)
+    가급적 대신 식별자(memberId)와 화면 표시용 값(username)만 보관하는 것을 추천드립니다.)
 
 ## BaseCrudService 사용 시 참고사항
     BaseCrudService는 제네릭 타입을 사용합니다.
@@ -73,9 +54,7 @@
         }
     
         @Override
-        protected Integer getIdFromDTO(ExampleDTO dto) {
-            return dto.getId();
-        }
+        protected Integer getIdFromDTO(ExampleDTO dto) { return dto.getId(); }
     }
 
     이때, 서비스에서 update 등은 DTO의 id를 사용하므로,
@@ -86,11 +65,6 @@
     가급적이면 각 서비스에서 @Override해서 DTO ↔ Entity 변환 로직을 구현해 주세요.
 
 ### CRUD 메서드 요약
-    컨트롤러에서 추가 / 수정 / 삭제 메서드의 반환값을 사용하지 않는다면, 단순히
-        service.setDelete(dto);
-        return "redirect:/.../list";
-    와 같이 써도 무방합니다.
-
 #### 목록 조회
     public Page<E> list(Pageable pageable)
     public Page<D> listDTO(Pageable pageable)
@@ -111,35 +85,31 @@
 
 #### 추가
     @Transactional
-    public D setInsert(D dto)
+    public void setInsert(D dto)
     
     1. beforeInsert(dto)
     2. toEntity(dto) → E 엔티티 생성
-    3. afterInsert(dto, entity)
-    4. repository.save(entity) 저장
-    5. 저장된 엔티티를 toDTO 로 변환해 DTO로 반환
-    
-    → 서비스 밖으로는 항상 DTO만 나가도록 설계되어 있습니다.
+    3. repository.save(entity) 저장
+    4. afterInsert(dto, entity)
 
 #### 수정
     @Transactional
-    public D setUpdate(D dto)
+    public void setUpdate(D dto)
     
     1. view(getIdFromDTO(dto)) 로 기존 엔티티 조회
     2. beforeUpdate(dto, entity)
     3. updateEntity(entity, dto) 로 필드 갱신
-    4. afterUpdate(dto, entity)
-    5. 저장 후 toDTO 로 변환해서 DTO 반환
+    4. repository.save(entity) 저장
+    5. afterUpdate(dto, entity)
 
 #### 삭제
     @Transactional
-    public boolean setDelete(D dto)
+    public void setDelete(D dto)
     
-    1. view(getIdFromDTO(dto)) 로 엔티티 조회
+    1. view(getIdFromDTO(dto)) 로 기존 엔티티 조회
     2. beforeDelete(entity)
-    3. repository.delete(entity)
+    3. repository.delete(entity) 삭제
     4. afterDelete(entity)
-    5. 삭제 성공 시 true, 삭제 후에도 엔티티가 남아 있으면 false 반환
 
 ### 훅(Hook) 메서드로 추가 동작 정의하기
     BaseCrudService는 추가/수정/삭제 시점에 추가 동작을 끼워 넣을 수 있도록

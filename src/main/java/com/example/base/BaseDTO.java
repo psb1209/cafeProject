@@ -17,5 +17,6 @@ public abstract class BaseDTO {
     private Integer id;
     private Timestamp createDate;
     private Integer memberId;
+    private String username;
 }
 
