@@ -1,6 +1,7 @@
 package com.example.cafeProject.member;
 
 import com.example.exception.EntityNotFoundException;
+import com.example.exception.PermissionDeniedException;
 import com.example.exception.WrongPasswordException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -182,28 +183,28 @@ public class MemberService {
             if (oldRole == RoleType.ADMIN) {
                 log.info("[updateRoleType] ADMIN의 권한은 변경할 수 없습니다. targetId={}, targetUsername={}",
                         entity.getId(), entity.getUsername());
-                throw new IllegalArgumentException("ADMIN의 권한은 변경할 수 없습니다.");
+                throw new PermissionDeniedException("ADMIN의 권한은 변경할 수 없습니다.");
             }
             if (newRole == RoleType.ADMIN) {
                 log.info("[updateRoleType] ADMIN으로 권한을 변경할 수 없습니다. targetId={}, targetUsername={}",
                         entity.getId(), entity.getUsername());
-                throw new IllegalArgumentException("ADMIN으로 권한을 변경할 수 없습니다.");
+                throw new PermissionDeniedException("ADMIN으로 권한을 변경할 수 없습니다.");
             }
         } else if (adminRole == RoleType.MANAGER) {
             if (oldRole == RoleType.ADMIN || oldRole == RoleType.MANAGER) {
                 log.info("[updateRoleType] MANAGER는 ADMIN/MANAGER 계정의 권한을 변경할 수 없습니다. adminId={}, adminRole={}, targetId={}, targetRole={}",
                         admin.getId(), adminRole, entity.getId(), oldRole);
-                throw new IllegalArgumentException("MANAGER는 ADMIN/MANAGER 계정의 권한을 변경할 수 없습니다.");
+                throw new PermissionDeniedException("MANAGER는 ADMIN/MANAGER 계정의 권한을 변경할 수 없습니다.");
             }
             if (newRole == RoleType.ADMIN || newRole == RoleType.MANAGER) {
                 log.info("[updateRoleType] MANAGER는 ADMIN/MANAGER 권한을 부여할 수 없습니다. adminId={}, adminRole={}, targetId={}, targetRole={}",
                         admin.getId(), adminRole, entity.getId(), oldRole);
-                throw new IllegalArgumentException("MANAGER는 ADMIN/MANAGER 권한을 부여할 수 없습니다.");
+                throw new PermissionDeniedException("MANAGER는 ADMIN/MANAGER 권한을 부여할 수 없습니다.");
             }
         } else {
             log.info("[updateRoleType] 권한 변경 권한이 없는 사용자입니다. adminId={}, adminRole={}",
                     admin.getId(), adminRole);
-            throw new IllegalArgumentException("권한 변경 권한이 없습니다.");
+            throw new PermissionDeniedException("권한 변경 권한이 없습니다.");
         }
         entity.setRole(d.getRole());
         memberRepository.save(entity);

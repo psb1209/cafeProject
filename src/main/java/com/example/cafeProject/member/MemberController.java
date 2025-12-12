@@ -3,6 +3,7 @@ package com.example.cafeProject.member;
 import com.example.cafeProject.security.ManagementOnly;
 import com.example.cafeProject.validation.ValidationGroups;
 import com.example.exception.EntityNotFoundException;
+import com.example.exception.PermissionDeniedException;
 import com.example.exception.WrongPasswordException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -220,7 +221,13 @@ public class MemberController {
             log.warn("[roleProc] 대상이 되는 Entity를 찾을 수 없음. principal={}", authentication.getName(), e);
             return getNotFoundRedirectPath();
         } catch (IllegalArgumentException e) {
-            log.warn("[roleProc] 권한 변경 실패. {}", e.getMessage());
+            log.warn("[roleProc] 잘못된 변경값. {}", e.getMessage());
+            model.addAttribute("member", memberService.view(dto.getId()));
+            model.addAttribute("roles", RoleType.values());
+            bindingResult.reject("roleChangeError", e.getMessage());
+            return "member/roleUpdate";
+        } catch (PermissionDeniedException e) {
+            log.warn("[roleProc] 변경 권한 부족. {}", e.getMessage());
             model.addAttribute("member", memberService.view(dto.getId()));
             model.addAttribute("roles", RoleType.values());
             bindingResult.reject("roleChangeError", e.getMessage());
