@@ -1,6 +1,7 @@
 package com.example.cafeProject.member;
 
 import com.example.exception.EntityNotFoundException;
+import com.example.exception.ForbiddenUsernameException;
 import com.example.exception.PermissionDeniedException;
 import com.example.exception.WrongPasswordException;
 import lombok.RequiredArgsConstructor;
@@ -9,10 +10,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -25,6 +29,19 @@ public class MemberService {
     private static final Class<MemberService> memberServiceClass = MemberService.class;
     // 로그 찍는 용도 그 이상도 그 이하도 아님. log.***은 전부 무시해도 됨!!
     private static final Logger log = LoggerFactory.getLogger(memberServiceClass);
+
+    /** 회원가입시 아이디에 포함할 수 없는 문자열 목록 */
+    private static final String[] FORBIDDEN_CONTAINS = {
+            "admin", "anonymous", "banned", "config",
+            "csrf", "empty", "exception", "manager",
+            "owner", "root", "system", "undefined"
+    };
+    /** 회원가입시 불가능한 아이디 목록 */
+    private static final String[] FORBIDDEN_EQUALS = {
+            "con", "prn", "aux", "nul", "null",
+            "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9",
+            "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9"
+    };
 
     /**
      * 전체 회원 목록 조회 (페이징 포함).
@@ -79,7 +96,7 @@ public class MemberService {
      */
     public Member viewCurrentMember(Authentication authentication) {
         // 인증 정보가 없거나 익명 사용자라면 접근 불가
-        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
             throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
         }
         log.debug("[{}] currentMember 조회 시도, name={}", memberServiceClass.getSimpleName(), authentication.getName());
@@ -167,6 +184,8 @@ public class MemberService {
         log.info("회원가입 시도: username={}, email={}",
                 dto.getUsername(), dto.getEmail());
 
+        // 금지된 username 체크
+        checkForbiddenUsername(dto.getUsername());
         // username 중복 체크
         if (memberRepository.existsByUsername(dto.getUsername())) throw new IllegalArgumentException("이미 사용 중인 id");
         // email 중복 체크
@@ -200,6 +219,49 @@ public class MemberService {
     private void afterDelete(Member entity, MemberDeleteDTO dto) {
         log.warn("회원 삭제 완료: id={}, username={}",
                 entity.getId(), entity.getUsername());
+    }
+
+    /**
+     * 회원가입 시 "혼동/예약어"로 간주되는 username을 차단하는 메서드.
+     * 1) 입력값을 정규화한 compact 문자열을 만든다.
+     *    - trim(): 앞/뒤 공백 제거
+     *    - toLowerCase(): 소문자 변환
+     *    - replace(" ", ""), replace("_", ""), replace("-", ""): 공백/언더바/하이픈 제거
+     *      → 예: "hello-anony_mous" 같은 우회 입력을 "helloanonymous"로 합쳐 검사 가능
+     * 2) FORBIDDEN_EQUALS: 정확히 일치하면 차단
+     * 3) FORBIDDEN_CONTAINS: 포함되면 차단
+     * ※ ForbiddenUsernameException : 금지된 username일 경우 발생
+     */
+    private void checkForbiddenUsername(String username) throws ForbiddenUsernameException {
+        // username 자체가 null이면 검증할 대상이 없으므로 종료
+        if (username == null) return;
+
+        // 검사 전, 우회 입력을 막기 위해 "비교용 문자열"로 정규화한다.
+        // 공백/언더바/하이픈을 제거하여 "anony-mous", "anony_mous" 같은 분리 우회도 탐지
+        String compact = username.trim()
+                .toLowerCase(Locale.ROOT)
+                .replace(" ", "")
+                .replace("_", "")
+                .replace("-", "");
+
+        int fCheck = 0;
+
+        // 정확히 일치하는 금지 목록 검사
+        for (int i = 0; i < FORBIDDEN_EQUALS.length; ++i) {
+            String token = FORBIDDEN_EQUALS[i];
+            if (compact.equals(token)) { ++fCheck; }
+        }
+        // 포함 금지 목록 검사
+        for (int i = 0; i < FORBIDDEN_CONTAINS.length; ++i) {
+            String token = FORBIDDEN_CONTAINS[i];
+            if (compact.contains(token)) { ++fCheck; }
+        }
+        // 검사 결과 금지된 username이면 ForbiddenUsernameException 발생
+        if (fCheck != 0) {
+            log.debug("금지된 username 가입 시도, username={}, compact={}",
+                    username, compact);
+            throw new ForbiddenUsernameException("혼동될 수 있는 id.");
+        }
     }
 
     /**
