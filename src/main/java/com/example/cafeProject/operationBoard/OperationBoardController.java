@@ -1,12 +1,17 @@
 package com.example.cafeProject.operationBoard;
 
+import com.example.cafeProject.member.Member;
+import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardCommentService;
+import jdk.dynalink.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +29,8 @@ public class OperationBoardController {
 
     private final OperationBoardService operationBoardService;
     private final OperationBoardCommentService operationBoardCommentService;
+    private final MemberService memberService;
+
 
     String dirName = "operationBoard";
 
@@ -43,6 +50,7 @@ public class OperationBoardController {
             OperationBoardDTO operationBoardDTO,
             @PageableDefault(size=7, sort="Id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
+
         try {
             OperationBoard operationBoard = operationBoardService.getSelectOneById(operationBoardDTO);
             model.addAttribute("operationBoard", operationBoard);
@@ -96,8 +104,22 @@ public class OperationBoardController {
     @PostMapping("/createProc")
     public String createProc(
             Model model,
-            OperationBoardDTO operationBoardDTO
+            OperationBoardDTO operationBoardDTO,
+            Authentication authentication
     ) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        String loginId = userDetails.getUsername(); // 로그인했을 때 아이디
+
+        try {
+            Member member = operationBoardService.getSelectOneByUsername(authentication);
+            operationBoardDTO.setMemberId(member.getId());
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "err0808");
+            model.addAttribute("errMsg", e.getMessage());
+            return "error/error";
+        }
+
         try {
             operationBoardService.setInsert(operationBoardDTO);
             return "redirect:/" + dirName + "/list";
@@ -133,6 +155,7 @@ public class OperationBoardController {
             OperationBoardDTO operationBoardDTO
     ) {
         try {
+            operationBoardCommentService.setDeleteAll(operationBoardDTO);
             operationBoardService.setDelete(operationBoardDTO);
             return "redirect:/" + dirName + "/list";
         } catch (IllegalArgumentException e) {

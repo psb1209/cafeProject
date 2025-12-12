@@ -1,5 +1,8 @@
 package com.example.cafeProject.operationBoard;
 
+import com.example.cafeProject.member.Member;
+import com.example.cafeProject.member.MemberRepository;
+import com.example.cafeProject.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -7,6 +10,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +25,9 @@ import java.util.Optional;
 public class OperationBoardService {
 
     private final OperationBoardRepository operationBoardRepository;
+    private final MemberRepository memberRepository;
+
+    private final MemberService memberService;
 
     public Page<OperationBoard> list(Pageable pageable) {
         return operationBoardRepository.findAll(pageable);
@@ -32,11 +39,18 @@ public class OperationBoardService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID(" + paramDTO.getId() + ")를 불러올 수 없습니다."));
     }
 
+    @Transactional(readOnly = true)
+    public Member getSelectOneByUsername(Authentication authentication) {
+        return memberRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID(" + authentication.getName() + ")를 불러올 수 없습니다."));
+    }
+
     @Transactional
     public void setInsert(OperationBoardDTO paramDTO) {
         OperationBoard operationBoard = new OperationBoard();
         operationBoard.setSubject(paramDTO.getSubject());
         operationBoard.setContent(paramDTO.getContent());
+        operationBoard.setMember(memberService.view(paramDTO.getMemberId()));
         operationBoard.setCnt(0);
 
         operationBoardRepository.save(operationBoard);

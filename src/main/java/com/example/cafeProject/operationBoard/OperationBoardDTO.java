@@ -21,4 +21,6 @@ public class OperationBoardDTO {
 
     private int memberId;
 
+    private int operationBoardCommentId;
+
 }

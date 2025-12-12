@@ -1,5 +1,6 @@
 package com.example.cafeProject.operationBoard;
 
+import com.example.cafeProject.member.Member;
 import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "operation")
+@Table(name = "operationBoard")
 @Entity
 public class OperationBoard {
 
@@ -37,9 +38,9 @@ public class OperationBoard {
     @CreationTimestamp
     private Timestamp createDate;
 
-/*    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
-    private Member member;*/
+    private Member member;
 
     @OneToMany(mappedBy = "operationBoard", fetch = FetchType.EAGER)
     @OrderBy("id desc")
