@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center'">
+<body>
+<h1 layout:fragment="pageTitle">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
+<div layout:fragment="content">
+    <!-- 본문 내용 시작 -->
+
+    <!--<h2 th:text="${operationBoard.subject}"></h2>-->
+
+    <div class="mb-3 mt-3">
+        <label for="subject">제목:</label>
+        <span class="form-control" id="subject" name="subject" th:text="${operationBoard.subject}"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="content">내용:</label>
+        <span class="form-control" id="content" name="content" th:utext="${operationBoard.content}"></span>
+    </div>
+
+    <div class="mb-3 mt-3">
+        <label for="cnt">조회수:</label>
+        <span class="form-control" id="cnt" th:text="${operationBoard.cnt}"></span>
+    </div>
+
+    <div class="mb-3 mt-3">
+        <label for="createDate">작성일:</label>
+        <span class="form-control" id="createDate" th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></span>
+    </div>
+
+    <a href="/operationBoard/create" class="btn btn-secondary">등록</a>
+    <a href="/operationBoard/list" class="btn btn-secondary">목록</a>
+    <a th:href="@{|/operationBoard/update/${operationBoard.id}|}" class="btn btn-secondary">수정</a>
+    <a th:href="@{|/operationBoard/delete/${operationBoard.id}|}" class="btn btn-secondary">삭제</a>
+
+    <form name="commentForm">
+
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <input type="hidden" name="operationBoardId" th:value="${operationBoard.id}">
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>댓글 목록</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr align="right">
+                <td>
+                    <textarea id="comment-content" rows="1" class="form-control" name="content"></textarea>
+                    <button type="button" id="btn-save-comment" class="btn btn-secondary"
+                            style="margin-top: 10px" onclick="commentSave();">댓글 등록</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <script>
+        function commentSave() {
+            document.commentForm.action = "/operationBoardComment/createProc";
+            document.commentForm.method = "post";
+            document.commentForm.submit();
+        }
+    </script>
+
+    <div th:if="${!operationBoard.commentList.isEmpty()}">
+        <table class="table">
+            <thead>
+            <tr>
+                <th width="80%">내용</th>
+                <th width="10%">작성자</th>
+                <th width="10%">삭제</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="operationBoardComment : ${commentList}">
+                <td th:text="${operationBoardComment.content}"></td>
+                <td>
+                    <span th:text="${operationBoardComment.member.username}"></span>
+                    <!--<span> - </span>-->
+                </td>
+                <td>
+                    <span>
+                        <a href="#" th:onclick="|submitOperationBoardCommentId('${operationBoardComment.id}')|">X</a>
+                    </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-top: 20px;" th:if="${!commentList.isEmpty()}">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${commentList.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${commentList.first} ? '#' : @{|?page=${commentList.number-1}|}">
+                    이전
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="page: ${#numbers.sequence(0, commentList.totalPages-1)}"
+                th:classappend="${page == commentList.number} ? 'active'">
+                <a class="page-link" th:text="${page + 1}" th:href="@{|?page=${page}|}"></a>
+            </li>
+
+            <li class="page-item" th:classappend="${commentList.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${commentList.last} ? '#' : @{|?page=${commentList.number+1}|}">
+                    다음
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <form name="submitOperationBoardId">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <input type="hidden" name="operationBoardId" th:value="${operationBoard.id}">
+        <input type="hidden" name="operationBoardCommentId" id="operationBoardCommentId">
+    </form>
+
+    <script>
+        function submitOperationBoardCommentId(value1) {
+            if (confirm('삭제하시겠습니까?')) {
+                document.getElementById("operationBoardCommentId").value = value1;
+
+                document.submitOperationBoardId.action = "/operationBoardComment/deleteProc";
+                document.submitOperationBoardId.method = "post";
+                document.submitOperationBoardId.submit();
+            }
+        }
+    </script>
+
+    <!-- 본문 내용 종료 -->
+</div>
+
+</body>
+</html>

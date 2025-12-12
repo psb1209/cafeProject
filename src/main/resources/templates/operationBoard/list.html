@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center'">
+<body>
+<h1 layout:fragment="pageTitle">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
+
+<div layout:fragment="content">
+    <!-- 본문 내용 시작 -->
+
+    <h2>운영 게시판</h2>
+
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>순번</th>
+            <th>제목</th>
+            <th>조회수</th>
+            <th>작성자</th>
+            <th>작성일</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="operationBoard, loop : ${operationBoardList}">
+            <td th:text="${loop.index+1}"></td>
+            <td>
+                <a th:href="@{|/operationBoard/view/${operationBoard.id}|}" th:text="${operationBoard.subject}"></a>
+            </td>
+            <td th:text="${operationBoard.cnt}"></td>
+            <td th:text="${operationBoard.member.username}"></td>
+            <!--<td> - </td>-->
+            <td th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td> <!--build.gradle 추가-->
+        </tr>
+        </tbody>
+    </table>
+
+    <div style="margin-top: 20px;" th:if="${!operationBoardList.isEmpty()}">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${operationBoardList.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${operationBoardList.first} ? '#' : @{|?page=${operationBoardList.number-1}|}">
+                    이전
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="page: ${#numbers.sequence(0, operationBoardList.totalPages-1)}"
+                th:classappend="${page == operationBoardList.number} ? 'active'">
+                <a class="page-link" th:text="${page + 1}" th:href="@{|?page=${page}|}"></a>
+            </li>
+
+            <li class="page-item" th:classappend="${operationBoardList.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${operationBoardList.last} ? '#' : @{|?page=${operationBoardList.number+1}|}">
+                    다음
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- 본문 내용 종료 -->
+</div>
+
+<script th:if="${operationBoard.isEmpty()}">
+    alert([[${errMsg}]]);
+</script>
+
+</body>
+</html>
