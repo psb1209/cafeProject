@@ -1,4 +1,4 @@
-package com.example.cafeProject.security;
+package com.example.cafeProject.validation;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.lang.annotation.ElementType;

@@ -18,12 +18,19 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class MemberService {
-    private static final Class<MemberService> memberServiceClass = MemberService.class;
-    private static final Logger log = LoggerFactory.getLogger(memberServiceClass);
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // 전체 목록
+    // 로그에 클래스명을 찍기 위해 미리 상수로 빼둔 클래스 객체
+    private static final Class<MemberService> memberServiceClass = MemberService.class;
+    // 로그 찍는 용도 그 이상도 그 이하도 아님. log.***은 전부 무시해도 됨!!
+    private static final Logger log = LoggerFactory.getLogger(memberServiceClass);
+
+    /**
+     * 전체 회원 목록 조회 (페이징 포함).
+     * - page, size, sort 조건을 로그로 남기고
+     * - 결과 Page 정보(전체 개수, 전체 페이지, 현재 페이지 요소 수)도 함께 로그로 남김
+     */
     public Page<Member> list(Pageable pageable) {
         log.debug("[{}] 목록 조회 요청, page={}, size={}, sort={}",
                 memberServiceClass.getSimpleName(),
@@ -39,7 +46,10 @@ public class MemberService {
         return page;
     }
 
-    // 상세보기 (id로)
+    /**
+     * 회원 상세 메서드 (id 기준)
+     * - 존재하지 않으면 EntityNotFoundException 발생
+     */
     public Member view(int id) throws EntityNotFoundException {
         log.debug("[{}] Entity 조회 시도, id={}", memberServiceClass.getSimpleName(), id);
         Member entity = memberRepository.findById(id)
@@ -48,7 +58,11 @@ public class MemberService {
         return entity;
     }
 
-    // Optional을 반환하는 view 메서드
+    /**
+     * Optional 버전 view 메서드 (id 기준)
+     * - 예외를 던지지 않고 Optional로 감싸서 반환.
+     * - 호출 측에서 isPresent()/orElse() 등으로 유연하게 처리하고 싶을 때 사용.
+     */
     public Optional<Member> viewOptional(int id) {
         log.debug("[{}] Optional 조회 시도, id={}", memberServiceClass.getSimpleName(), id);
         Optional<Member> result = memberRepository.findById(id);
@@ -57,9 +71,15 @@ public class MemberService {
         return result;
     }
 
+    /**
+     * 현재 로그인한 사용자의 Member 엔티티 조회.
+     * - Authentication을 기반으로 username을 가져와 DB에서 조회
+     * - 인증 정보가 없거나 익명이면 AccessDeniedException 발생
+     * - username으로 조회 결과가 없으면 EntityNotFoundException 발생
+     */
     public Member viewCurrentMember(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()
-                || "anonymousUser".equals(authentication.getName())) {
+        // 인증 정보가 없거나 익명 사용자라면 접근 불가
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
             throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
         }
         log.debug("[{}] currentMember 조회 시도, name={}", memberServiceClass.getSimpleName(), authentication.getName());
@@ -69,7 +89,13 @@ public class MemberService {
         return entity;
     }
 
-    // 등록
+    /**
+     * 회원 등록.
+     * 1) beforeCreate(dto) 에서 DTO 정규화 + 중복 체크 + 기본 role 세팅
+     * 2) DTO → Entity 변환(toEntity)
+     * 3) afterCreate(dto, entity) 에서 로그 등 후처리
+     * 4) 저장
+     */
     @Transactional
     public Member setInsert(MemberDTO dto) {
         beforeCreate(dto);
@@ -78,7 +104,14 @@ public class MemberService {
         return memberRepository.save(entity);
     }
 
-    // 수정
+    /**
+     * 비밀번호 변경(회원 정보 수정).
+     * 1) Authentication 기반으로 현재 회원 조회 (viewCurrentMember)
+     * 2) beforeUpdate(dto, entity) 에서 "현재 비밀번호" 검증
+     * 3) updateEntity(entity, dto) 에서 실제 필드 갱신 (새 비밀번호 인코딩)
+     * 4) afterUpdate(dto, entity) 에서 로그 등 후처리
+     * 5) 저장
+     */
     @Transactional
     public Member setUpdate(Authentication authentication, PasswordChangeDTO dto) {
         Member entity = viewCurrentMember(authentication);
@@ -88,7 +121,13 @@ public class MemberService {
         return memberRepository.save(entity);
     }
 
-    // 삭제
+    /**
+     * 회원 탈퇴(삭제).
+     * 1) Authentication 기반으로 현재 회원 조회
+     * 2) beforeDelete(entity, dto) 에서 비밀번호 확인 등 사전 검증
+     * 3) delete(entity) 호출
+     * 4) afterDelete(entity, dto) 에서 로그 등 후처리
+     */
     @Transactional
     public void setDelete(Authentication authentication, MemberDeleteDTO dto) {
         Member entity = viewCurrentMember(authentication);
@@ -97,7 +136,10 @@ public class MemberService {
         afterDelete(entity, dto);
     }
 
-    // DTO → new Entity
+    /**
+     * DTO → 새로운 Member 엔티티 생성.
+     * - 비밀번호는 반드시 passwordEncoder를 사용해 인코딩하여 저장.
+     */
     private Member toEntity(MemberDTO dto) {
         return Member.builder()
                 .username(dto.getUsername())
@@ -106,27 +148,31 @@ public class MemberService {
                 .role(dto.getRole())
                 .build();
     }
-    // 기존 Entity + DTO로 필드 갱신
+    /**
+     * 기존 Member 엔티티에 비밀번호 변경 DTO를 반영.
+     * - 새 비밀번호가 null 또는 공백이면 아무것도 하지 않음.
+     * - 값이 있으면 인코딩 후 password 필드 갱신.
+     */
     private void updateEntity(Member e, PasswordChangeDTO d) {
         if (d.getNewPassword() != null && !d.getNewPassword().isBlank()) {
             e.setPassword(passwordEncoder.encode(d.getNewPassword()));
         }
     }
 
-    // 이하의 메서드는 각 메서드의 기본 동작에 더해 추가 동작을 정의할 때 사용하는 메서드입니다.
+
+
     private void beforeCreate(MemberDTO dto) {
         dto.normalize();
 
         log.info("회원가입 시도: username={}, email={}",
                 dto.getUsername(), dto.getEmail());
 
-        if (memberRepository.existsByUsername(dto.getUsername())) {
-            throw new IllegalArgumentException("이미 사용 중인 id");
-        }
-        if (memberRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("이미 사용 중인 email");
-        }
+        // username 중복 체크
+        if (memberRepository.existsByUsername(dto.getUsername())) throw new IllegalArgumentException("이미 사용 중인 id");
+        // email 중복 체크
+        if (memberRepository.existsByEmail(dto.getEmail())) throw new IllegalArgumentException("이미 사용 중인 email");
 
+        // role이 지정되지 않았으면 기본값 USER 부여
         if (dto.getRole() == null) {
             dto.setRole(RoleType.USER);
         }
@@ -138,6 +184,7 @@ public class MemberService {
     private void beforeUpdate(PasswordChangeDTO dto, Member entity) {
         log.info("회원 정보 수정 시도: id={}, username={}",
                 entity.getId(), entity.getUsername());
+        // 수정 전 비밀번호 체크
         checkPassword(dto.getCurrentPassword(), entity);
     }
     private void afterUpdate(PasswordChangeDTO dto, Member entity) {
@@ -145,28 +192,48 @@ public class MemberService {
                 entity.getId(), entity.getUsername());
     }
     private void beforeDelete(Member entity, MemberDeleteDTO dto) {
-        checkPassword(dto.getPassword(), entity);
         log.warn("회원 삭제 시도: id={}, username={}",
                 entity.getId(), entity.getUsername());
+        // 삭제 전 비밀번호 체크
+        checkPassword(dto.getPassword(), entity);
     }
     private void afterDelete(Member entity, MemberDeleteDTO dto) {
         log.warn("회원 삭제 완료: id={}, username={}",
                 entity.getId(), entity.getUsername());
     }
 
+    /**
+     * 사용자가 입력한 비밀번호가 DB에 저장된 비밀번호와 일치하는지 확인.
+     * - 일치하지 않으면 WrongPasswordException 발생.
+     */
     private void checkPassword(String password, Member entity) throws WrongPasswordException {
         if (!passwordEncoder.matches(password, entity.getPassword())) {
             throw new WrongPasswordException("올바르지 않은 현재 비밀번호");
         }
     }
 
+    /**
+     * 관리자(admin)가 다른 회원의 권한(Role)을 변경하는 메서드.
+     * 규칙 요약:
+     * - 이미 같은 권한으로 변경하려 하면 예외
+     * - 본인 자신의 권한은 변경할 수 없음
+     * - ADMIN:
+     *   - 다른 ADMIN의 권한을 변경할 수 없음
+     *   - 누구를 ADMIN으로 올릴 수도 없음
+     * - MANAGER:
+     *   - ADMIN / MANAGER 계정의 권한을 변경할 수 없음
+     *   - 누구에게도 ADMIN / MANAGER 권한을 부여할 수 없음
+     * - 그 외(일반 USER 등)는 권한 변경 작업 자체를 할 수 없음
+     * 위 조건 중 하나라도 위반하면 PermissionDeniedException 또는 IllegalArgumentException을 던짐.
+     */
     @Transactional
     public void updateRoleType(MemberDTO d, Member admin) {
+        // 변경 대상 회원 조회
         Member entity = view(d.getId());
 
-        RoleType oldRole = entity.getRole();
-        RoleType newRole = d.getRole();
-        RoleType adminRole = admin.getRole();
+        RoleType oldRole = entity.getRole();    // 기존 권한
+        RoleType newRole = d.getRole();         // 변경 요청 권한
+        RoleType adminRole = admin.getRole();   // 변경을 수행하는 관리자 권한
 
         if (oldRole == d.getRole()) {
             log.info("[updateRoleType] 이미 같은 권한입니다. id={}, username={}, role={}",
@@ -206,6 +273,8 @@ public class MemberService {
                     admin.getId(), adminRole);
             throw new PermissionDeniedException("권한 변경 권한이 없습니다.");
         }
+
+        // 모든 검증을 통과한 경우 실제 권한 변경
         entity.setRole(d.getRole());
         memberRepository.save(entity);
         log.info("[updateRoleType] 권한 변경됨. id={}, username={}, role={} -> {}",

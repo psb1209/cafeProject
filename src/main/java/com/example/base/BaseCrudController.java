@@ -16,17 +16,33 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 public abstract class BaseCrudController<E, D> {
-
-    protected final Logger log = LoggerFactory.getLogger(getClass());
     protected final BaseCrudService<E, D> service;
-    protected final String basePath;
+    protected final String basePath; // 기본으로 사용할 링크
+
+    // 로그 찍는 용도 그 이상도 그 이하도 아님. log.***은 전부 무시해도 됨!!
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     protected BaseCrudController(BaseCrudService<E, D> service, String basePath) {
         this.service = service;
         this.basePath = basePath;
     }
 
-    // view 결과에서 EntityNotFoundException이 발생하지 않으면 기존 링크를 반환, 아니라면 getNotFoundRedirectPath로 redirect
+    // 모든 POST 검증 실패 시 공통으로 사용하는 로깅 + 뷰 반환 메서드.
+    // action: 로그에 찍힐 작업 이름, path: 실패 시 다시 보여줄 뷰 경로.
+    protected String logValidationErrors(String action, String path, BindingResult bindingResult) {
+        log.warn("[{} 검증 실패]", action);
+        bindingResult.getFieldErrors().forEach(error ->
+                log.warn("[{} 검증 실패 상세] - field: {}, value: {}, message: {}",
+                        action,
+                        error.getField(),
+                        error.getRejectedValue(),
+                        error.getDefaultMessage())
+        );  // 모든 검증 오류를 log.warn으로 출력
+        return action + "/" + path;
+    }
+
+    // id로 Member를 조회해서 존재하면 model에 "data"로 담고 지정된 뷰로 이동.
+    // 대상이 없으면 경고 로그를 남기고 메인으로 redirect.
     protected String loadPathOrRedirect(int id, Model model, String path) {
         try {
             E entity = service.view(id);
@@ -41,19 +57,6 @@ public abstract class BaseCrudController<E, D> {
     protected String getNotFoundRedirectPath() {
         // 기본값: 메인
         return "redirect:/";
-    }
-
-    // 공통 검증 실패 로그 + 뷰 이름 반환
-    protected String logValidationErrors(String action, String path, BindingResult bindingResult) {
-        log.warn("[{} 검증 실패]", action);
-        bindingResult.getFieldErrors().forEach(error ->
-                log.warn("[{} 검증 실패 상세] - field: {}, value: {}, message: {}",
-                        action,
-                        error.getField(),
-                        error.getRejectedValue(),
-                        error.getDefaultMessage())
-        );
-        return action + "/" + path;
     }
 
     @GetMapping("/list")
