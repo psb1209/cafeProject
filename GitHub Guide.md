@@ -1,5 +1,4 @@
 # GitHub 사용하기
-==============
 
 ## GitHub 회원가입 & 리포지토리 접근 확인
 -----------------------------------
@@ -105,3 +104,4 @@ GitHub로 올리기 (push)
 
 - "Your branch is up to date with 'origin/main'."
   → 내 로컬과 GitHub의 main 브랜치 내용이 일치하는 상태
+
