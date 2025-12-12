@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<body>
+<header th:fragment="inc_header"
+        class="masthead"
+        th:with="
+            img=${headerImage} != null ? ${headerImage} : @{/assets/img/main.jpg},
+            pos=${headerPosition} != null ? ${headerPosition} : 'center center'
+        "
+        th:style="|background-image: url('${img}'); background-position: ${pos}; background-repeat: no-repeat; background-size: cover;|">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="site-heading">
+                    <h1 layout:fragment="pageTitle">Clean Cafe</h1>
+                    <span class="subheading" layout:fragment="pageSubTitle">
+                        A Blog Theme by Start Bootstrap
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+</body>
+</html>

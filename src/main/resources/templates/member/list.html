@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="showHeader=false">
+
+<body>
+
+<div layout:fragment="content">
+    <!-- 본문 내용 시작 -->
+    <h1>유저 목록</h1>
+
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>아이디</th>
+            <th>이메일</th>
+            <th>권한</th>
+            <th>가입일자</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="data : ${list}">
+            <td><span th:text="${data.id}"></span></td>
+            <td><a th:text="${data.username}" th:href="@{|/member/view/${data.id}|}"></a></td>
+            <td><span th:text="${data.email}"></span></td>
+            <td><span th:text="${data.role}"></span></td>
+            <td><span th:text="${#dates.format(data.createDate, 'yyyy-MM-dd')}"></span></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div style="margin-top: 25px;" th:if="${list.totalPages > 0}">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${list.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${list.first} ? '#' : @{|?page=${list.number-1}|}">
+                    Prev
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="page: ${#numbers.sequence(0, list.totalPages-1)}"
+                th:classappend="${page == list.number} ? 'active'">
+                <a class="page-link"
+                   th:text="${page + 1}"
+                   th:href="@{|?page=${page}|}">
+                </a>
+            </li>
+
+            <li class="page-item" th:classappend="${list.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${list.last} ? '#' : @{|?page=${list.number+1}|}">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- 본문 내용 종료 -->
+</div>
+
+</body>
+</html>

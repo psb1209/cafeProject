@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center'">
+
+<div layout:fragment="content" class="container px-4 px-lg-5">
+    <!-- 본문 내용 시작 -->
+
+        <h2>Hover Rows</h2>
+        <p>The .table-hover class enables a hover state (grey background on mouse over) on table rows:</p>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>John</td>
+                <td>Doe</td>
+                <td>john@example.com</td>
+            </tr>
+            <tr>
+                <td>Mary</td>
+                <td>Moe</td>
+                <td>mary@example.com</td>
+            </tr>
+            <tr>
+                <td>July</td>
+                <td>Dooley</td>
+                <td>july@example.com</td>
+            </tr>
+            </tbody>
+        </table>
+
+    <!-- 본문 내용 종료 -->
+</div>
+</html>

@@ -1,0 +1,21 @@
+localhost:9006
+
+DB명 : cafeProject
+사용자명 : cafeProjectUser, 1234, localhost
+
+mariadb -u root -p
+1234
+use mysql;
+
+create database cafeProject;
+create user 'cafeProjectUser'@'localhost' identified by '1234';
+grant all privileges on cafeProject.* to 'cafeProjectUser'@'localhost';
+flush privileges;
+
+
+메소드명 : list, view, create, update, delete, createProc, updateProc, deleteProc
+html : list.html, view.html, create.html, update.html, delete.html
+
+
+
+

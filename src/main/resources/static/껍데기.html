@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center'">
+
+<body>
+
+<h1 layout:fragment="pageTitle">My Cafe</h1>
+<span layout:fragment="pageSubTitle">first page</span>
+
+<div layout:fragment="content">
+    <!-- 본문 내용 시작 -->
+
+    <!-- 본문 내용 종료 -->
+</div>
+
+</body>
+</html>
