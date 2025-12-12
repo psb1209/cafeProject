@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center'">
+
+<body>
+
+<h1 layout:fragment="pageTitle">My Cafe</h1>
+<span layout:fragment="pageSubTitle">first page</span>
+
+<div layout:fragment="content">
+    <!-- 본문 내용 시작 -->
+    <h2>자유게시판 상세보기</h2>
+
+        <form name="form">
+            <div class="mb-3 mt-3">
+                <label for="subject">subject:</label>
+                <span  class="form-control" id="subject"  th:text="${communityBoard.subject}"></span>
+            </div>
+            <div class="mb-3">
+                <label for="content">content:</label>
+                <span  class="form-control" id="content"  th:text="${communityBoard.content}" ></span>
+            </div>
+<!--            <div class="mb-3">-->
+<!--                <label for="member">member:</label>-->
+<!--                <span type="text" class="form-control" id="member" name="member" th:text="${communityBoard.member}" ></span>-->
+<!--            </div>-->
+            <div class="mb-3">
+                <label for="cnt">cnt:</label>
+                <span  class="form-control" id="cnt" th:text="${communityBoard.cnt}"  ></span>
+            </div>
+            <div class="mb-3">
+                <label for="createDate">createDate:</label>
+                <span  class="form-control" id="createDate" th:text="${#dates.format(communityBoard.createDate, 'yyyy-MM-dd')}" ></span>
+            </div>
+
+
+        </form>
+
+
+
+    <a href="/communityBoard/list" class="btn btn-secondary">목록</a>
+    <a href="/communityBoard/create" class="btn btn-secondary">등록</a>
+    <a th:href="@{|/communityBoard/update/${communityBoard.id}|}" class="btn btn-secondary">수정</a>
+    <a th:href="@{|/communityBoard/delete/${communityBoard.id}|}" class="btn btn-secondary">삭제</a>
+
+    <hr>
+
+    <div style="margin-top: 20px;">
+        <form name="commentForm">
+<!--            <input type="text" name="_csrf" th:value="${_csrf.token}">-->
+            <input type="hidden" id="communityBoardId" name="communityBoardId" th:value="${communityBoard.id}">
+            <textarea id="reply-content" rows="1" class="form-control" name="content" ></textarea>
+            <button id="btn-save-replay" class="btn btn-secondary" type="button" onclick="commentSave();">코멘트 등록</button>
+        </form>
+        <script>
+            function commentSave(){
+            if(confirm('코멘트 등록할까요?')){
+                document.commentForm.action="/communityBoardComment/createProc";
+                document.commentForm.method="post";
+                document.commentForm.submit();
+
+                }
+            }
+        </script>
+    </div>
+
+        <div style="margin-top": 20px; id="commentList">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th width="80%">내용</th>
+                    <th width="10%">작성자</th>
+                    <th width="10%">삭제</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr th:each="communityBoardComment:${communityBoardCommentPage}">
+                    <td th:text="${communityBoardComment.content}"></td>
+<!--                    <td th:text="${communityBoardComment.member}"></td>-->
+                    <td>
+                        <a th:href="@{|/communityBoardComment/deleteProc/${communityBoardComment.id}|}"> x </a>
+                    </td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div>
+            <ul class="pagination">
+                <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${postList.number-1}|}">Prev</a></li>-->
+                <li class="page-item" th:classappend="${communityBoardCommentPage.first} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="${communityBoardCommentPage.first} ? '#' : @{|?page=${communityBoardCommentPage.number-1}|}">
+                        Prev
+                    </a>
+                </li>
+
+                <li class="page-item"
+                    th:each="page: ${#numbers.sequence(0, communityBoardCommentPage.totalPages-1)}"
+                    th:classappend="${page == communityBoardCommentPage.number} ? 'active'">
+                    <a class="page-link"  th:text="${page}" th:href="@{|?page=${page}|}"></a>
+                </li>
+
+                <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${postList.number+1}|}">Next</a></li>-->
+                <li class="page-item" th:classappend="${communityBoardCommentPage.last} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="${communityBoardCommentPage.last} ? '#' : @{|?page=${communityBoardCommentPage.number+1}|}">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+
+    <!-- 본문 내용 종료 -->
+</div>
+
+</body>
+</html>

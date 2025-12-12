@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center'">
+
+<body>
+
+<h1 layout:fragment="pageTitle">My Cafe</h1>
+<span layout:fragment="pageSubTitle">first page</span>
+
+<div layout:fragment="content">
+    <!-- 본문 내용 시작 -->
+    <h2>자유게시판 목록</h2>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>순번</th>
+            <th>제목</th>
+            <th>조회수</th>
+<!--            <th>작성자</th>-->
+            <th>등록일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="communityBoard, loop : ${communityBoardPage}">
+            <td th:text="${loop.index+1}"></td>
+            <td><a th:text="${communityBoard.subject}" th:href="@{|/communityBoard/view/${communityBoard.id}|}"></a>
+            </td>
+            <td th:text="${communityBoard.cnt}"></td>
+<!--            <td th:text="${communityBoard.member.username}"></td>-->
+            <td th:text="${#dates.format(communityBoard.createDate, 'yyyy-MM-dd')}"></td>
+        </tr>
+
+
+        </tbody>
+    </table>
+
+    <a href="/communityBoard/create" class="btn btn-secondary">등록</a>
+
+    <div style="margin-top: 20px;">
+        <ul class="pagination">
+            <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${memberList.number-1}|}">Prev</a></li>-->
+            <li class="page-item" th:classappend="${communityBoardPage.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${communityBoardPage.first} ? '#' : @{|?page=${communityBoardPage.number-1}|}">
+                    Prev
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="page: ${#numbers.sequence(0, communityBoardPage.totalPages-1)}"
+                th:classappend="${page == communityBoardPage.number} ? 'active'">
+                <a class="page-link"  th:text="${page}" th:href="@{|?page=${page}|}"></a>
+            </li>
+
+            <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${memberList.number+1}|}">Next</a></li>-->
+            <li class="page-item" th:classappend="${communityBoardPage.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${communityBoardPage.last} ? '#' : @{|?page=${communityBoardPage.number+1}|}">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </div>
+
+</body>
+</html>
