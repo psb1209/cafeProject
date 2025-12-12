@@ -66,7 +66,7 @@ public class MemberController {
             model.addAttribute("data", entity);
             return path;
         } catch (AccessDeniedException e) { // 현재 로그인 정보를 확인할 수 없음
-            log.warn("[loadPathOrRedirect] 현재 로그인 정보를 확인할 수 없음. principal={}", authentication.getName());
+            log.warn("[loadPathOrRedirect] 현재 로그인 정보를 확인할 수 없음. principal={}", authentication != null ? authentication.getName() : "null");
             return "redirect:/";
         } catch (EntityNotFoundException e) { // 이미 삭제되었거나 존재하지 않는 계정 오류
             log.warn("대상이 되는 Entity를 찾을 수 없음. principal={}", authentication != null ? authentication.getName() : "null", e);

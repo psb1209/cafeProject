@@ -1,7 +1,5 @@
 package com.example.cafeProject.member;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -9,7 +7,6 @@ import lombok.*;
 @Setter
 public class MemberDeleteDTO { // 회원 탈퇴시 사용하는 DTO입니다.
 
-    @Enumerated(EnumType.STRING)
     private ReasonType reason; // 탈퇴 사유
 
     @NotBlank(

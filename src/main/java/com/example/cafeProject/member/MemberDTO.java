@@ -14,7 +14,7 @@ public class MemberDTO { //일반적인 상황에서 Member 관련 처리를 수
 
     @NotNull(
             message = "대상 회원 id는 필수입니다.",
-            groups = ValidationGroups.OnUpdate.class // 업데이트시 검증
+            groups = ValidationGroups.OnUpdate.class // 수정시 검증
     )
     private Integer id;
 
@@ -60,7 +60,7 @@ public class MemberDTO { //일반적인 상황에서 Member 관련 처리를 수
 
     @NotNull(
             message = "변경할 권한은 필수입니다.",
-            groups = ValidationGroups.OnUpdate.class // 생성시 검증
+            groups = ValidationGroups.OnUpdate.class // 수정시 검증
     )
     private RoleType role;
 
