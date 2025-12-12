@@ -60,23 +60,14 @@ cd cafeProject
 처음 한 번만, 본인 이름/이메일을 설정해 줍니다.
 
 ```bat
-git config --global user.name "exampleUsername"
-git config --global user.email "example@gmail.com"
+git config user.name "exampleUsername"
+git config user.email "example@gmail.com"
 ```
 
 * `exampleUsername` → 본인 GitHub 닉네임 등
 * `example@gmail.com` → 본인 GitHub에 사용하는 이메일
 
-> `--global` : 이 컴퓨터에서 앞으로 사용할 **모든 Git 리포지토리에 공통**으로 적용됩니다.
-> 만약 이 컴퓨터를 여러 사람이 같이 쓰거나, 설정을 프로젝트마다 다르게 하고 싶다면
-> `--global`을 빼고 아래처럼 **리포지토리마다 한번씩** 설정해도 됩니다.
 
-```bat
-git config user.name "exampleUsername"
-git config user.email "example@gmail.com"
-```
-
-(이 경우, 프롬프트 켤 때마다가 아니라, **그 리포지토리에서 한 번 설정해두면 계속 유지**됩니다.)
 
 ---
 
@@ -142,4 +133,5 @@ git status
   → 변경사항 없음, 깔끔한 상태
 * `Your branch is up to date with 'origin/main'.`
   → 내 로컬과 GitHub의 main 브랜치 내용이 일치
+
 
