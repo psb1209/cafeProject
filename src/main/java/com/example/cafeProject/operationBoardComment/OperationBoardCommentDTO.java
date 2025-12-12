@@ -15,7 +15,7 @@ public class OperationBoardCommentDTO {
 
     private Timestamp createDate;
 
-/*    private int memberId;*/
+    private int memberId;
 
     private int operationBoardId;
 

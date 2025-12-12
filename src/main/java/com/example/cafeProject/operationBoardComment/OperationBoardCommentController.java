@@ -1,9 +1,12 @@
 package com.example.cafeProject.operationBoardComment;
 
+import com.example.cafeProject.member.Member;
 import com.example.cafeProject.operationBoard.OperationBoard;
 import com.example.cafeProject.operationBoard.OperationBoardDTO;
 import com.example.cafeProject.operationBoard.OperationBoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,8 +26,21 @@ public class OperationBoardCommentController {
     @PostMapping("/createProc")
     public String createProc(
             Model model,
-            OperationBoardCommentDTO operationBoardCommentDTO
+            OperationBoardCommentDTO operationBoardCommentDTO,
+            Authentication authentication
     ) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        String loginId = userDetails.getUsername(); // 로그인했을 때 아이디
+        try {
+            Member member = operationBoardService.getSelectOneByUsername(authentication);
+            operationBoardCommentDTO.setMemberId(member.getId());
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "err0808");
+            model.addAttribute("errMsg", e.getMessage());
+            return "error/error";
+        }
+
         try {
             OperationBoardDTO operationBoardDTO = new OperationBoardDTO();
             operationBoardDTO.setId(operationBoardCommentDTO.getOperationBoardId());
@@ -50,6 +66,7 @@ public class OperationBoardCommentController {
             Model model,
             OperationBoardCommentDTO operationBoardCommentDTO
     ) {
+
         try {
             OperationBoardDTO operationBoardDTO = new OperationBoardDTO();
             operationBoardDTO.setId(operationBoardCommentDTO.getOperationBoardId());
