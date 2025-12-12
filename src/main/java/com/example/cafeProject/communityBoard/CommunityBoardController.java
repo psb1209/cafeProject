@@ -132,14 +132,15 @@ public class CommunityBoardController {
     public String deleteProc(
             CommunityBoardDTO communityBoardDTO,
             Model model
-    ){  try{
-        communityBoardService.setDelete(communityBoardDTO.getId());
-        return "redirect:/communityBoard/list";
-    } catch (Exception e) {
-        model.addAttribute("errorCode", "err0001");
-        model.addAttribute("errorMsg", e.getMessage());
-        return "error/error";
-    }
+    ){
+        try{
+            communityBoardService.setDelete(communityBoardDTO.getId());
+            return "redirect:/communityBoard/list";
+        } catch (Exception e) {
+            model.addAttribute("errorCode", "err0001");
+            model.addAttribute("errorMsg", e.getMessage());
+            return "error/error";
+        }
 
     }
 
