@@ -7,14 +7,14 @@
 
    * 제가 해당 리포지터리의 **Collaborator**로 추가해야 합니다.
 3. 초대를 수락한 후, 아래 주소로 접속해서 소스 파일이 보이는지 확인해 주세요.
-   👉 [https://github.com/Anim1048576/cafeProject](https://github.com/Anim1048576/cafeProject)
+   [https://github.com/Anim1048576/cafeProject](https://github.com/Anim1048576/cafeProject)
 
 ---
 
 ### 1. Git 설치
 
 1. 아래 링크에서 Windows용 Git을 설치합니다.
-   👉 [https://git-scm.com/install/windows](https://git-scm.com/install/windows)
+   [https://git-scm.com/install/windows](https://git-scm.com/install/windows)
    설치 옵션은 웬만하면 **기본값(Next 연타)** 으로 두셔도 됩니다.
 
 2. 설치가 제대로 되었는지 확인하려면,
@@ -142,3 +142,4 @@ git status
   → 변경사항 없음, 깔끔한 상태
 * `Your branch is up to date with 'origin/main'.`
   → 내 로컬과 GitHub의 main 브랜치 내용이 일치
+
