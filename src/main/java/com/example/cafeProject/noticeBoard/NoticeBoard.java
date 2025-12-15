@@ -21,7 +21,7 @@ public class NoticeBoard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false, columnDefinition = "longtext")
+    @Column(nullable = false, length = 100)
     private String subject;
 
     @Lob

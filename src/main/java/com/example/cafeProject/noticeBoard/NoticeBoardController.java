@@ -79,8 +79,8 @@ public class NoticeBoardController {
         noticeBoardDTO.setId(id);
         NoticeBoard noticeBoard = noticeBoardService.view(noticeBoardDTO);
         if (noticeBoard == null) {
-            model.addAttribute("errorCode", "err0001");
-            model.addAttribute("errorMsg", "존재하지 않는 게시글입니다.");
+            model.addAttribute("errCode", "err0001");
+            model.addAttribute("errMsg", "존재하지 않는 게시글입니다.");
             return "error/error";
         }
         model.addAttribute("noticeBoard", noticeBoard);
@@ -96,8 +96,8 @@ public class NoticeBoardController {
         noticeBoardDTO.setId(id);
         NoticeBoard noticeBoard = noticeBoardService.view(noticeBoardDTO);
         if (noticeBoard == null) {
-            model.addAttribute("errorCode", "err0001");
-            model.addAttribute("errorMsg", "존재하지 않는 게시글입니다.");
+            model.addAttribute("errCode", "err0001");
+            model.addAttribute("errMsg", "존재하지 않는 게시글입니다.");
             return "error/error";
         }
         model.addAttribute("noticeBoard", noticeBoard);
@@ -114,8 +114,8 @@ public class NoticeBoardController {
         noticeBoardDTO.setMemberId(authenticationId);
         int result = noticeBoardService.createProc(noticeBoardDTO);
         if (result > 0) { //실패
-            model.addAttribute("errorCode", "err0002");
-            model.addAttribute("errorMsg", "게시글 등록 중 오류가 발생했습니다.");
+            model.addAttribute("errCode", "err0002");
+            model.addAttribute("errMsg", "게시글 등록 중 오류가 발생했습니다.");
             return "error/error";
         }
         return "redirect:/noticeBoard/list";
@@ -128,8 +128,8 @@ public class NoticeBoardController {
     ) {
         NoticeBoard noticeBoard = noticeBoardService.view(noticeBoardDTO);
         if (noticeBoard == null) {
-            model.addAttribute("errorCode", "err0003");
-            model.addAttribute("errorMsg", "등록된 게시글이 아닙니다.");
+            model.addAttribute("errCode", "err0003");
+            model.addAttribute("errMsg", "등록된 게시글이 아닙니다.");
             return "error/error";
         }
 
@@ -137,8 +137,8 @@ public class NoticeBoardController {
         noticeBoardDTO.setCnt(noticeBoard.getCnt());
         int result = noticeBoardService.updateProc(noticeBoardDTO);
         if (result > 0) { //실패
-            model.addAttribute("errorCode", "err0002");
-            model.addAttribute("errorMsg", "게시글 수정중 예외가 발생했습니다.");
+            model.addAttribute("errCode", "err0002");
+            model.addAttribute("errMsg", "게시글 수정중 예외가 발생했습니다.");
             return "error/error";
         }
         return "redirect:/noticeBoard/view/" + noticeBoardDTO.getId();
@@ -160,8 +160,8 @@ public class NoticeBoardController {
             errorCounter++;
         }
         if (errorCounter > 0) {
-            model.addAttribute("errorCode", "err0004");
-            model.addAttribute("errorMsg", "게시글 삭제중 예외가 발생했습니다.");
+            model.addAttribute("errCode", "err0004");
+            model.addAttribute("errMsg", "게시글 삭제중 예외가 발생했습니다.");
             return "error/error";
         }
         return "redirect:/noticeBoard/list";
