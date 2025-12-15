@@ -6,6 +6,7 @@ import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardCommentService;
 import jdk.dynalink.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,8 +19,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -169,26 +173,30 @@ public class OperationBoardController {
         }
     }
 
+    @Value("${app.image.upload-dir}")
+    protected String uploadDir; //저장할 폴더
+
+    @Value("${app.image.url-prefix}")
+    protected String urlPrefix; // 클라이언트에 반환할 URL
+
     @ResponseBody
     @PostMapping(value = "/uploadImage", produces = "application/json")
-    public Map<String, Object> uploadImage(@RequestParam("file") MultipartFile file) throws Exception {
-        String uploadDir = "C:/dw202/attach/summernote/";  // 저장할 폴더  // 폴더 위치 변경
+    public Map<String, Object> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
         File folder = new File(uploadDir);
-        if (!folder.exists()) folder.mkdirs();
-
+        if (!folder.exists() && !folder.mkdirs() && !folder.exists()) throw new IOException("업로드 폴더 생성 실패: " + folder.getAbsolutePath());
 
         //파일명에서 한글 제거:
-        String original = file.getOriginalFilename();
-        original = original.replaceAll("[^a-zA-Z0-9._-]", "_");
+        String original = Objects.requireNonNull(file.getOriginalFilename(), "파일 이름이 null입니다.")
+                .replaceAll("[^a-zA-Z0-9._-]", "_");
         String fileName = UUID.randomUUID() + "_" + original;
 
-        //String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-        String filePath = uploadDir + fileName;
-
-        file.transferTo(new File(filePath)); // 파일 저장
+        file.transferTo(Paths.get(uploadDir, fileName).toFile()); // 파일 저장
 
         Map<String, Object> response = new HashMap<>();
-        response.put("url", "/dw202/attach/summernote/" + fileName); // 클라이언트에 반환할 URL // 파일 위치 벼경
+
+        response.put("url", urlPrefix.endsWith("/")
+                ? urlPrefix + fileName
+                : urlPrefix + "/" + fileName);
         return response;
     }
     //********************************************************************************************

@@ -8,6 +8,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -26,6 +29,7 @@ public class OperationBoardService {
 
     private final OperationBoardRepository operationBoardRepository;
     private final MemberRepository memberRepository;
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     private final MemberService memberService;
 
@@ -58,10 +62,16 @@ public class OperationBoardService {
 
     @Transactional
     public OperationBoard setUpdate(OperationBoardDTO paramDTO) {
+        log.debug("문제0");
+
         OperationBoard operationBoard = getSelectOneById(paramDTO);
+        log.debug("문제1");
 
         operationBoard.setSubject(paramDTO.getSubject());
+        log.debug("문제2");
+
         operationBoard.setContent(paramDTO.getContent());
+        log.debug("문제3");
         /*operationBoard.setCnt(paramDTO.getCnt());*/
 
         return operationBoard;
@@ -81,8 +91,12 @@ public class OperationBoardService {
     }
 
     //************************************************************************************************************************
+
+    @Value("${app.image.upload-dir}")
+    protected String imgPath;
+
     //서머노트관련
-    private List<String> extractImageUrls(String html) {
+    protected List<String> extractImageUrls(String html) {
         List<String> urls = new ArrayList<>();
 
         Document doc = Jsoup.parse(html);
@@ -96,20 +110,25 @@ public class OperationBoardService {
         return urls;
     }
 
-    private void deleteImageFiles(List<String> imageUrls) {
-        String basePath = "C:/dw202/attach/summernote/"; // 파일 위치 변경
+    protected void deleteImageFiles(List<String> imageUrls) {
 
         for (String url : imageUrls) {
             try {
                 // URL에서 파일명만 가져오기
                 String fileName = Paths.get(url).getFileName().toString();
 
-                File file = new File(basePath + fileName);
+                File file = Paths.get(imgPath, fileName).toFile();
                 if (file.exists()) {
-                    file.delete();
+                    if (file.delete()) {
+                        log.info("[deleteImageFiles] 이미지 파일 삭제 성공 - fileName={}, path={}",
+                                fileName, file.getAbsolutePath());
+                    } else {
+                        log.warn("[deleteImageFiles] 이미지 파일 삭제 실패 - fileName={}, path={}",
+                                fileName, file.getAbsolutePath());
+                    }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("[deleteImageFiles] 이미지 삭제중 예상 못한 오류 : {}", e.getMessage());
             }
         }
     }
