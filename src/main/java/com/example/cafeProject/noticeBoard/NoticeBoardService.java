@@ -1,8 +1,6 @@
 package com.example.cafeProject.noticeBoard;
 
-import com.example.cafeProject.member.MemberRepository;
 import com.example.cafeProject.member.MemberService;
-import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -11,7 +9,6 @@ import org.jsoup.select.Elements;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.nio.file.Paths;
