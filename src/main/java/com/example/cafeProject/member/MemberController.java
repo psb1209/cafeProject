@@ -394,11 +394,20 @@ public class MemberController {
         }
     }
 
+    /**
+    * 현재 로그인한 사용자의 권한(Authorities)에 따라
+    * 권한 변경 화면에서 선택 가능한 RoleType 목록을 반환한다.
+    */
     private RoleType[] allowedRoleOptions(Authentication authentication) {
+        // ADMIN이면: MANAGER까지 부여 가능
         if (authentication.getAuthorities().toString().contains("ROLE_ADMIN"))
             return new RoleType[]{RoleType.BANNED, RoleType.USER, RoleType.MANAGER};
+        
+        // MANAGER이면: USER/BANNED만 변경 가능
         if (authentication.getAuthorities().toString().contains("ROLE_MANAGER"))
             return new RoleType[]{RoleType.BANNED, RoleType.USER};
+
+        // 그 외 권한(일반 USER 등)은 권한 변경 기능 사용 불가
         return null;
     }
 }
