@@ -7,8 +7,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -24,6 +29,7 @@ public class NoticeBoardService {
     private final NoticeBoardRepository noticeBoardRepository;
     private final NoticeBoardCommentRepository noticeBoardCommentRepository;
     private final MemberService memberService;
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     public Page<NoticeBoard> list(Pageable pageable) {
 
@@ -92,7 +98,11 @@ public class NoticeBoardService {
     }
 
 
-    private List<String> extractImageUrls(String html) {
+    @Value("${app.image.upload-dir}")
+    protected String imgPath;
+
+    //서머노트관련
+    protected List<String> extractImageUrls(String html) {
         List<String> urls = new ArrayList<>();
 
         Document doc = Jsoup.parse(html);
@@ -106,20 +116,25 @@ public class NoticeBoardService {
         return urls;
     }
 
-    private void deleteImageFiles(List<String> imageUrls) {
-        String basePath = "C:/dw202/attach/summernote/";
+    protected void deleteImageFiles(List<String> imageUrls) {
 
         for (String url : imageUrls) {
             try {
                 // URL에서 파일명만 가져오기
                 String fileName = Paths.get(url).getFileName().toString();
 
-                File file = new File(basePath + fileName);
+                File file = Paths.get(imgPath, fileName).toFile();
                 if (file.exists()) {
-                    file.delete();
+                    if (file.delete()) {
+                        log.info("[deleteImageFiles] 이미지 파일 삭제 성공 - fileName={}, path={}",
+                                fileName, file.getAbsolutePath());
+                    } else {
+                        log.warn("[deleteImageFiles] 이미지 파일 삭제 실패 - fileName={}, path={}",
+                                fileName, file.getAbsolutePath());
+                    }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("[deleteImageFiles] 이미지 삭제중 예상 못한 오류 : {}", e.getMessage());
             }
         }
     }
