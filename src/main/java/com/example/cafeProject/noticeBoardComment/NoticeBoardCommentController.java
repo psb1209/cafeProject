@@ -1,6 +1,8 @@
 package com.example.cafeProject.noticeBoardComment;
 
+import com.example.cafeProject.member.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,13 +15,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class NoticeBoardCommentController {
     private final NoticeBoardCommentService noticeBoardCommentService;
-
+    private final MemberService memberService;
 
     @PostMapping("/createProc")
     public String createProc(
             Model model,
-            NoticeBoardCommentDTO noticeBoardCommentDTO
+            NoticeBoardCommentDTO noticeBoardCommentDTO,
+            Authentication authentication
     ) {
+        int authenticationId = memberService.viewCurrentMember(authentication).getId();
+        noticeBoardCommentDTO.setMemberId(authenticationId);
         try {
             noticeBoardCommentService.createProc(noticeBoardCommentDTO);
             return "redirect:/noticeBoard/view/" + noticeBoardCommentDTO.getNoticeBoardId();
@@ -30,11 +35,10 @@ public class NoticeBoardCommentController {
         }
     }
 
-    //    @GetMapping("/sakjeProc/{commentId}/{guestBookId}")
     @GetMapping("/deleteProc/{noticeBoardCommentId}")
     public String deleteProc(Model model,
                             @PathVariable("noticeBoardCommentId") int noticeBoardCommentId
-                            //@PathVariable("guestBookId") int guestBookId
+
     ) {
 
         NoticeBoardComment noticeBoardComment = noticeBoardCommentService.view(noticeBoardCommentId);

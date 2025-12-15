@@ -1,5 +1,6 @@
 package com.example.cafeProject.noticeBoardComment;
 
+import com.example.cafeProject.member.Member;
 import com.example.cafeProject.noticeBoard.NoticeBoard;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,9 +28,9 @@ public class NoticeBoardComment {
     @CreationTimestamp
     private Timestamp createDate;
 
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "userid")
-//    private Member member;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userid")
+    private Member member;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "noticeBoardid")

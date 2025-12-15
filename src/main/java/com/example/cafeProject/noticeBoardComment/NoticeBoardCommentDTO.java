@@ -11,6 +11,6 @@ public class NoticeBoardCommentDTO {
     private int id;
     private String content;
     private Timestamp createDate;
-//    private int memberId;
+    private int memberId;
     private int noticeBoardId;
 }
