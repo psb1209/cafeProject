@@ -17,7 +17,7 @@ public class PasswordChangeDTO { // 비밀번호 변경을 검증하기 위한 D
     private String currentPassword;
 
     @NotBlank(message = "새 비밀번호를 입력해주세요.")
-    @Size(min = 8, max = 20, message = "비밀번호는 8~20자 사이여야 합니다.")
+    @Size(min = 8, message = "password는 8자 이상이어야 합니다.")
     @Pattern(
             regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z0-9~!@#$%^&*_\\-+=]+$",
             message = "password는 영문과 숫자를 각각 최소 1자 이상 포함해야 하며, 허용된 특수문자만 사용할 수 있습니다."
