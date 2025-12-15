@@ -1,6 +1,8 @@
 package com.example.cafeProject.noticeBoard;
 
 import com.example.cafeProject.member.MemberService;
+import com.example.cafeProject.noticeBoardComment.NoticeBoardComment;
+import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
