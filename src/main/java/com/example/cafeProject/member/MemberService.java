@@ -249,12 +249,12 @@ public class MemberService {
         // 정확히 일치하는 금지 목록 검사
         for (int i = 0; i < FORBIDDEN_EQUALS.length; ++i) {
             String token = FORBIDDEN_EQUALS[i];
-            if (compact.equals(token)) { ++fCheck; }
+            if (compact.equals(token)) ++fCheck;
         }
         // 포함 금지 목록 검사
         for (int i = 0; i < FORBIDDEN_CONTAINS.length; ++i) {
             String token = FORBIDDEN_CONTAINS[i];
-            if (compact.contains(token)) { ++fCheck; }
+            if (compact.contains(token)) ++fCheck;
         }
         // 검사 결과 금지된 username이면 ForbiddenUsernameException 발생
         if (fCheck != 0) {
