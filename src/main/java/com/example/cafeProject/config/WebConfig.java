@@ -22,7 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
 
         String location = Paths.get(uploadDir).toUri().toString();
         location = location.endsWith("/") ? location : location + "/";
-        
+
         registry.addResourceHandler(handler)
                 .addResourceLocations(location);
     }
