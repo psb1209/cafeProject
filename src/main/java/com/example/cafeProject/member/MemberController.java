@@ -145,7 +145,13 @@ public class MemberController {
 
         model.addAttribute("data", dto);
         model.addAttribute("member", member);
-        model.addAttribute("roles", RoleType.values());
+        if (authentication.getAuthorities().toString().contains("ROLE_ADMIN")) {
+            model.addAttribute("roles", new RoleType[]{RoleType.BANNED, RoleType.USER, RoleType.MANAGER});
+        } else if (authentication.getAuthorities().toString().contains("ROLE_MANAGER")) {
+            model.addAttribute("roles", new RoleType[]{RoleType.BANNED, RoleType.USER});
+        } else {
+            return "redirect:/";
+        }
 
         return basePath + "/roleUpdate";
     }
