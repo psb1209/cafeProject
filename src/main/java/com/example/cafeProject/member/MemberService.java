@@ -201,10 +201,8 @@ public class MemberService {
         // email 중복 체크
         if (memberRepository.existsByEmail(dto.getEmail())) throw new IllegalArgumentException("이미 사용 중인 email");
 
-        // role이 지정되지 않았으면 기본값 USER 부여
-        if (dto.getRole() == null) {
-            dto.setRole(RoleType.USER);
-        }
+        // role 기본값: USER
+        dto.setRole(RoleType.USER);
     }
     private void afterCreate(MemberDTO dto, Member entity) {
         log.info("회원가입 완료: id={}, username={}, role={}",
@@ -279,7 +277,7 @@ public class MemberService {
      * - 일치하지 않으면 WrongPasswordException 발생.
      */
     private void checkPassword(String password, Member entity) throws WrongPasswordException {
-        if (!passwordEncoder.matches(password, entity.getPassword())) {
+        if (password != null && !passwordEncoder.matches(password, entity.getPassword())) {
             throw new WrongPasswordException("올바르지 않은 현재 비밀번호");
         }
     }
