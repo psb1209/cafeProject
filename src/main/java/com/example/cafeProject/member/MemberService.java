@@ -107,16 +107,6 @@ public class MemberService {
     }
 
     /**
-     * 인증 객체가 유효한 로그인 상태인지 판별.
-     * 사용처 예:
-     * - 로그인 사용자만 접근 가능한 서비스/컨트롤러에서 방어 로직
-     * - 현재 사용자 엔티티 조회 전에 선검사
-     */
-    public boolean isNotLogin(Authentication authentication) {
-        return authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken;
-    }
-
-    /**
      * 회원 등록.
      * 1) beforeCreate(dto) 에서 DTO 정규화 + 중복 체크 + 기본 role 세팅
      * 2) DTO → Entity 변환(toEntity)
@@ -270,6 +260,16 @@ public class MemberService {
                     username, compact);
             throw new ForbiddenUsernameException("혼동될 수 있는 id.");
         }
+    }
+
+    /**
+     * 인증 객체가 유효한 로그인 상태인지 판별.
+     * 사용처 예:
+     * - 로그인 사용자만 접근 가능한 서비스/컨트롤러에서 방어 로직
+     * - 현재 사용자 엔티티 조회 전에 선검사
+     */
+    public boolean isNotLogin(Authentication authentication) {
+        return authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken;
     }
 
     /**

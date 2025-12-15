@@ -402,7 +402,7 @@ public class MemberController {
         // ADMIN이면: MANAGER까지 부여 가능
         if (authentication.getAuthorities().toString().contains("ROLE_ADMIN"))
             return new RoleType[]{RoleType.BANNED, RoleType.USER, RoleType.MANAGER};
-        
+
         // MANAGER이면: USER/BANNED만 변경 가능
         if (authentication.getAuthorities().toString().contains("ROLE_MANAGER"))
             return new RoleType[]{RoleType.BANNED, RoleType.USER};
