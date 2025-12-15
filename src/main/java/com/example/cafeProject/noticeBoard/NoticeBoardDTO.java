@@ -13,5 +13,5 @@ public class NoticeBoardDTO {
     private String content;
     private int cnt;
     private Timestamp createDate;
-//    private int memberId;
+    private int memberId;
 }

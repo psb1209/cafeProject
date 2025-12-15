@@ -1,5 +1,7 @@
 package com.example.cafeProject.noticeBoard;
 
+import com.example.cafeProject.member.MemberRepository;
+import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
@@ -23,6 +25,7 @@ public class NoticeBoardService {
 
     private final NoticeBoardRepository noticeBoardRepository;
     private final NoticeBoardCommentRepository noticeBoardCommentRepository;
+    private final MemberService memberService;
 
     public Page<NoticeBoard> list(Pageable pageable) {
 
@@ -44,6 +47,7 @@ public class NoticeBoardService {
         noticeBoard.setSubject(noticeBoardDTO.getSubject());
         noticeBoard.setContent(noticeBoardDTO.getContent());
         noticeBoard.setCnt(0);
+        noticeBoard.setMember(memberService.view(noticeBoardDTO.getMemberId()));
 
         int result = 0;
         try {
@@ -56,17 +60,13 @@ public class NoticeBoardService {
     }
 
     public int updateProc(NoticeBoardDTO noticeBoardDTO) {
-        NoticeBoard noticeBoard = new NoticeBoard();
-        noticeBoard.setId(noticeBoardDTO.getId());
+        NoticeBoard noticeBoard = view(noticeBoardDTO);
         noticeBoard.setSubject(noticeBoardDTO.getSubject());
         noticeBoard.setContent(noticeBoardDTO.getContent());
-        noticeBoard.setCreateDate(noticeBoardDTO.getCreateDate());
-        noticeBoard.setCnt(noticeBoardDTO.getCnt());
-
         int result = 0;
         try {
             noticeBoardRepository.save(noticeBoard);
-        } catch(Exception e) {
+        } catch (Exception e) {
             //e.printStackTrace();
             result++;
         }
@@ -88,8 +88,10 @@ public class NoticeBoardService {
         return result;
     }
 
-
-
+    void cntUpdateProc(NoticeBoard noticeBoard) {
+        noticeBoard.setCnt(noticeBoard.getCnt() + 1);
+        noticeBoardRepository.save(noticeBoard);
+    }
 
 
     private List<String> extractImageUrls(String html) {

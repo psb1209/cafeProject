@@ -1,6 +1,6 @@
 package com.example.cafeProject.noticeBoard;
 
-import com.example.cafeProject.noticeBoardComment.NoticeBoardComment;
+import com.example.cafeProject.member.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -34,8 +33,8 @@ public class NoticeBoard {
     @CreationTimestamp
     private Timestamp createDate;
 
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "userid")
-//    private Member member;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userid")
+    private Member member;
 
 }

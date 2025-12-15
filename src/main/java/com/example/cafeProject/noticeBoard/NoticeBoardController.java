@@ -1,5 +1,6 @@
 package com.example.cafeProject.noticeBoard;
 
+import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardComment;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentService;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,7 @@ public class NoticeBoardController {
 
     private final NoticeBoardService noticeBoardService;
     private final NoticeBoardCommentService noticeBoardCommentService;
+    private final MemberService memberService;
 
     @GetMapping("/list")
     public String list(
@@ -48,10 +51,11 @@ public class NoticeBoardController {
             return "redirect:/";
         }
         model.addAttribute("noticeBoard", noticeBoard);
-
         Page<NoticeBoardComment> noticeBoardCommentList = noticeBoardCommentService.listByNoticeBoard(id, pageable);
         model.addAttribute("noticeBoardCommentList", noticeBoardCommentList);
 
+        noticeBoardService.cntUpdateProc(noticeBoard);
+        model.addAttribute("noticeBoard", noticeBoard);
         return "noticeBoard/view";
     }
 
@@ -95,13 +99,14 @@ public class NoticeBoardController {
         return "noticeBoard/delete";
     }
 
-
-
     @PostMapping("/createProc")
     public String createProc(
             Model model,
-            NoticeBoardDTO noticeBoardDTO
+            NoticeBoardDTO noticeBoardDTO,
+            Authentication authentication
     ) {
+        int authenticationId = memberService.viewCurrentMember(authentication).getId();
+        noticeBoardDTO.setMemberId(authenticationId);
         int result = noticeBoardService.createProc(noticeBoardDTO);
         if (result > 0) { //실패
             model.addAttribute("errorCode", "err0002");
