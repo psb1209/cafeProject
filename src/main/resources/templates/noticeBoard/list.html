@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center'">
+
+
+<h1 layout:fragment="pageTitle">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">헬스를 사랑하는 사람들의 모임</span>
+
+<div layout:fragment="content">
+    <div class="container">
+    <!-- 본문 내용 시작 -->
+    <h1>공지사항</h1>
+
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th></th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>조회수</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="noticeBoard, loop : ${noticeBoardList}">
+            <td th:text="${loop.index+1}" style="font-size: 15px;"></td>
+            <td>
+                <a th:href="@{|/noticeBoard/view/${noticeBoard.id}|}" th:text="${noticeBoard.subject}" style="font-size: 15px;"></a>
+            </td>
+            <td>
+<!--                <a th:href="@{|/member/view/${member.id}|}" th:text="${member.username}"></a>-->
+                <span th:if="${noticeBoard.member != null and noticeBoard.member.username != null}"
+                      th:text="${noticeBoard.member.username}"></span>
+
+                <span th:unless="${noticeBoard.member != null and noticeBoard.member.username != null}"
+                      th:text="'-'"></span>
+            </td>
+            <td th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd')}" style="font-size: 15px;"></td>
+            <td th:text="${noticeBoard.cnt}" style="font-size: 15px;"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="/noticeBoard/create" class="btn btn-secondary">글쓰기</a>
+
+    <div style="margin-top: 20px;" th:if="${!noticeBoardList.isEmpty()}">
+        <ul class="pagination">
+            <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${memberList.number-1}|}">Prev</a></li>-->
+            <li class="page-item" th:classappend="${noticeBoardList.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${noticeBoardList.first} ? '#' : @{|?page=${noticeBoardList.number-1}|}">
+                    Prev
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="page: ${#numbers.sequence(0, noticeBoardList.totalPages-1)}"
+                th:classappend="${page == noticeBoardList.number} ? 'active'">
+                <a class="page-link"  th:text="${page}" th:href="@{|?page=${page}|}"></a>
+            </li>
+
+            <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${memberList.number+1}|}">Next</a></li>-->
+            <li class="page-item" th:classappend="${noticeBoardList.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${noticeBoardList.last} ? '#' : @{|?page=${noticeBoardList.number+1}|}">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </div>
+    </div>
+    <!-- 본문 내용 종료 -->
+</div>
+
+</html>

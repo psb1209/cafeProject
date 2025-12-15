@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center'">
+
+<body>
+
+<h1 layout:fragment="pageTitle">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">헬스를 사랑하는 사람들의 모임</span>
+
+<div layout:fragment="content">
+    <div class="container">
+    <!-- 본문 내용 시작 -->
+    <h1>글 삭제하기</h1>
+        <form name="DirForm" id="DirForm" th:action="@{/noticeBoard/deleteProc}" th:method="post">
+            <!--        <input type="text" name="_csrf" th:value="${_csrf.token}">-->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div style="display: none;">
+                <input type="text" name="id" th:value="${noticeBoard.id}">
+            </div>
+
+            <div class="mb-3">
+                <label for="subject">제목:</label>
+                <span class="form-control" id="subject" th:text="${noticeBoard.subject}"></span>
+            </div>
+            <div class="mb-3">
+                <label for="content">내용:</label>
+                <span class="form-control" id="content" th:utext="${noticeBoard.content}"></span>
+            </div>
+        </form>
+        <!--    <button id="btn-save" class="btn btn-secondary" type="button" onclick="save();">삭제하기</button>-->
+        <button id="btn-delete" class="btn btn-secondary" type="button" onclick="save();">삭제하기</button>
+<!--    <script>-->
+<!--        function save() {-->
+<!--            if (confirm('삭제할까요?')) {-->
+<!--                document.form.action = "/noticeBoard/deleteProc";-->
+<!--                document.form.method = "post";-->
+<!--                document.form.submit();-->
+<!--            }-->
+<!--        }-->
+<!--    </script>-->
+        <script>
+            function save() {
+                if (confirm('삭제 하시겠습니까?')) {
+                    document.getElementById('DirForm').submit();
+                }
+            }
+        </script>
+    </div>
+    <!-- 본문 내용 종료 -->
+</div>
+
+</body>
+</html>

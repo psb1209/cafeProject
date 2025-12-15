@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center'">
+
+<h1 layout:fragment="pageTitle">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">헬스를 사랑하는 사람들의 모임</span>
+
+<div layout:fragment="content">
+    <div class="container">
+    <!-- 본문 내용 시작 -->
+
+
+    <div>
+        <a href="/noticeBoard/list" class="btn btn-secondary">공지사항 ></a>
+    </div>
+    <div class="mb-3">
+        <label for="subject"></label>
+        <span class="form-control" id="subject" th:text="${noticeBoard.subject}" style="font-size: 40px;"></span>
+    </div>
+    <div class="mb-3">
+        <label for="content"></label>
+        <span class="form-control" id="content" th:utext="${noticeBoard.content}"></span>
+    </div>
+    <div class="mb-3">
+        <label for="cnt">조회수:</label>
+        <span class="form-control" id="cnt" th:text="${noticeBoard.cnt}"></span>
+    </div>
+    <div class="mb-3">
+        <label for="createDate2">작성일:</label>
+        <!--        <span class="form-control" id="createDate1" th:text="${board.createDate}"></span><br>-->
+                <span class="form-control" id="createDate2" th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd')}"></span><br>
+<!--        <span class="form-control" id="createDate" th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd HH:mm:ss')}"></span>-->
+    </div>
+
+    <div class="text-end">
+        <a href="/noticeBoard/create" class="btn btn-secondary">등록</a>
+        <a th:href="@{|/noticeBoard/update/${noticeBoard.id}|}" class="btn btn-secondary">수정</a>
+        <a th:href="@{|/noticeBoard/delete/${noticeBoard.id}|}" class="btn btn-secondary">삭제</a>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <form name="noticeBoardCommentForm">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <input type="hidden" id="noticeBoardId" name="noticeBoardId" th:value="${noticeBoard.id}">
+            <textarea id="reply-content" rows="1" class="form-control border-primary bg-light" name="content" placeholder="댓글을 입력하세요..."></textarea><br>
+            <button id="btn-save-reply" class="btn btn-secondary" type="button" onclick="noticeBoardCommentSave();">댓글 등록</button>
+        </form>
+        <script>
+            function noticeBoardCommentSave() {
+                if (confirm('댓글을 등록할까요?')) {
+                    document.noticeBoardCommentForm.action = "/noticeBoardComment/createProc";
+                    document.noticeBoardCommentForm.method = "post";
+                    document.noticeBoardCommentForm.submit();
+                }
+            }
+        </script>
+    </div>
+
+    <div style="margin-top: 20px;" id="noticeBoardCommentList">
+        <table class="table">
+            <thead>
+            <tr>
+                <th width="70%">댓글</th>
+                <th width="20%">작성자</th>
+                <th width="10%">삭제</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="noticeBoardComment : ${noticeBoardCommentList}">
+                <td th:text="${noticeBoardComment.content}" style="font-size: 15px;"></td>
+                <td>
+                    <span th:if="${noticeBoardComment.member != null and noticeBoardComment.member.username != null}"
+                          th:text="${noticeBoardComment.member.username}"></span>
+
+                    <span th:unless="${noticeBoardComment.member != null and noticeBoardComment.member.username != null}"
+                          th:text="'-'"></span>
+                </td>
+<!--                <td th:text="${noticeBoardComment.member}"></td>-->
+                <td>
+                    <!--                    <a th:href="@{|/comment/sakjeProc/${comment.id}/${guestBook.id}|}">X</a>-->
+                    <a th:href="@{|/noticeBoardComment/deleteProc/${noticeBoardComment.id}|}" style="font-size: 15px;">X</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-top: 20px;" th:if="${!noticeBoardCommentList.isEmpty()}">
+        <ul class="pagination">
+            <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${commentList.number-1}|}">Prev</a></li>-->
+            <li class="page-item" th:classappend="${noticeBoardCommentList.first} ? 'disabled'" >
+                <a class="page-link"
+                   th:href="${noticeBoardCommentList.first} ? '#' : @{|?page=${noticeBoardCommentList.number-1}|}">
+                    Prev
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="page: ${#numbers.sequence(0, noticeBoardCommentList.totalPages-1)}"
+                th:classappend="${page == noticeBoardCommentList.number} ? 'active'">
+                <a class="page-link"  th:text="${page +1}" th:href="@{|?page=${page}|}"></a>
+            </li>
+
+            <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${commentList.number+1}|}">Next</a></li>-->
+            <li class="page-item" th:classappend="${noticeBoardCommentList.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${noticeBoardCommentList.last} ? '#' : @{|?page=${noticeBoardCommentList.number+1}|}">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </div>
+    </div>
+    <!-- 본문 내용 종료 -->
+</div>
+
+
+</html>
