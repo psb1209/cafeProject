@@ -96,7 +96,7 @@ public class MemberService {
      */
     public Member viewCurrentMember(Authentication authentication) {
         // 인증 정보가 없거나 익명 사용자라면 접근 불가
-        if (authenticationIsAnonymous(authentication)) {
+        if (isNotLogin(authentication)) {
             throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
         }
         log.debug("[{}] currentMember 조회 시도, name={}", memberServiceClass.getSimpleName(), authentication.getName());
@@ -106,7 +106,13 @@ public class MemberService {
         return entity;
     }
 
-    public boolean authenticationIsAnonymous(Authentication authentication) {
+    /**
+     * 인증 객체가 유효한 로그인 상태인지 판별.
+     * 사용처 예:
+     * - 로그인 사용자만 접근 가능한 서비스/컨트롤러에서 방어 로직
+     * - 현재 사용자 엔티티 조회 전에 선검사
+     */
+    public boolean isNotLogin(Authentication authentication) {
         return authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken;
     }
 
