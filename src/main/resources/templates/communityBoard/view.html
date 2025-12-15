@@ -50,7 +50,7 @@
 
     <div style="margin-top: 20px;">
         <form name="commentForm">
-<!--            <input type="text" name="_csrf" th:value="${_csrf.token}">-->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <input type="hidden" id="communityBoardId" name="communityBoardId" th:value="${communityBoard.id}">
             <textarea id="reply-content" rows="1" class="form-control" name="content" ></textarea>
             <button id="btn-save-replay" class="btn btn-secondary" type="button" onclick="commentSave();">코멘트 등록</button>
