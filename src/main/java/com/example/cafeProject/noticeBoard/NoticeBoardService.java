@@ -1,6 +1,7 @@
 package com.example.cafeProject.noticeBoard;
 
 import com.example.cafeProject.member.MemberService;
+import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

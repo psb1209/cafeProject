@@ -1,7 +1,6 @@
-package com.example.cafeProject.noticeBoardComment;
+package com.example.cafeProject.communityBoardComment;
 
-import com.example.cafeProject.member.Member;
-import com.example.cafeProject.noticeBoard.NoticeBoard;
+import com.example.cafeProject.communityBoard.CommunityBoard;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,23 +15,22 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "noticeBoardComment")
-public class NoticeBoardComment {
+@Table(name = "CommentBoardComments")
+public class CommunityBoardComment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false, length = 100)
+    @Lob
+    @Column(nullable = false)
     private String content;
 
     @CreationTimestamp
     private Timestamp createDate;
+//    private Member member;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "userid")
-    private Member member;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "noticeBoardid")
-    private NoticeBoard noticeBoard; //연관된 NoticeBoard
+    @JoinColumn(name = "communityBoardId")
+    private CommunityBoard communityBoard;
 }
