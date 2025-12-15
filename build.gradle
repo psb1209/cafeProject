@@ -26,29 +26,31 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // thymeleaf layout 사용.
+    // thymeleaf layout 사용을 위해서.
     implementation group: 'nz.net.ultraq.thymeleaf', name: 'thymeleaf-layout-dialect', version: '3.2.1'
 
     // 타임리프의 시간 관련 라이브러리.
     implementation group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-java8time', version: '3.0.4.RELEASE'
 
-    //modelmapper 사용.
+    // spring security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // thymeleaf springsecurity6 - 로그인 시 로그아웃 메뉴 보이게, 로그아웃 시 로그인 메뉴 보이게.
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.1.1'
 
-    //img url 추출.
     implementation 'org.jsoup:jsoup:1.17.2'
 }
 
