@@ -96,7 +96,7 @@ public class MemberService {
      */
     public Member viewCurrentMember(Authentication authentication) {
         // 인증 정보가 없거나 익명 사용자라면 접근 불가
-        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+        if (authenticationIsAnonymous(authentication)) {
             throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
         }
         log.debug("[{}] currentMember 조회 시도, name={}", memberServiceClass.getSimpleName(), authentication.getName());
@@ -104,6 +104,10 @@ public class MemberService {
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 username=" + authentication.getName()));
         log.debug("[{}] currentMember 조회 성공, name={}", memberServiceClass.getSimpleName(), authentication.getName());
         return entity;
+    }
+
+    public boolean authenticationIsAnonymous(Authentication authentication) {
+        return authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken;
     }
 
     /**

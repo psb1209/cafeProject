@@ -247,7 +247,7 @@ public class MemberController {
 
         try {
             // @PreAuthorize 때문에 null이 아니어야 하지만 방어 코드 차원에서 호출
-            if (authentication == null || !authentication.isAuthenticated()) throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
+            if (memberService.authenticationIsAnonymous(authentication)) throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
             // 밴 체크 : 현재 활동중인 유저의 모든 권한 목록을 가져와서 그중 BANNED가 있으면 비밀번호 변경 차단
             if (authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_BANNED"))) {
@@ -358,7 +358,7 @@ public class MemberController {
 
         try {
             // @PreAuthorize 때문에 null이 아니어야 하지만 방어 코드 차원에서 호출
-            if (authentication == null || !authentication.isAuthenticated()) throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
+            if (memberService.authenticationIsAnonymous(authentication)) throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
             // 밴 체크 : 현재 활동중인 유저의 모든 권한 목록을 가져와서 그중 BANNED가 있으면 회원 탈퇴 차단
             if (authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_BANNED"))) {
