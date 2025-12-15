@@ -62,16 +62,10 @@ public class OperationBoardService {
 
     @Transactional
     public OperationBoard setUpdate(OperationBoardDTO paramDTO) {
-        log.debug("문제0");
-
         OperationBoard operationBoard = getSelectOneById(paramDTO);
-        log.debug("문제1");
 
         operationBoard.setSubject(paramDTO.getSubject());
-        log.debug("문제2");
-
         operationBoard.setContent(paramDTO.getContent());
-        log.debug("문제3");
         /*operationBoard.setCnt(paramDTO.getCnt());*/
 
         return operationBoard;
@@ -88,6 +82,13 @@ public class OperationBoardService {
         deleteImageFiles(imageUrls);
 
         operationBoardRepository.delete(operationBoard);
+    }
+
+    @Transactional
+    public void cntPlus(OperationBoard operationBoard) {
+        operationBoard.setCnt(operationBoard.getCnt() + 1);
+
+        operationBoardRepository.save(operationBoard);
     }
 
     //************************************************************************************************************************

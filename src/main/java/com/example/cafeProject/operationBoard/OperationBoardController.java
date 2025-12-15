@@ -60,6 +60,7 @@ public class OperationBoardController {
             model.addAttribute("operationBoard", operationBoard);
             Page<OperationBoardComment> commentList = operationBoardCommentService.getCommentListPage(operationBoardDTO.getId(), pageable);
             model.addAttribute("commentList", commentList);
+            operationBoardService.cntPlus(operationBoard);
             return dirName + "/view";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err0101");

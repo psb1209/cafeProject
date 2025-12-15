@@ -12,5 +12,4 @@ public class CafeProjectApplication {
         System.out.println("-- cafeProject --");
 	}
 
-
 }
