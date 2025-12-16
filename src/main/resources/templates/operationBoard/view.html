@@ -64,9 +64,17 @@
 
     <script>
         function commentSave() {
-            document.commentForm.action = "/operationBoardComment/createProc";
-            document.commentForm.method = "post";
-            document.commentForm.submit();
+            if (document.commentForm.content.value.trim() === '') {
+                alert('내용을 입력해주세요');
+                document.commentForm.content.focus();
+                return;
+            }
+
+            if (confirm('추가하시겠습니까?')) {
+                document.commentForm.action = "/operationBoardComment/createProc";
+                document.commentForm.method = "post";
+                document.commentForm.submit();
+            }
         }
     </script>
 
@@ -126,6 +134,20 @@
         <input type="hidden" name="operationBoardId" th:value="${operationBoard.id}">
         <input type="hidden" name="operationBoardCommentId" id="operationBoardCommentId">
     </form>
+
+    <script>
+        function save() {
+            if (document.DirForm.content.value.trim() === '') {
+                alert('내용을 입력해주세요');
+                document.DirForm.content.focus();
+                return;
+            }
+
+            if (confirm('추가하시겠습니까?')) {
+                document.getElementById('DirForm').submit();
+            }
+        }
+    </script>
 
     <script>
         function submitOperationBoardCommentId(value1) {
