@@ -61,21 +61,18 @@
 
 ## 작업 후 내 변경사항 올리기
 ### 변경된 파일들을 추가하기
-    
       git add .
     
     - "." : 현재 폴더 기준으로 변경된 모든 파일을 한 번에 추가합니다.
     - 나중에 익숙해지면 필요한 파일만 골라서 "git add 파일명" 으로 추가해도 됩니다.
     
 ### 커밋 만들기
-    
       git commit -m "작업 내용"
     
     - "작업 내용" 부분에 이번에 한 일을 짧게 적어 주세요.
       예) "회원 가입 폼 검증 추가", "운영게시판 리스트 구현" 등
     
 ### GitHub로 올리기 (push)
-    
       git push origin main
     
     - 로컬의 변경사항을 GitHub main 브랜치에 올립니다.
@@ -90,19 +87,6 @@
     git commit -m "작업 내용"
     git push origin main
 
-#### rejected 에러시 해결
-    만약 git push 할 때
-    ! [rejected] main -> main (fetch first)
-    같은 에러가 나오면, 아래 명령을 다시 실행해주세요.
-
-    git pull --rebase origin main
-    git push origin main
-
-    ※ git pull --rebase 실행 시
-    "cannot pull with rebase: You have unstaged changes"
-    라는 메시지가 나오면, 아직 커밋하지 않은 수정이 있다는 뜻이니
-    먼저 git add / git commit을 해주세요.
-
 
 ## Git 상태 확인 (선택)
     현재 Git 상태를 확인하고 싶을 때:
@@ -115,6 +99,38 @@
     - "Your branch is up to date with 'origin/main'."
       → 내 로컬과 GitHub의 main 브랜치 내용이 일치하는 상태
 
+
+## 에러 발생시 해결
+### rejected 에러시 해결
+    만약 git push 할 때
+    ! [rejected] main -> main (fetch first)
+    같은 에러가 나오면, 아래 명령을 다시 실행해주세요.
+
+    git pull --rebase origin main
+    git push origin main
+
+    ※ git pull --rebase 실행 시
+    "cannot pull with rebase: You have unstaged changes"
+    라는 메시지가 나오면, 아직 커밋하지 않은 수정이 있다는 뜻이니
+    먼저 git add / git commit을 해주세요.
+
+### 충돌 발생시 해결
+    1) 충돌 파일 확인
+        git status
+
+    2) 충돌난 파일을 열고
+        <<<<<<<, =======, >>>>>>> 표시를 없애도록
+        최종 코드를 직접 수정해주세요.
+
+    3) 수정이 끝난 파일을 staging
+    src/main/java/com/example/cafeProject/에 위치한 Something.java란 파일을 수정했다면...
+        git add src/main/java/com/example/cafeProject/Something.java
+        
+    여러 개의 파일을 수정했다면...
+        git add .
+
+    4) 컨티뉴
+        git rebase --continue
 
 
 
