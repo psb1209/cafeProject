@@ -43,23 +43,23 @@
         </tbody>
     </table>
 
-    <a href="/noticeBoard/create" class="btn btn-secondary">글쓰기</a>
+        <a href="/noticeBoard/create" class="btn btn-secondary">글쓰기</a>
 
-    <div style="margin-top: 20px;" th:if="${!noticeBoardList.isEmpty()}">
-        <ul class="pagination">
-            <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${memberList.number-1}|}">Prev</a></li>-->
-            <li class="page-item" th:classappend="${noticeBoardList.first} ? 'disabled'">
-                <a class="page-link"
-                   th:href="${noticeBoardList.first} ? '#' : @{|?page=${noticeBoardList.number-1}|}">
-                    Prev
-                </a>
-            </li>
+        <div style="margin-top: 20px;" th:if="${!noticeBoardList.isEmpty()}">
+            <ul class="pagination">
+                <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${memberList.number-1}|}">Prev</a></li>-->
+                <li class="page-item" th:classappend="${noticeBoardList.first} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="${noticeBoardList.first} ? '#' : @{|?page=${noticeBoardList.number-1}|}">
+                        이전
+                    </a>
+                </li>
 
-            <li class="page-item"
-                th:each="page: ${#numbers.sequence(0, noticeBoardList.totalPages-1)}"
-                th:classappend="${page == noticeBoardList.number} ? 'active'">
-                <a class="page-link"  th:text="${page}" th:href="@{|?page=${page}|}"></a>
-            </li>
+                <li class="page-item"
+                    th:each="page: ${#numbers.sequence(0, noticeBoardList.totalPages-1)}"
+                    th:classappend="${page == noticeBoardList.number} ? 'active'">
+                    <a class="page-link" th:text="${page}" th:href="@{|?page=${page}|}"></a>
+                </li>
 
             <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${memberList.number+1}|}">Next</a></li>-->
             <li class="page-item" th:classappend="${noticeBoardList.last} ? 'disabled'">
@@ -69,8 +69,7 @@
                 </a>
             </li>
         </ul>
-    </div>
     <!-- 본문 내용 종료 -->
 </div>
-
+</div>
 </html>

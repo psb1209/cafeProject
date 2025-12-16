@@ -4,6 +4,7 @@ import com.example.base.BaseImageService;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardComment;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentService;
+import com.example.cafeProject.operationBoard.OperationBoardDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -144,27 +145,47 @@ public class NoticeBoardController {
         return "redirect:/noticeBoard/view/" + noticeBoardDTO.getId();
     }
 
+//    @PostMapping("/deleteProc")
+//    public String deleteProc(
+//            Model model,
+//            NoticeBoardDTO noticeBoardDTO
+//    ) {
+//        int errorCounter = 0;
+//        NoticeBoard noticeBoard = noticeBoardService.view(noticeBoardDTO);
+//        if (noticeBoard == null) {
+//            errorCounter++;
+//        }
+//
+//        int result = noticeBoardService.deleteProc(noticeBoardDTO);
+//        if (result > 0) { //실패
+//            errorCounter++;
+//        }
+//        if (errorCounter > 0) {
+//            model.addAttribute("errCode", "err0004");
+//            model.addAttribute("errMsg", "게시글 삭제중 예외가 발생했습니다.");
+//            return "error/error";
+//        }
+//        return "redirect:/noticeBoard/list";
+//    }
+
     @PostMapping("/deleteProc")
     public String deleteProc(
             Model model,
             NoticeBoardDTO noticeBoardDTO
     ) {
-        int errorCounter = 0;
-        NoticeBoard noticeBoard = noticeBoardService.view(noticeBoardDTO);
-        if (noticeBoard == null) {
-            errorCounter++;
-        }
-
-        int result = noticeBoardService.deleteProc(noticeBoardDTO);
-        if (result > 0) { //실패
-            errorCounter++;
-        }
-        if (errorCounter > 0) {
-            model.addAttribute("errCode", "err0004");
-            model.addAttribute("errMsg", "게시글 삭제중 예외가 발생했습니다.");
+        try {
+            noticeBoardCommentService.setDeleteAll(noticeBoardDTO);
+            noticeBoardService.setDelete(noticeBoardDTO);
+            return "redirect:/noticeBoard/list";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "err1111");
+            model.addAttribute("errCode", e.getMessage());
+            return "error/error";
+        } catch (Exception e) {
+            model.addAttribute("errCode", "err2422");
+            model.addAttribute("errMsg", "삭제 중 문제가 발생했습니다.");
             return "error/error";
         }
-        return "redirect:/noticeBoard/list";
     }
 
     @Value("${app.image.upload-dir}")

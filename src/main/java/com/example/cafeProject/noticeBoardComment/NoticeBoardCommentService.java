@@ -3,12 +3,17 @@ package com.example.cafeProject.noticeBoardComment;
 
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoard.NoticeBoard;
+import com.example.cafeProject.noticeBoard.NoticeBoardDTO;
 import com.example.cafeProject.noticeBoard.NoticeBoardRepository;
+import com.example.cafeProject.operationBoard.OperationBoardDTO;
+import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -54,4 +59,16 @@ public class NoticeBoardCommentService {
         noticeBoardComment.setId(noticeBoardCommentId);
         noticeBoardCommentRepository.delete(noticeBoardComment);
     }
+
+
+    public void setDeleteAll(NoticeBoardDTO noticeBoardDTO) {
+        List<NoticeBoardComment> noticeBoardComment = noticeBoardCommentRepository.findByNoticeBoardId(noticeBoardDTO.getId());
+
+        noticeBoardCommentRepository.deleteAll(noticeBoardComment);
+    }
+
+//    public void replyProc() {
+//        int ref = noticeBoardCommentRepository.getMaxRef() + 1;
+//        noticeBoardCommentRepository.updateRelevel(3, 5);
+//    }
 }

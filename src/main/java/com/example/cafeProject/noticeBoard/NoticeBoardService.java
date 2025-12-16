@@ -2,6 +2,8 @@ package com.example.cafeProject.noticeBoard;
 
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentRepository;
+import com.example.cafeProject.operationBoard.OperationBoard;
+import com.example.cafeProject.operationBoard.OperationBoardDTO;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -30,6 +33,8 @@ public class NoticeBoardService {
     private final NoticeBoardCommentRepository noticeBoardCommentRepository;
     private final MemberService memberService;
     protected final Logger log = LoggerFactory.getLogger(getClass());
+
+
 
     public Page<NoticeBoard> list(Pageable pageable) {
 
@@ -77,20 +82,39 @@ public class NoticeBoardService {
         return result;
     }
 
-    public int deleteProc(NoticeBoardDTO noticeBoardDTO) {
-        NoticeBoard noticeBoard = new NoticeBoard();
-        noticeBoard.setId(noticeBoardDTO.getId());
-        int result = 0;
-        try {
-            //noticeBoardCommentRepository.deleteByNoticeBoardId(noticeBoardDTO.getId());
-            noticeBoardRepository.delete(noticeBoard);
+//    public int deleteProc(NoticeBoardDTO noticeBoardDTO) {
+//        NoticeBoard noticeBoard = new NoticeBoard();
+//        noticeBoard.setId(noticeBoardDTO.getId());
+//        int result = 0;
+//        try {
+//            //noticeBoardCommentRepository.deleteByNoticeBoardId(noticeBoardDTO.getId());
+//            noticeBoardRepository.delete(noticeBoard);
+//
+//        } catch (Exception e) {
+//            //e.printStackTrace();
+//            result++;
+//        }
+//        return result;
+//    }
 
-        } catch (Exception e) {
-            //e.printStackTrace();
-            result++;
-        }
-        return result;
+
+    public void setDelete(NoticeBoardDTO paramDTO) {
+        NoticeBoard noticeBoard = getSelectOneById(paramDTO);
+
+        // 1. 메모 내용에서 이미지 src 추출
+        List<String> imageUrls = extractImageUrls(noticeBoard.getContent());
+
+        // 2. 이미지 파일 삭제
+        deleteImageFiles(imageUrls);
+
+        noticeBoardRepository.delete(noticeBoard);
     }
+
+    public NoticeBoard getSelectOneById(NoticeBoardDTO paramDTO) {
+        return noticeBoardRepository.findById(paramDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+    }
+
 
     void cntUpdateProc(NoticeBoard noticeBoard) {
         noticeBoard.setCnt(noticeBoard.getCnt() + 1);

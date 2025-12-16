@@ -23,6 +23,7 @@ public class NoticeBoardCommentController {
             NoticeBoardCommentDTO noticeBoardCommentDTO,
             Authentication authentication
     ) {
+
         int authenticationId = memberService.viewCurrentMember(authentication).getId();
         noticeBoardCommentDTO.setMemberId(authenticationId);
         try {
@@ -35,7 +36,7 @@ public class NoticeBoardCommentController {
         }
     }
 
-    @GetMapping("/deleteProc/{noticeBoardCommentId}")
+    @PostMapping("/deleteProc/{noticeBoardCommentId}")
     public String deleteProc(Model model,
                             @PathVariable("noticeBoardCommentId") int noticeBoardCommentId
 
@@ -52,4 +53,5 @@ public class NoticeBoardCommentController {
         noticeBoardCommentService.deleteProc(noticeBoardCommentId);
         return "redirect:/noticeBoard/view/" + noticeBoardId + "#noticeBoardCommentList";
     }
+
 }
