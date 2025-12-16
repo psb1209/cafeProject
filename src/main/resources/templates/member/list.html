@@ -35,7 +35,7 @@
     </table>
 
     <div style="margin-top: 25px;" th:if="${list.totalPages > 0}">
-        <ul class="pagination">
+        <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${list.first} ? 'disabled'">
                 <a class="page-link"
                    th:href="${list.first} ? '#' : @{|?page=${list.number-1}|}">
