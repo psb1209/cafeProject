@@ -35,7 +35,6 @@ public class OperationBoardController {
     private final OperationBoardCommentService operationBoardCommentService;
     private final MemberService memberService;
 
-
     String dirName = "operationBoard";
 
     @GetMapping("/list")
@@ -54,7 +53,6 @@ public class OperationBoardController {
             OperationBoardDTO operationBoardDTO,
             @PageableDefault(size=7, sort="Id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-
         try {
             OperationBoard operationBoard = operationBoardService.getSelectOneById(operationBoardDTO);
             model.addAttribute("operationBoard", operationBoard);

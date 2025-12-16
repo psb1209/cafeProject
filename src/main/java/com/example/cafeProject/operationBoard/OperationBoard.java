@@ -32,7 +32,6 @@ public class OperationBoard {
     @Column(nullable = false, columnDefinition = "longtext")
     private String content;
 
-
     private int cnt;
 
     @CreationTimestamp

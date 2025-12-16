@@ -3,7 +3,8 @@
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       layout:decorate="~{_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
-               headerPosition='center center'">
+               headerPosition='center center',
+               test=true">
 <body>
 <h1 layout:fragment="pageTitle">헬 사 모</h1>
 <span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
@@ -19,7 +20,7 @@
 
         <div class="mb-3 mt-3">
             <label for="subject"> 제목:</label>
-            <input type="text" class="form-control" id="subject" placeholder="Enter subject" name="subject">
+            <input type="text" class="form-control" id="subject" placeholder="제목을 작성하세요." name="subject">
         </div>
 
         <div class="mb-3">

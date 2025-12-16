@@ -29,6 +29,9 @@
     <!-- 테마/사이드바 CSS -->
     <link th:href="@{/css/styles.css}" rel="stylesheet" />
     <link th:href="@{/css/sidebar.css}" rel="stylesheet" />
+    <link th:if="${test} == true"
+          th:href="@{/css/test.css}"
+          rel="stylesheet" />
     <!-- Bootstrap JS Bundle & Summernote JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
