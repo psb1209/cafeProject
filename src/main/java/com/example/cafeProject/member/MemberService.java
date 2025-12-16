@@ -199,6 +199,7 @@ public class MemberService {
                 entity.getId(), entity.getUsername(), entity.getRole());
     }
     private void beforeUpdate(PasswordChangeDTO dto, Member entity) {
+        dto.normalize();
         log.info("회원 정보 수정 시도: id={}, username={}",
                 entity.getId(), entity.getUsername());
         // 수정 전 비밀번호 체크
@@ -209,6 +210,7 @@ public class MemberService {
                 entity.getId(), entity.getUsername());
     }
     private void beforeDelete(Member entity, MemberDeleteDTO dto) {
+        dto.normalize();
         log.warn("회원 삭제 시도: id={}, username={}",
                 entity.getId(), entity.getUsername());
         // 삭제 전 비밀번호 체크
