@@ -38,7 +38,7 @@ public final class MemberControllerReadable {
 
     private MemberControllerReadable(MemberService memberService) {
         this.memberService = memberService;
-        throw new UnsupportedOperationException("Docs-only class. Use MemberService instead.");
+        throw new UnsupportedOperationException("Docs-only class. Use MemberController instead.");
     }
 
     @ManagementOnly
