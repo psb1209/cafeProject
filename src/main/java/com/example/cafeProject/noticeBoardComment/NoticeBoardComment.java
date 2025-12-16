@@ -34,5 +34,5 @@ public class NoticeBoardComment {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "noticeBoardid")
-    private NoticeBoard noticeBoard; //연관된 NoticeBoard
+    private NoticeBoard noticeBoard;
 }

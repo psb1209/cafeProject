@@ -7,36 +7,42 @@
 
 <div layout:fragment="content" class="container px-4 px-lg-5">
     <!-- 본문 내용 시작 -->
+    <h1>공지사항</h1>
 
-        <h2>Hover Rows</h2>
-        <p>The .table-hover class enables a hover state (grey background on mouse over) on table rows:</p>
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th>Firstname</th>
-                <th>Lastname</th>
-                <th>Email</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>John</td>
-                <td>Doe</td>
-                <td>john@example.com</td>
-            </tr>
-            <tr>
-                <td>Mary</td>
-                <td>Moe</td>
-                <td>mary@example.com</td>
-            </tr>
-            <tr>
-                <td>July</td>
-                <td>Dooley</td>
-                <td>july@example.com</td>
-            </tr>
-            </tbody>
-        </table>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th></th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>조회수</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="noticeBoard, loop : ${noticeBoardList}">
+            <td th:text="${loop.index+1}" style="font-size: 15px;"></td>
+            <td>
+                <a th:href="@{|/noticeBoard/view/${noticeBoard.id}|}" th:text="${noticeBoard.subject}" style="font-size: 15px;"></a>
+            </td>
+            <td>
+                <!--                <a th:href="@{|/member/view/${member.id}|}" th:text="${member.username}"></a>-->
+                <span th:if="${noticeBoard.member != null and noticeBoard.member.username != null}"
+                      th:text="${noticeBoard.member.username}"></span>
+
+                <span th:unless="${noticeBoard.member != null and noticeBoard.member.username != null}"
+                      th:text="'-'"></span>
+            </td>
+            <td th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd')}" style="font-size: 15px;"></td>
+            <td th:text="${noticeBoard.cnt}" style="font-size: 15px;"></td>
+        </tr>
+        </tbody>
+    </table>
+    <a href="/noticeBoard/list" class="btn btn-secondary">더보기</a>
+
+
+
+</div>
 
     <!-- 본문 내용 종료 -->
-</div>
 </html>

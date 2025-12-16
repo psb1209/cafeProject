@@ -47,18 +47,6 @@ public class NoticeBoardCommentService {
             throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
         }
 
-//        NoticeBoard noticeBoard = null;
-//        Optional<Member> optionalMember = memberRepository.findById(paramDTO.getMemberId());
-//        if (optionalMember.isPresent()) {
-//            member = optionalMember.get();
-//        }
-//
-//        Comment comment = new Comment();
-//        comment.setContent(paramDTO.getContent());
-//        comment.setMember(member);
-//        comment.setGuestBook(guestBook);
-//
-//        commentRepository.save(comment);
     }
 
     public void deleteProc(int noticeBoardCommentId) {
