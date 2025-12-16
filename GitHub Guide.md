@@ -87,10 +87,17 @@
     git commit -m "작업 내용"
     git push origin main
 
+#### rejected 에러시 해결
+    만약 git push 할 때
+    ! [rejected] main -> main (fetch first)
+    같은 에러가 나오면, 아래 명령을 다시 실행해주세요.
+
+    git pull --rebase origin main
+    git push origin main
+
 
 ## Git 상태 확인 (선택)
     현재 Git 상태를 확인하고 싶을 때:
-    
       git status
     
     - "nothing to commit, working tree clean"
@@ -101,15 +108,7 @@
 
 
 ## 에러 발생시 해결
-### rejected 에러시 해결
-    만약 git push 할 때
-    ! [rejected] main -> main (fetch first)
-    같은 에러가 나오면, 아래 명령을 다시 실행해주세요.
-
-    git pull --rebase origin main
-    git push origin main
-
-    ※ git pull --rebase 실행 시
+### git pull --rebase가 안 될 때
     "cannot pull with rebase: You have unstaged changes"
     라는 메시지가 나오면, 아직 커밋하지 않은 수정이 있다는 뜻이니
     먼저 git add / git commit을 해주세요.
@@ -131,6 +130,7 @@
 
     4) 컨티뉴
         git rebase --continue
+
 
 
 
