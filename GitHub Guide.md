@@ -87,6 +87,15 @@
     git commit -m "작업 내용"
     git push origin main
 
+#### Reject 에러시 해결
+    만약 git push 할 때
+    ! [rejected] main -> main (fetch first)
+    같은 에러가 나오면, 아래 명령을 다시 실행해주세요.
+
+    git pull --rebase origin main
+    git push origin main
+
+
 ## Git 상태 확인 (선택)
     현재 Git 상태를 확인하고 싶을 때:
     
@@ -97,5 +106,6 @@
     
     - "Your branch is up to date with 'origin/main'."
       → 내 로컬과 GitHub의 main 브랜치 내용이 일치하는 상태
+
 
 
