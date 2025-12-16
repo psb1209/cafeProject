@@ -63,14 +63,20 @@
         <table class="table">
             <thead>
             <tr>
-                <th width="70%">댓글</th>
-                <th width="20%">작성자</th>
+                <th width="50%">댓글</th>
+                <th width="10%">작성자</th>
+                <th width="10%">ref</th>
+                <th width="10%">step</th>
+                <th width="10%">level</th>
                 <th width="10%">삭제</th>
+
+
             </tr>
             </thead>
             <tbody>
             <tr th:each="noticeBoardComment : ${noticeBoardCommentList}">
-                <td th:text="${noticeBoardComment.content}" style="font-size: 15px;"></td>
+                <td th:text="${noticeBoardComment.content}" style="font-size: 15px;"><a th:href="#" style="font-size: 15px;">답글쓰기</a></td>
+
                 <td>
                     <span th:if="${noticeBoardComment.member != null and noticeBoardComment.member.username != null}"
                           th:text="${noticeBoardComment.member.username}"></span>
@@ -78,9 +84,10 @@
                     <span th:unless="${noticeBoardComment.member != null and noticeBoardComment.member.username != null}"
                           th:text="'-'"></span>
                 </td>
-<!--                <td th:text="${noticeBoardComment.member}"></td>-->
+                <td th:text="${noticeBoardComment.ref}" style="font-size: 15px;"></td>
+                <td th:text="${noticeBoardComment.step}" style="font-size: 15px;"></td>
+                <td th:text="${noticeBoardComment.level}" style="font-size: 15px;"></td>
                 <td>
-                    <!--                    <a th:href="@{|/comment/sakjeProc/${comment.id}/${guestBook.id}|}">X</a>-->
                     <a th:href="@{|/noticeBoardComment/deleteProc/${noticeBoardComment.id}|}" style="font-size: 15px;">X</a>
                 </td>
             </tr>

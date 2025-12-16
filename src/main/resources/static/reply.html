@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>댓글 / 답글 기능</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          padding: 20px;
+        }
+        .comment {
+          border: 1px solid #ddd;
+          padding: 10px;
+          margin-top: 10px;
+        }
+        .reply {
+          margin-left: 30px;
+          border-left: 2px solid #ccc;
+          padding-left: 10px;
+          margin-top: 5px;
+        }
+        button {
+          margin-top: 5px;
+        }
+        textarea {
+          width: 100%;
+          height: 60px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>댓글</h2>
+
+<textarea id="commentInput" placeholder="댓글을 입력하세요"></textarea>
+<br />
+<button onclick="addComment()">댓글 작성</button>
+
+<div id="commentList"></div>
+
+<script>
+    function addComment() {
+      const input = document.getElementById("commentInput");
+      if (!input.value.trim()) return;
+
+      const commentDiv = createComment(input.value);
+      document.getElementById("commentList").appendChild(commentDiv);
+
+      input.value = "";
+    }
+
+    function createComment(text) {
+      const div = document.createElement("div");
+      div.className = "comment";
+
+      const content = document.createElement("p");
+      content.textContent = text;
+
+      const replyBtn = document.createElement("button");
+      replyBtn.textContent = "답글";
+      replyBtn.onclick = () => showReplyForm(div);
+
+      div.appendChild(content);
+      div.appendChild(replyBtn);
+
+      return div;
+    }
+
+    function showReplyForm(parentDiv) {
+      if (parentDiv.querySelector("textarea")) return;
+
+      const textarea = document.createElement("textarea");
+      textarea.placeholder = "답글을 입력하세요";
+
+      const submitBtn = document.createElement("button");
+      submitBtn.textContent = "답글 작성";
+
+      submitBtn.onclick = () => {
+        if (!textarea.value.trim()) return;
+
+        const replyDiv = document.createElement("div");
+        replyDiv.className = "reply";
+        replyDiv.textContent = textarea.value;
+
+        parentDiv.appendChild(replyDiv);
+        textarea.remove();
+        submitBtn.remove();
+      };
+
+      parentDiv.appendChild(textarea);
+      parentDiv.appendChild(submitBtn);
+    }
+</script>
+
+</body>
+</html>

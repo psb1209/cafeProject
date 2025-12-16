@@ -35,4 +35,10 @@ public class NoticeBoardComment {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "noticeBoardid")
     private NoticeBoard noticeBoard;
+
+    private int ref;
+    private int step;
+    private int level;
+
+
 }

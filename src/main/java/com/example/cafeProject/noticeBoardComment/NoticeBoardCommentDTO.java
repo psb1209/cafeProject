@@ -13,4 +13,7 @@ public class NoticeBoardCommentDTO {
     private Timestamp createDate;
     private int memberId;
     private int noticeBoardId;
+    private int ref;
+    private int step;
+    private int level;
 }
