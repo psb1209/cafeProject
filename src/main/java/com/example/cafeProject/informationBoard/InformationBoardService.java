@@ -5,6 +5,7 @@ import com.example.cafeProject.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -21,21 +22,21 @@ public class InformationBoardService {
 
 
     //기본키로 정보게시글 레코드 한줄 찾기
-    @Transactional(readOnly = true) //import org.springframework.transaction.annotation.Transactional;
+    @Transactional(readOnly = true)
     public InformationBoard getSelectOneById(int id) {
         return informationBoardRepository.findById(id)
                 .orElseThrow(()-> new IllegalArgumentException("해당 게시글 없음"));
     }
 
     //아이디로 맴버 레코드 한줄 찾기
-    @Transactional(readOnly = true) //import org.springframework.transaction.annotation.Transactional;
+    @Transactional(readOnly = true)
     public Member getSelectOneById_member(String username) {
         return memberRepository.findByUsername(username)
                 .orElseThrow(()-> new IllegalArgumentException("해당 맴버 없음"));
     }
 
     //기본키로 맴버 레코드 한줄 찾기 --> 메서드 오버라이딩
-    @Transactional(readOnly = true) //import org.springframework.transaction.annotation.Transactional;
+    @Transactional(readOnly = true)
     public Member getSelectOneById_member(int id) {
         return memberRepository.findById(id)
                 .orElseThrow(()-> new IllegalArgumentException("해당 맴버 없음"));
@@ -47,7 +48,7 @@ public class InformationBoardService {
         return informationBoardRepository.findAll(pageable);
     }
 
-    //게시글 레코드추가
+    //카페 회원만 게시글 작성
     @Transactional
     public void setInsert(InformationBoardDTO informationBoardDTO, User user) {
 
@@ -60,14 +61,13 @@ public class InformationBoardService {
     @Transactional
     public void setUpdate(InformationBoardDTO informationBoardDTO, User user) {
 
-        Member member_principal = getSelectOneById_member(user.getUsername());
         InformationBoard informationBoard = getSelectOneById(informationBoardDTO.getId());
-        if(member_principal.getUsername().equals(informationBoard.getMember().getUsername())) {
-
-            informationBoard.setSubject(informationBoardDTO.getSubject());
-            informationBoard.setContent(informationBoardDTO.getContent());
-            //수정일 추가??
+        if(!user.getUsername().equals(informationBoard.getMember().getUsername())) {
+            throw new AccessDeniedException("수정 권한이 없습니다.");
         }
+        informationBoard.setSubject(informationBoardDTO.getSubject());
+        informationBoard.setContent(informationBoardDTO.getContent());
+        //수정일 추가??
     }
 
     //조회수 증가
@@ -94,11 +94,12 @@ public class InformationBoardService {
                 break;
             }
         }
-
         boolean isAuthor = user.getUsername().equals(informationBoard.getMember().getUsername());
 
         if (isAuthor || isAdminOrManager) {
             informationBoardRepository.delete(informationBoard);
+        } else {
+            throw new AccessDeniedException("삭제 권한이 없습니다.");
         }
     }
 

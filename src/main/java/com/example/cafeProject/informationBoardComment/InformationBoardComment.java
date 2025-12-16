@@ -32,19 +32,14 @@ public class InformationBoardComment {
     private InformationBoard informationBoard;
 
 
-    public InformationBoardComment dtoToEntity(InformationBoardCommentDTO informationBoardCommentDTO,
+    public static InformationBoardComment dtoToEntity(InformationBoardCommentDTO informationBoardCommentDTO,
                                                Member member, InformationBoard informationBoard) {
 
         InformationBoardComment informationBoardComment = new InformationBoardComment();
-
-        informationBoardComment.setId(informationBoardCommentDTO.getId());
         informationBoardComment.setContent(informationBoardCommentDTO.getContent());
-        informationBoardComment.setCreateDate(informationBoardCommentDTO.getCreateDate());
         informationBoardComment.setMember(member);
         informationBoardComment.setInformationBoard(informationBoard);
-
         return informationBoardComment;
-
     }
 
 }
