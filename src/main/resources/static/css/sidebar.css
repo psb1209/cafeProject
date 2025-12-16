@@ -246,6 +246,6 @@
 }
 
 .layout-main.no-sidebar .layout-content {
-  max-width: 1140px;            /* 필요 시 제한폭 */
+  max-width: 1140px;
   width: 100%;
 }
