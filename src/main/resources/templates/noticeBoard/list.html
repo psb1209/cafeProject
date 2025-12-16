@@ -10,7 +10,6 @@
 <span layout:fragment="pageSubTitle">헬스를 사랑하는 사람들의 모임</span>
 
 <div layout:fragment="content">
-    <div class="container">
     <!-- 본문 내용 시작 -->
     <h1>공지사항</h1>
 
@@ -26,9 +25,9 @@
         </thead>
         <tbody>
         <tr th:each="noticeBoard, loop : ${noticeBoardList}">
-            <td th:text="${loop.index+1}" style="font-size: 15px;"></td>
+            <td th:text="${loop.index+1}"></td>
             <td>
-                <a th:href="@{|/noticeBoard/view/${noticeBoard.id}|}" th:text="${noticeBoard.subject}" style="font-size: 15px;"></a>
+                <a th:href="@{|/noticeBoard/view/${noticeBoard.id}|}" th:text="${noticeBoard.subject}"></a>
             </td>
             <td>
 <!--                <a th:href="@{|/member/view/${member.id}|}" th:text="${member.username}"></a>-->
@@ -38,8 +37,8 @@
                 <span th:unless="${noticeBoard.member != null and noticeBoard.member.username != null}"
                       th:text="'-'"></span>
             </td>
-            <td th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd')}" style="font-size: 15px;"></td>
-            <td th:text="${noticeBoard.cnt}" style="font-size: 15px;"></td>
+            <td th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd')}"></td>
+            <td th:text="${noticeBoard.cnt}"></td>
         </tr>
         </tbody>
     </table>
@@ -70,7 +69,6 @@
                 </a>
             </li>
         </ul>
-    </div>
     </div>
     <!-- 본문 내용 종료 -->
 </div>

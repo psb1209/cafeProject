@@ -52,7 +52,7 @@
             <li class="page-item"
                 th:each="page: ${#numbers.sequence(0, communityBoardPage.totalPages-1)}"
                 th:classappend="${page == communityBoardPage.number} ? 'active'">
-                <a class="page-link"  th:text="${page}" th:href="@{|?page=${page}|}"></a>
+                <a class="page-link"  th:text="${page + 1}" th:href="@{|?page=${page}|}"></a>
             </li>
 
             <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${memberList.number+1}|}">Next</a></li>-->
@@ -64,6 +64,8 @@
             </li>
         </ul>
     </div>
+    <!-- 본문 내용 종료 -->
+</div>
 
 </body>
 </html>
