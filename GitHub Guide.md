@@ -82,7 +82,10 @@
     - 올리고 나면 다른 사람들은 "git pull"로 이 내용을 받아갈 수 있습니다.
 
 ### 한 눈에 정리
+#### 작업 시작 전 다른 사람 변경사항 받아오기
     git pull --rebase origin main
+
+#### 작업 끝난 후 내 변경사항 올리기
     git add .
     git commit -m "작업 내용"
     git push origin main
@@ -95,6 +98,11 @@
     git pull --rebase origin main
     git push origin main
 
+    ※ git pull --rebase 실행 시
+    "cannot pull with rebase: You have unstaged changes"
+    라는 메시지가 나오면, 아직 커밋하지 않은 수정이 있다는 뜻이니
+    먼저 git add / git commit을 해주세요.
+
 
 ## Git 상태 확인 (선택)
     현재 Git 상태를 확인하고 싶을 때:
@@ -106,6 +114,7 @@
     
     - "Your branch is up to date with 'origin/main'."
       → 내 로컬과 GitHub의 main 브랜치 내용이 일치하는 상태
+
 
 
 
