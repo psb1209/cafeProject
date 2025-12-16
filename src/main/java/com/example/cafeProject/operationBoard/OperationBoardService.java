@@ -40,13 +40,13 @@ public class OperationBoardService {
     @Transactional(readOnly = true)
     public OperationBoard getSelectOneById(OperationBoardDTO paramDTO) {
         return operationBoardRepository.findById(paramDTO.getId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID(" + paramDTO.getId() + ")를 불러올 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
     }
 
     @Transactional(readOnly = true)
     public Member getSelectOneByUsername(Authentication authentication) {
         return memberRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID(" + authentication.getName() + ")를 불러올 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
     }
 
     @Transactional

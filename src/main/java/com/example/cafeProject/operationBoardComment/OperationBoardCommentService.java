@@ -45,7 +45,7 @@ public class OperationBoardCommentService {
     @Transactional
     public void setDelete(OperationBoardCommentDTO operationBoardCommentDTO) {
         OperationBoardComment operationBoardComment = operationBoardCommentRepository.findById(operationBoardCommentDTO.getOperationBoardCommentId())
-                .orElseThrow(() -> new IllegalArgumentException("삭제할 레코드(" + operationBoardCommentDTO.getOperationBoardCommentId() + ")를 찾을 수 없습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 답변을 찾을 수 없습니다."));
 
         operationBoardCommentRepository.delete(operationBoardComment);
     }

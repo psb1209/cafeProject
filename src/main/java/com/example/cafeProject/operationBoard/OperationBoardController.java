@@ -63,7 +63,7 @@ public class OperationBoardController {
             operationBoardService.cntPlus(operationBoard);
             return dirName + "/view";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errCode", "err0101");
+            model.addAttribute("errCode", "err1111");
             model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
@@ -84,7 +84,7 @@ public class OperationBoardController {
             model.addAttribute("operationBoard", operationBoard);
             return dirName + "/update";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errCode", "err0101");
+            model.addAttribute("errCode", "err1111");
             model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
@@ -100,7 +100,7 @@ public class OperationBoardController {
             model.addAttribute("operationBoard", operationBoard);
             return dirName + "/delete";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errCode", "err0101");
+            model.addAttribute("errCode", "err1111");
             model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
@@ -120,7 +120,7 @@ public class OperationBoardController {
             Member member = operationBoardService.getSelectOneByUsername(authentication);
             operationBoardDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errCode", "err0808");
+            model.addAttribute("errCode", "err1111");
             model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
@@ -129,8 +129,8 @@ public class OperationBoardController {
             operationBoardService.setInsert(operationBoardDTO);
             return "redirect:/" + dirName + "/list";
         } catch (Exception e) {
-            model.addAttribute("errCode", "err0202");
-            model.addAttribute("errMsg", "등록 중 오류가 발생했습니다.");
+            model.addAttribute("errCode", "err2222");
+            model.addAttribute("errMsg", "등록 중 문제가 발생했습니다.");
             return "error/error";
         }
     }
@@ -144,12 +144,12 @@ public class OperationBoardController {
             OperationBoard operationBoard = operationBoardService.setUpdate(operationBoardDTO);
             return "redirect:/" + dirName + "/view/" + operationBoardDTO.getId();
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errCode", "err0101");
+            model.addAttribute("errCode", "err1111");
             model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         } catch (Exception e) {
-            model.addAttribute("errCode", "err0303");
-            model.addAttribute("errMsg", "처리하는 과정에서 오류가 발생했습니다.");
+            model.addAttribute("errCode", "err2322");
+            model.addAttribute("errMsg", "수정 중 문제가 발생했습니다.");
             return "error/error";
         }
     }
@@ -164,12 +164,12 @@ public class OperationBoardController {
             operationBoardService.setDelete(operationBoardDTO);
             return "redirect:/" + dirName + "/list";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errCode", "err0101");
+            model.addAttribute("errCode", "err1111");
             model.addAttribute("errCode", e.getMessage());
             return "error/error";
         } catch (Exception e) {
-            model.addAttribute("errCode", "err0303");
-            model.addAttribute("errMsg", "처리하는 과정에서 오류가 발생했습니다.");
+            model.addAttribute("errCode", "err2422");
+            model.addAttribute("errMsg", "삭제 중 문제가 발생했습니다.");
             return "error/error";
         }
     }

@@ -36,7 +36,7 @@ public class OperationBoardCommentController {
             Member member = operationBoardService.getSelectOneByUsername(authentication);
             operationBoardCommentDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errCode", "err0808");
+            model.addAttribute("errCode", "err1110");
             model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
@@ -46,7 +46,7 @@ public class OperationBoardCommentController {
             operationBoardDTO.setId(operationBoardCommentDTO.getOperationBoardId());
             operationBoardService.getSelectOneById(operationBoardDTO);
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errCode", "err0101");
+            model.addAttribute("errCode", "err1111");
             model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
@@ -55,8 +55,8 @@ public class OperationBoardCommentController {
             operationBoardCommentService.setInsert(operationBoardCommentDTO);
             return "redirect:/" + dirName + "/view/" + operationBoardCommentDTO.getOperationBoardId();
         } catch (Exception e) {
-            model.addAttribute("errCode", "err0909");
-            model.addAttribute("errMsg", "댓글 등록 중 오류 발생");
+            model.addAttribute("errCode", "err2232");
+            model.addAttribute("errMsg", "등록 중 문제가 발생했습니다.");
             return "error/error";
         }
     }
@@ -72,7 +72,7 @@ public class OperationBoardCommentController {
             operationBoardDTO.setId(operationBoardCommentDTO.getOperationBoardId());
             operationBoardService.getSelectOneById(operationBoardDTO);
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errCode", "err0101");
+            model.addAttribute("errCode", "err1111");
             model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
@@ -81,12 +81,12 @@ public class OperationBoardCommentController {
             operationBoardCommentService.setDelete(operationBoardCommentDTO);
             return "redirect:/" + dirName + "/view/" + operationBoardCommentDTO.getOperationBoardId();
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errCode", "err0001");
+            model.addAttribute("errCode", "err1111");
             model.addAttribute("errMsg", e.getMessage()); // e.getMessage() 기본적으로 나오는 메세지
             return "error/error";
         } catch (Exception e) { // 모든 예외는 Exception 상속 받기에 Exception이 나중에 처리되어야 함
-            model.addAttribute("errCode", "err0003");
-            model.addAttribute("errMsg", "삭제 처리 중 오류가 발생했습니다."); // e.getMessage() 기본적으로 나오는 메세지
+            model.addAttribute("errCode", "err2242");
+            model.addAttribute("errMsg", "삭제 중 문제가 발생했습니다."); // e.getMessage() 기본적으로 나오는 메세지
             return "error/error";
         }
 
