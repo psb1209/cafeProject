@@ -123,14 +123,15 @@
         최종 코드를 직접 수정해주세요.
 
     3) 수정이 끝난 파일을 staging
-    src/main/java/com/example/cafeProject/에 위치한 Something.java란 파일을 수정했다면...
-        git add src/main/java/com/example/cafeProject/Something.java
+        src/main/java/com/example/cafeProject/에 위치한 Something.java란 파일을 수정했다면...
+            git add src/main/java/com/example/cafeProject/Something.java
         
-    여러 개의 파일을 수정했다면...
-        git add .
+        여러 개의 파일을 수정했다면...
+            git add .
 
     4) 컨티뉴
         git rebase --continue
+
 
 
 
