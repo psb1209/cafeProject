@@ -52,15 +52,15 @@
 
 ## 깃허브와 작업 내용 주고받기
     작업 시작 전에 (다른 사람 변경사항 받아오기)
+    
+      git pull --rebase origin main
+    
     - 다른 팀원이 작업한 내용을 내 컴퓨터로 내려받습니다.
-    
-      git pull
-    
-    - 작업을 시작하기 전에 한 번씩 해두면 충돌을 줄일 수 있습니다.
+    - 작업을 시작하기 전에 한 번 실행해 두면 충돌을 줄일 수 있습니다.
 
 
 ## 작업 후 내 변경사항 올리기
-### 변경된 파일들을 추가하기 (staging)
+### 변경된 파일들을 추가하기
     
       git add .
     
@@ -76,16 +76,13 @@
     
 ### GitHub로 올리기 (push)
     
-      git push
-    
-    또는
-    
       git push origin main
     
     - 로컬의 변경사항을 GitHub main 브랜치에 올립니다.
     - 올리고 나면 다른 사람들은 "git pull"로 이 내용을 받아갈 수 있습니다.
 
 ### 한 눈에 정리
+    git pull --rebase origin main
     git add .
     git commit -m "작업 내용"
     git push origin main
@@ -100,4 +97,5 @@
     
     - "Your branch is up to date with 'origin/main'."
       → 내 로컬과 GitHub의 main 브랜치 내용이 일치하는 상태
+
 
