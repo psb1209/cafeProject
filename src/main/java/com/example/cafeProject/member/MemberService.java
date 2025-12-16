@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Locale;
 import java.util.Optional;
 
@@ -187,9 +186,15 @@ public class MemberService {
         // 금지된 username 체크
         checkForbiddenUsername(dto.getUsername());
         // username 중복 체크
-        if (memberRepository.existsByUsername(dto.getUsername())) throw new IllegalArgumentException("이미 사용 중인 id");
+        if (memberRepository.existsByUsername(dto.getUsername())) {
+            log.warn("회원가입 실패(아이디 중복): username={}", dto.getUsername());
+            throw new IllegalArgumentException("이미 사용 중인 id");
+        }
         // email 중복 체크
-        if (memberRepository.existsByEmail(dto.getEmail())) throw new IllegalArgumentException("이미 사용 중인 email");
+        if (memberRepository.existsByEmail(dto.getEmail())) {
+            log.warn("회원가입 실패(이메일 중복): username={}", dto.getEmail());
+            throw new IllegalArgumentException("이미 사용 중인 email");
+        }
 
         // role 기본값: USER
         dto.setRole(RoleType.USER);
@@ -244,23 +249,17 @@ public class MemberService {
                 .replace("_", "")
                 .replace("-", "");
 
-        int fCheck = 0;
-
-        // 정확히 일치하는 금지 목록 검사
-        for (int i = 0; i < FORBIDDEN_EQUALS.length; ++i) {
-            String token = FORBIDDEN_EQUALS[i];
-            if (compact.equals(token)) ++fCheck;
+        for (String token : FORBIDDEN_EQUALS) {
+            if (compact.equals(token)) {
+                log.warn("금지된 username(EQUALS) 시도: username={}, compact={}, token={}", username, compact, token);
+                throw new ForbiddenUsernameException("혼동될 수 있는 id.");
+            }
         }
-        // 포함 금지 목록 검사
-        for (int i = 0; i < FORBIDDEN_CONTAINS.length; ++i) {
-            String token = FORBIDDEN_CONTAINS[i];
-            if (compact.contains(token)) ++fCheck;
-        }
-        // 검사 결과 금지된 username이면 ForbiddenUsernameException 발생
-        if (fCheck != 0) {
-            log.debug("금지된 username 가입 시도, username={}, compact={}",
-                    username, compact);
-            throw new ForbiddenUsernameException("혼동될 수 있는 id.");
+        for (String token : FORBIDDEN_CONTAINS) {
+            if (compact.contains(token)) {
+                log.warn("금지된 username(CONTAINS) 시도: username={}, compact={}, token={}", username, compact, token);
+                throw new ForbiddenUsernameException("혼동될 수 있는 id.");
+            }
         }
     }
 
@@ -280,6 +279,7 @@ public class MemberService {
      */
     private void checkPassword(String password, Member entity) throws WrongPasswordException {
         if (password != null && !passwordEncoder.matches(password, entity.getPassword())) {
+            log.warn("비밀번호 불일치: memberId={}, username={}", entity.getId(), entity.getUsername());
             throw new WrongPasswordException("올바르지 않은 현재 비밀번호");
         }
     }
@@ -306,6 +306,9 @@ public class MemberService {
         RoleType oldRole = entity.getRole();    // 기존 권한
         RoleType newRole = d.getRole();         // 변경 요청 권한
         RoleType adminRole = admin.getRole();   // 변경을 수행하는 관리자 권한
+
+        log.info("[updateRoleType] 권한 변경 요청: adminId={}, adminRole={}, targetId={}, oldRole={}, newRole={}",
+                admin.getId(), adminRole, entity.getId(), oldRole, newRole);
 
         if (oldRole == d.getRole()) {
             log.info("[updateRoleType] 이미 같은 권한입니다. id={}, username={}, role={}",

@@ -40,7 +40,7 @@ public class MemberController {
             Pageable pageable,
             Authentication authentication
     ) {
-        log.debug("list 호출됨. 호출자 : {}", authentication.getName());
+        log.debug("list 호출됨. 호출자 : {}", safeName(authentication));
         Page<Member> list = memberService.list(pageable);
         model.addAttribute("list", list);
         return basePath + "/list";
@@ -52,7 +52,7 @@ public class MemberController {
             Model model,
             Authentication authentication
     ) {
-        log.debug("view 호출됨. 호출자 : {}", authentication.getName());
+        log.debug("view 호출됨. 호출자 : {}", safeName(authentication));
         return loadPathOrRedirect(authentication, model, basePath+"/view");
     }
 
@@ -63,7 +63,7 @@ public class MemberController {
             @PathVariable int id,
             Authentication authentication
     ) {
-        log.debug("관리자용 view 호출됨. 호출자 : {}", authentication.getName());
+        log.debug("관리자용 view 호출됨. 호출자 : {}", safeName(authentication));
         return loadPathOrRedirect(id, model, basePath+"/view");
     }
 
@@ -81,7 +81,7 @@ public class MemberController {
             Model model,
             Authentication authentication
     ) {
-        log.debug("passwordUpdate 호출됨. 호출자 : {}", authentication.getName());
+        log.debug("passwordUpdate 호출됨. 호출자 : {}", safeName(authentication));
         model.addAttribute("data", new PasswordChangeDTO()); // 입력 폼이 터지지 않게 data란 이름으로 빈 값을 보냄
         return basePath + "/passwordUpdate";
     }
@@ -93,7 +93,7 @@ public class MemberController {
             Authentication authentication,
             Model model
     ) {
-        log.debug("roleUpdate 호출됨. 호출자 : {}", authentication.getName());
+        log.debug("roleUpdate 호출됨. 호출자 : {}", safeName(authentication));
         Member member = memberService.view(id);
 
         MemberDTO dto = MemberDTO.builder()
@@ -117,7 +117,7 @@ public class MemberController {
             Model model,
             Authentication authentication
     ) {
-        log.debug("delete 호출됨. 호출자 : {}", authentication.getName());
+        log.debug("delete 호출됨. 호출자 : {}", safeName(authentication));
         model.addAttribute("data", new MemberDeleteDTO());  // 입력 폼이 터지지 않게 data란 이름으로 빈 값을 보냄
         return basePath + "/delete";
     }
@@ -141,7 +141,7 @@ public class MemberController {
             BindingResult bindingResult
     ) {
         // 검증 에러가 터지면 logValidationErrors(공통 검증 실패 로그 + 실패시 링크)를 반환
-        if (bindingResult.hasErrors()) return logValidationErrors("createProc", "create", bindingResult);
+        if (bindingResult.hasErrors()) return logValidationErrors("createProc", "create", bindingResult, "Anonymous");
 
         try {
             memberService.setInsert(dto); // 서비스에 회원 가입 처리 위임
@@ -190,7 +190,7 @@ public class MemberController {
             Authentication authentication
     ) {
         // 검증 에러가 터지면 logValidationErrors(공통 검증 실패 로그 + 실패시 링크)를 반환
-        if (bindingResult.hasErrors()) return logValidationErrors("passwordProc", "passwordUpdate", bindingResult);
+        if (bindingResult.hasErrors()) return logValidationErrors("passwordProc", "passwordUpdate", bindingResult, safeName(authentication));
         // Valid로 처리하기 애매한 "새 비밀번호 / 확인 비밀번호" 일치 여부 수동 검증
         if (!passwordChangeDTO.getNewPassword().equals(passwordChangeDTO.getConfirmPassword())) {
             log.warn("[비밀번호 변경 검증 실패] 새 비밀번호 불일치");
@@ -203,19 +203,19 @@ public class MemberController {
             if (memberService.isNotLogin(authentication)) return "redirect:/member/login";
             // 밴 체크 : 현재 활동중인 유저의 모든 권한 목록을 가져와서 그중 BANNED가 있으면 비밀번호 변경 차단
             if (authentication.getAuthorities().toString().contains("ROLE_BANNED")) {
-                log.warn("[비밀번호 변경 차단] BANNED 계정, principal={}", authentication.getName());
+                log.warn("[비밀번호 변경 차단] BANNED 계정, principal={}", safeName(authentication));
                 return "redirect:/";
             }
             memberService.setUpdate(authentication, passwordChangeDTO); // 서비스에 실제 비밀번호 변경 로직 위임
             return "redirect:/"; // 성공 시 메인으로 이동
         } catch (AccessDeniedException e) { // 현재 로그인 정보를 확인할 수 없음
-            log.warn("[passwordProc] 현재 로그인 정보를 확인할 수 없음. principal={}", authentication != null ? authentication.getName() : "null", e);
+            log.warn("[passwordProc] 현재 로그인 정보를 확인할 수 없음. principal={}", safeName(authentication), e);
             return "redirect:/";
         } catch (EntityNotFoundException e) { // 이미 삭제되었거나 존재하지 않는 계정 오류
-            log.warn("[passwordProc] 대상이 되는 Entity를 찾을 수 없음. principal={}", authentication != null ? authentication.getName() : "null", e);
+            log.warn("[passwordProc] 대상이 되는 Entity를 찾을 수 없음. principal={}", safeName(authentication), e);
             return "redirect:/";
         } catch (WrongPasswordException e) { // 현재 비밀번호가 일치하지 않는 오류
-            log.warn("[passwordProc] 현재 비밀번호 불일치. username={}", authentication != null ? authentication.getName() : "null");
+            log.warn("[passwordProc] 현재 비밀번호 불일치. username={}", safeName(authentication));
             bindingResult.rejectValue("currentPassword", "wrong", e.getMessage());
             return basePath + "/passwordUpdate";
         } catch (Exception e) { // 그 외 치명적인 오류
@@ -249,17 +249,17 @@ public class MemberController {
             Model model
     ) {
         // 검증 에러가 터지면 logValidationErrors(공통 검증 실패 로그 + 실패시 링크)를 반환
-        if (bindingResult.hasErrors()) return logValidationErrors("roleProc", "roleUpdate", bindingResult);
+        if (bindingResult.hasErrors()) return logValidationErrors("roleProc", "roleUpdate", bindingResult, safeName(authentication));
 
         try {
             Member admin = memberService.viewCurrentMember(authentication);
             memberService.updateRoleType(dto, admin);
             return "redirect:/" + basePath + "/view/" + dto.getId();
         } catch (AccessDeniedException e) { // 현재 로그인 정보를 확인할 수 없음
-            log.warn("[roleProc] 현재 로그인 정보를 확인할 수 없음. principal={}", authentication != null ? authentication.getName() : "null", e);
+            log.warn("[roleProc] 현재 로그인 정보를 확인할 수 없음. principal={}", safeName(authentication), e);
             return "redirect:/";
         } catch (EntityNotFoundException e) { // 이미 삭제되었거나 존재하지 않는 계정 오류
-            log.warn("[roleProc] 대상이 되는 Entity를 찾을 수 없음. principal={}", authentication != null ? authentication.getName() : "null", e);
+            log.warn("[roleProc] 대상이 되는 Entity를 찾을 수 없음. principal={}", safeName(authentication), e);
             return "redirect:/";
         } catch (IllegalArgumentException e) { // 잘못된 변경값
             log.warn("[roleProc] 잘못된 변경값. {}", e.getMessage());
@@ -301,6 +301,7 @@ public class MemberController {
      * 5) 예외 유형별 처리:
      *    - AccessDeniedException : 현재 로그인한 유저 정보 없음 → 메인으로 이동
      *    - EntityNotFoundException : 회원 정보 없음 → 메인으로 이동
+     *    - WrongPasswordException : 현재 비밀번호 불일치 → 폼에 필드 에러 표시
      *    - 그 외 예외 → 런타임 에러 페이지
      */
     @PreAuthorize("isAuthenticated()")
@@ -311,24 +312,28 @@ public class MemberController {
             Authentication authentication
     ) {
         // 검증 에러가 터지면 logValidationErrors(공통 검증 실패 로그 + 실패시 링크)를 반환
-        if (bindingResult.hasErrors()) return logValidationErrors("deleteProc", "delete", bindingResult);
+        if (bindingResult.hasErrors()) return logValidationErrors("deleteProc", "delete", bindingResult, safeName(authentication));
 
         try {
             // @PreAuthorize 때문에 null이 아니어야 하지만 방어 코드 차원에서 호출
             if (memberService.isNotLogin(authentication)) return "redirect:/member/login";
             // 밴 체크 : 현재 활동중인 유저의 모든 권한 목록을 가져와서 그중 BANNED가 있으면 회원 탈퇴 차단
             if (authentication.getAuthorities().toString().contains("ROLE_BANNED")) {
-                log.warn("[회원 탈퇴 차단] BANNED 계정, principal={}", authentication.getName());
+                log.warn("[회원 탈퇴 차단] BANNED 계정, principal={}", safeName(authentication));
                 return "redirect:/";
             }
             memberService.setDelete(authentication, dto);
             return "redirect:/";
         } catch (AccessDeniedException e) { // 현재 로그인 정보를 확인할 수 없음
-            log.warn("[deleteProc] 현재 로그인 정보를 확인할 수 없음. principal={}", authentication != null ? authentication.getName() : "null", e);
+            log.warn("[deleteProc] 현재 로그인 정보를 확인할 수 없음. principal={}", safeName(authentication), e);
             return "redirect:/";
         } catch (EntityNotFoundException e) { // 이미 삭제되었거나 존재하지 않는 계정 오류
-            log.warn("[deleteProc] 대상이 되는 Entity를 찾을 수 없음. principal={}", authentication != null ? authentication.getName() : "null", e);
+            log.warn("[deleteProc] 대상이 되는 Entity를 찾을 수 없음. principal={}", safeName(authentication), e);
             return "redirect:/";
+        } catch (WrongPasswordException e) {
+            log.warn("[deleteProc] 현재 비밀번호 불일치. username={}", safeName(authentication));
+            bindingResult.rejectValue("password", "wrong", e.getMessage());
+            return basePath + "/delete";
         } catch (Exception e) { // 그 외 치명적인 오류
             log.error("[deleteProc] 예상하지 못한 오류 : {}", e.getMessage());
             return "redirect:/error/runtimeErrorPage";
@@ -352,22 +357,25 @@ public class MemberController {
         return basePath + "/login";
     }
 
-    // 모든 POST 검증 실패 시 공통으로 사용하는 로깅 + 뷰 반환 메서드.
-    // action: 로그에 찍힐 작업 이름, path: 실패 시 다시 보여줄 뷰 경로.
-    private String logValidationErrors(String action, String path, BindingResult bindingResult) {
-        log.warn("[{} 검증 실패]", action);
+    /**
+     * 모든 POST 검증 실패 시 공통으로 사용하는 로깅 + 뷰 반환 메서드.
+     * action: 로그에 찍힐 작업 이름, path: 실패 시 다시 보여줄 뷰 경로.
+     */
+    private String logValidationErrors(String action, String path, BindingResult bindingResult, String principal) {
+        log.warn("[{} 검증 실패] principal={}", action, principal);
         bindingResult.getFieldErrors().forEach(error ->
-                log.warn("[{} 검증 실패 상세] - field: {}, value: {}, message: {}",
+                log.warn("[{} 검증 실패 상세] - field: {}, message: {}",
                         action,
                         error.getField(),
-                        error.getRejectedValue(),
                         error.getDefaultMessage())
         ); // 모든 검증 오류를 log.warn으로 출력
         return basePath + "/" + path;
     }
 
-    // id로 Member를 조회해서 존재하면 model에 "data"로 담고 지정된 뷰로 이동.
-    // 대상이 없으면 경고 로그를 남기고 메인으로 redirect.
+    /**
+     * id로 Member를 조회해서 존재하면 model에 "data"로 담고 지정된 뷰로 이동.
+     * 대상이 없으면 경고 로그를 남기고 메인으로 redirect.
+     */
     private String loadPathOrRedirect(int id, Model model, String path) {
         try {
             Member entity = memberService.view(id);
@@ -378,18 +386,21 @@ public class MemberController {
             return "redirect:/";
         }
     }
-    // 현재 로그인한 사용자의 Member를 조회해서 model에 "data"로 담고 지정된 뷰로 이동.
-    // 대상이 없으면 경고 로그를 남기고 메인으로 redirect.
+
+    /**
+     * 현재 로그인한 사용자의 Member를 조회해서 model에 "data"로 담고 지정된 뷰로 이동.
+     * 대상이 없으면 경고 로그를 남기고 메인으로 redirect.
+     */
     private String loadPathOrRedirect(Authentication authentication, Model model, String path) {
         try {
             Member entity = memberService.viewCurrentMember(authentication);
             model.addAttribute("data", entity);
             return path;
         } catch (AccessDeniedException e) { // 현재 로그인 정보를 확인할 수 없음
-            log.warn("[loadPathOrRedirect] 현재 로그인 정보를 확인할 수 없음. principal={}", authentication != null ? authentication.getName() : "null");
+            log.warn("[loadPathOrRedirect] 현재 로그인 정보를 확인할 수 없음. principal={}", safeName(authentication));
             return "redirect:/";
         } catch (EntityNotFoundException e) { // 이미 삭제되었거나 존재하지 않는 계정 오류
-            log.warn("대상이 되는 Entity를 찾을 수 없음. principal={}", authentication != null ? authentication.getName() : "null", e);
+            log.warn("대상이 되는 Entity를 찾을 수 없음. principal={}", safeName(authentication), e);
             return "redirect:/";
         }
     }
@@ -409,5 +420,13 @@ public class MemberController {
 
         // 그 외 권한(일반 USER 등)은 권한 변경 기능 사용 불가
         return null;
+    }
+
+    /**
+     * authentication에서 getName 메서드를 실행할 때 NPE가 날 수 있기에 사용하는 메서드.
+     * authentication이 null일 경우 getName을 실행하는 대신 "null"이라는 문자열을 반환한다.
+     */
+    private String safeName(Authentication authentication) {
+        return (authentication == null) ? "null" : authentication.getName();
     }
 }
