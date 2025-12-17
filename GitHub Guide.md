@@ -78,6 +78,13 @@
     - 로컬의 변경사항을 GitHub main 브랜치에 올립니다.
     - 올리고 나면 다른 사람들은 "git pull"로 이 내용을 받아갈 수 있습니다.
 
+## 아직 커밋 안 한 수정사항 되돌리기
+      git restore .
+
+    - 로컬의 변경사항을 전부 취소하고, 마지막 커밋 상태로 파일을 되돌립니다.
+    - 새로 만든 파일은 그대로 남습니다.
+    - 뭔가 좀 큰일난 것 같아서 지금 한 작업을 모두 취소하고 싶을 때 사용합니다.
+
 ### 한 눈에 정리
 #### 작업 시작 전 다른 사람 변경사항 받아오기
     git pull --rebase origin main
@@ -94,6 +101,9 @@
 
     git pull --rebase origin main
     git push origin main
+
+#### 작업 되돌리기
+    git restore .
 
 
 ## Git 상태 확인 (선택)
@@ -121,6 +131,15 @@
         <<<<<<<, =======, >>>>>>> 표시를 없애도록
         최종 코드를 직접 수정해주세요.
 
+        <<<<<<< HEAD
+        (내 코드)
+        =======
+        (상대 코드)
+        >>>>>>> origin/main
+
+        충돌이 일어난 파일의 구조는 이렇습니다.
+        두 코드를 적절히 병합하거나, 어떤 코드를 사용할지 결정하는 것은 상황에 따라 취사선택 해주시면 됩니다.
+
     3) 수정이 끝난 파일을 staging
         src/main/java/com/example/cafeProject/에 위치한 Something.java란 파일을 수정했다면...
             git add src/main/java/com/example/cafeProject/Something.java
@@ -130,6 +149,9 @@
 
     4) 컨티뉴
         git rebase --continue
+
+
+
 
 
 
