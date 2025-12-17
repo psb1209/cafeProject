@@ -43,6 +43,7 @@ public abstract class BaseImageController<E, D> extends BaseCrudController<E, D>
         response.put("url", urlPrefix.endsWith("/")
                 ? urlPrefix + fileName
                 : urlPrefix + "/" + fileName);
+        response.put("fileName", fileName);
         return response;
     }
 }

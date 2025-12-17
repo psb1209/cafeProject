@@ -51,7 +51,7 @@ public abstract class BaseCrudController<E, D> {
 
     /** 등록 폼 화면 */
     @GetMapping("/create")
-    public String create() {
+    public String create(Model model) {
         return basePath + "/create";
     }
 

@@ -25,6 +25,9 @@ public class Board extends BaseEntity {
     @Column(nullable = false, columnDefinition = "longtext")
     private String description;
 
+    @Column(length = 255)
+    private String imgName;
+
     @Column(nullable = false, length = 20, unique = true, updatable = false)
     private String code; // 링크에 표시될 코드
 

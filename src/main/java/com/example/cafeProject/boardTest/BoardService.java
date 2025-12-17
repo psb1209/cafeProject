@@ -55,5 +55,6 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         dto.setCreateDate(null);
         dto.setMemberId(null);
         dto.setUsername(null);
+        dto.setEnabled(true);
     }
 }
