@@ -31,6 +31,7 @@ public class CommunityBoardService {
         CommunityBoard communityBoard=new CommunityBoard();
         communityBoard.setSubject(communityBoardDTO.getSubject());
         communityBoard.setContent(communityBoardDTO.getContent());
+//        communityBoard.setMember(member);
         communityBoardRepository.save(communityBoard);
 
     }
@@ -61,4 +62,7 @@ public class CommunityBoardService {
         communityBoard.setCnt(communityBoard.getCnt()+1);
         communityBoardRepository.save(communityBoard);
     }
+
+
+
 }

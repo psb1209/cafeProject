@@ -1,6 +1,7 @@
 package com.example.cafeProject.communityBoard;
 
 
+import com.example.cafeProject.member.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,7 +36,7 @@ public class CommunityBoard {
     @CreationTimestamp
     private Timestamp createDate;
 
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "userid")
-//    private Member member;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userid")
+    private Member member;
 }

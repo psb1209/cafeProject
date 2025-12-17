@@ -2,12 +2,15 @@ package com.example.cafeProject.communityBoardComment;
 
 
 import com.example.cafeProject.communityBoard.CommunityBoard;
+import com.example.cafeProject.communityBoard.CommunityBoardDTO;
 import com.example.cafeProject.communityBoard.CommunityBoardRepository;
+import com.example.cafeProject.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -16,6 +19,7 @@ import java.util.Optional;
 public class CommunityBoardCommentService {
     private final CommunityBoardCommentRepository communityBoardCommentRepository;
     private final CommunityBoardRepository communityBoardRepository;
+
 
 
     public Page<CommunityBoardComment> communityBoardCommentPage(int communityBoardCommentId,Pageable pageable){
@@ -54,5 +58,10 @@ public class CommunityBoardCommentService {
         CommunityBoardComment communityBoardComment=new CommunityBoardComment();
         communityBoardComment.setId(commentid);
         communityBoardCommentRepository.delete(communityBoardComment);
+    }
+
+    public void setDeleteAll(CommunityBoardDTO communityBoardDTO){
+        List<CommunityBoardComment> communityBoardComment=communityBoardCommentRepository.findByCommunityBoardId(communityBoardDTO.getId());
+        communityBoardCommentRepository.deleteAll(communityBoardComment);
     }
 }
