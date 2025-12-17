@@ -131,6 +131,15 @@
         <<<<<<<, =======, >>>>>>> 표시를 없애도록
         최종 코드를 직접 수정해주세요.
 
+        <<<<<<< HEAD
+        (내 코드)
+        =======
+        (상대 코드)
+        >>>>>>> origin/main
+
+        파일의 구조는 이렇습니다.
+        두 코드를 적절히 병합하거나, 어떤 코드를 사용할지 결정하는 것은 상황에 따라 취사선택 해주시면 됩니다.
+
     3) 수정이 끝난 파일을 staging
         src/main/java/com/example/cafeProject/에 위치한 Something.java란 파일을 수정했다면...
             git add src/main/java/com/example/cafeProject/Something.java
@@ -140,6 +149,7 @@
 
     4) 컨티뉴
         git rebase --continue
+
 
 
 
