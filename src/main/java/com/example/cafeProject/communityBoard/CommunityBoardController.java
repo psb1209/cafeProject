@@ -134,6 +134,7 @@ public class CommunityBoardController {
             Model model
     ){
         try{
+            communityBoardCommentService.setDeleteAll(communityBoardDTO);
             communityBoardService.setDelete(communityBoardDTO.getId());
             return "redirect:/communityBoard/list";
         } catch (Exception e) {
