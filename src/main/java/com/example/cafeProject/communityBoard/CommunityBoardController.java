@@ -48,8 +48,8 @@ public class CommunityBoardController {
             return "communityBoard/view";
 
         } catch (Exception e) {
-            model.addAttribute("errorCode", "err0001");
-            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("errCode", "err0001");
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
 
@@ -70,8 +70,8 @@ public class CommunityBoardController {
             model.addAttribute("communityBoard",communityBoard);
             return "communityBoard/update";
         } catch (Exception e) {
-            model.addAttribute("errorCode", "err0001");
-            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("errCode", "err0001");
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
 
@@ -87,8 +87,8 @@ public class CommunityBoardController {
             model.addAttribute("communityBoard",communityBoard);
             return "communityBoard/delete";
         } catch (Exception e) {
-            model.addAttribute("errorCode", "err0001");
-            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("errCode", "err0001");
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
 
@@ -103,8 +103,8 @@ public class CommunityBoardController {
             communityBoardService.setInsert(communityBoardDTO);
             return "redirect:/communityBoard/list";
         } catch (Exception e) {
-            model.addAttribute("errorCode", "err0001");
-            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("errCode", "err0001");
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
 
@@ -120,8 +120,8 @@ public class CommunityBoardController {
             communityBoardService.setUpdate(communityBoardDTO);
             return "redirect:/communityBoard/view/"+communityBoardDTO.getId();
         } catch (Exception e) {
-            model.addAttribute("errorCode", "err0001");
-            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("errCode", "err0001");
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
 
@@ -137,8 +137,8 @@ public class CommunityBoardController {
             communityBoardService.setDelete(communityBoardDTO.getId());
             return "redirect:/communityBoard/list";
         } catch (Exception e) {
-            model.addAttribute("errorCode", "err0001");
-            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("errCode", "err0001");
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
 

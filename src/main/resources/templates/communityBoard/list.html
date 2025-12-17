@@ -39,7 +39,7 @@
 
     <a href="/communityBoard/create" class="btn btn-secondary">등록</a>
 
-    <div style="margin-top: 20px;">
+    <div style="margin-top: 20px;" th:if="${communityBoardPage.totalPages > 0}">
         <ul class="pagination">
             <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${memberList.number-1}|}">Prev</a></li>-->
             <li class="page-item" th:classappend="${communityBoardPage.first} ? 'disabled'">

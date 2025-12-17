@@ -81,6 +81,7 @@
                 <tr th:each="communityBoardComment:${communityBoardCommentPage}">
                     <td th:text="${communityBoardComment.content}"></td>
 <!--                    <td th:text="${communityBoardComment.member}"></td>-->
+                    <td> - </td>
                     <td>
                         <a th:href="@{|/communityBoardComment/deleteProc/${communityBoardComment.id}|}"> x </a>
                     </td>
@@ -91,7 +92,7 @@
         </div>
 
         <div>
-            <ul class="pagination">
+            <ul class="pagination" th:if="${communityBoardCommentPage.totalPages > 0}">
                 <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${postList.number-1}|}">Prev</a></li>-->
                 <li class="page-item" th:classappend="${communityBoardCommentPage.first} ? 'disabled'">
                     <a class="page-link"
@@ -103,7 +104,7 @@
                 <li class="page-item"
                     th:each="page: ${#numbers.sequence(0, communityBoardCommentPage.totalPages-1)}"
                     th:classappend="${page == communityBoardCommentPage.number} ? 'active'">
-                    <a class="page-link"  th:text="${page}" th:href="@{|?page=${page}|}"></a>
+                    <a class="page-link" th:text="${page + 1}" th:href="@{|?page=${page}|}"></a>
                 </li>
 
                 <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${postList.number+1}|}">Next</a></li>-->
