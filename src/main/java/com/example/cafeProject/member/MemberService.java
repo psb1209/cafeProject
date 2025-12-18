@@ -274,6 +274,34 @@ public class MemberService {
     }
 
     /**
+     * 현재 사용자의 "실효 권한 목록(Effective Roles)"을 반환.
+     * - 게시판 조회/목록 등에서 Board.readRole IN (:roles) 같은 형태로 사용하기 위해,
+     *   "내가 볼 수 있는 권한 범위"를 RoleType 배열로 만들어 준다.
+     * 주의:
+     * - 빈 배열(RoleType[0])은 "아무 권한도 없음"을 의미한다.
+     *   따라서 Repository에서 IN (:roles)로 조회할 때 roles가 비면 쿼리가 깨질 수 있으니,
+     *   호출 측(Service 등)에서 roles.length == 0이면 Page.empty(...)를 반환하는 방어가 필요하다.
+     */
+    public RoleType[] getEffectiveRoles(Authentication authentication) {
+        if (isNotLogin(authentication)) return new RoleType[]{ RoleType.GUEST };
+
+        if (authentication.getAuthorities().toString().contains("ROLE_BANNED"))
+            return new RoleType[0];
+
+        if (authentication.getAuthorities().toString().contains("ROLE_ADMIN"))
+            return new RoleType[]{ RoleType.GUEST, RoleType.USER, RoleType.MANAGER, RoleType.ADMIN };
+
+        if (authentication.getAuthorities().toString().contains("ROLE_MANAGER"))
+            return new RoleType[]{ RoleType.GUEST, RoleType.USER, RoleType.MANAGER };
+
+        if (authentication.getAuthorities().toString().contains("ROLE_USER"))
+            return new RoleType[]{ RoleType.GUEST, RoleType.USER };
+
+        // 예상 못한 케이스라도 최소 공개만
+        return new RoleType[]{ RoleType.GUEST };
+    }
+
+    /**
      * 사용자가 입력한 비밀번호가 DB에 저장된 비밀번호와 일치하는지 확인.
      * - 일치하지 않으면 WrongPasswordException 발생.
      */

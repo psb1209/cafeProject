@@ -1,6 +1,7 @@
 package com.example.base;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,6 +24,13 @@ public abstract class BaseImageController<E, D> extends BaseCrudController<E, D>
 
     protected BaseImageController(BaseImageService<E, D> service, String basePath) {
         super(service, basePath);
+    }
+
+    /** 모든 링크에 자동으로 imageUrlPrefix를 모델에 담아서 보냄 */
+    @ModelAttribute("imageUrlPrefix")
+    public String imageUrlPrefix() {
+        // /attach/summernote/ 형태로 끝에 / 보정
+        return urlPrefix.endsWith("/") ? urlPrefix : urlPrefix + "/";
     }
 
     @ResponseBody

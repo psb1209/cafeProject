@@ -143,6 +143,23 @@ public abstract class BaseCrudService<E, D> {
         log.debug("[{} - setDelete] afterDelete 실행 성공", entityClass.getSimpleName());
     }
 
+    /** 공백 상태인 새 Entity 만들기 */
+    public E newEntity() {
+        try {
+            return entityClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Entity 생성 실패 : " + entityClass.getName(), e);
+        }
+    }
+    /** 공백 상태인 새 DTO 만들기 */
+    public D newDTO() {
+        try {
+            return dtoClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("DTO 생성 실패 : " + dtoClass.getName(), e);
+        }
+    }
+
     // 이하의 메서드는 가급적이면 각 클래스에서 @override해서 사용해주세요.
     /** DTO → new Entity */
     protected E toEntity(D dto) {
@@ -156,7 +173,6 @@ public abstract class BaseCrudService<E, D> {
     protected void updateEntity(E e, D d) {
         modelMapper.map(d, e);
     }
-
 
     // 이하의 메서드는 각 메서드의 기본 동작에 더해 추가 동작을 정의할 때 사용하는 메서드입니다.
 

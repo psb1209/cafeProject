@@ -10827,3 +10827,55 @@ body.no-header #mainNav .navbar-toggler {
   border-color: #fff !important;
 }
 
+/* 게시판 모음용 */
+.board-grid{
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.board-tile{
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.board-tile:hover{
+  transform: translateY(-2px);
+  transition: transform .12s ease;
+}
+
+.board-thumb{
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  background: rgba(0,0,0,.03);
+}
+
+.board-thumb > img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.board-title{
+  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 14px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 1400px){ .board-grid{ grid-template-columns: repeat(5, 1fr); } }
+@media (max-width: 1200px){ .board-grid{ grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 992px) { .board-grid{ grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 576px) { .board-grid{ grid-template-columns: repeat(2, 1fr); } }
+

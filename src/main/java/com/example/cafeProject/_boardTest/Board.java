@@ -1,4 +1,4 @@
-package com.example.cafeProject.boardTest;
+package com.example.cafeProject._boardTest;
 
 import com.example.base.BaseEntity;
 import com.example.cafeProject.member.RoleType;
@@ -37,4 +37,8 @@ public class Board extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private RoleType writeRole; // 작성 권한
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private RoleType readRole; // 보기 권한
 }
