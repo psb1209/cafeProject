@@ -11,10 +11,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 
 public abstract class BaseCrudController<E, D> {
     protected final BaseCrudService<E, D> service; // CRUD 비즈니스 로직을 담당하는 서비스
@@ -26,6 +24,16 @@ public abstract class BaseCrudController<E, D> {
     protected BaseCrudController(BaseCrudService<E, D> service, String basePath) {
         this.service = service;
         this.basePath = normalizeBasePath(basePath);
+    }
+
+    /** dto에 값을 담을 때 해당 필드는 무시됨 */
+    protected String[] disallowedFields() {
+        return new String[]{"memberId", "username", "createDate"};
+    }
+
+    @InitBinder("data")
+    public void initBinder(WebDataBinder binder) {
+        binder.setDisallowedFields(disallowedFields());
     }
 
     /** 목록 화면 */
