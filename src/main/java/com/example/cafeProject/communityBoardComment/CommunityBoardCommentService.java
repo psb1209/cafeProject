@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,9 +55,9 @@ public class CommunityBoardCommentService {
         return communityBoardComment;
     }
 
-    public void setDelete(int commentid){
+    public void setDelete(int commentId){
         CommunityBoardComment communityBoardComment=new CommunityBoardComment();
-        communityBoardComment.setId(commentid);
+        communityBoardComment.setId(commentId);
         communityBoardCommentRepository.delete(communityBoardComment);
     }
 
@@ -64,4 +65,15 @@ public class CommunityBoardCommentService {
         List<CommunityBoardComment> communityBoardComment=communityBoardCommentRepository.findByCommunityBoardId(communityBoardDTO.getId());
         communityBoardCommentRepository.deleteAll(communityBoardComment);
     }
+
+    @Transactional
+    public CommunityBoardComment setUpdate(CommunityBoardCommentDTO communityBoardCommentDTO){
+        CommunityBoardComment communityBoardComment =getSelectOneById(communityBoardCommentDTO.getId());
+
+        communityBoardComment.setContent(communityBoardCommentDTO.getContent());
+
+        return communityBoardComment;
+
+    }
+
 }

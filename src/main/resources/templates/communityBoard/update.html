@@ -15,7 +15,7 @@
     <h2>자유게시판 수정</h2>
     <form name="form">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-        <input type="text" name="id" th:value="${communityBoard.id}">
+        <input type="hidden" name="id" th:value="${communityBoard.id}">
         <div class="mb-3 mt-3">
             <label for="subject">subject:</label>
             <input type="text" class="form-control" id="subject"  name="subject" th:value="${communityBoard.subject}">

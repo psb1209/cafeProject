@@ -30,21 +30,57 @@ public class CommunityBoardCommentController {
             }
     }
 
-    @GetMapping("/deleteProc/{commentid}")
+    @GetMapping("/deleteProc/{commentId}")
     public String deleteProc(
-            @PathVariable("commentid") int commentid,
+            @PathVariable("commentId") int commentId,
             Model model
     ){
-        CommunityBoardComment communityBoardComment=communityBoardCommentService.getSelectOneById(commentid);
+        CommunityBoardComment communityBoardComment=communityBoardCommentService.getSelectOneById(commentId);
         if(communityBoardComment==null){
             model.addAttribute("errorCode", "에러0005");
-            model.addAttribute("errorMsg", "해당 댓글이 해당하지 않습니다.");
+            model.addAttribute("errorMsg", "해당 댓글이 존재하지 않습니다.");
             return "error/error";
         }
 
         int communityBoardId=communityBoardComment.getCommunityBoard().getId();
 
-        communityBoardCommentService.setDelete(commentid);
+        communityBoardCommentService.setDelete(commentId);
+        return "redirect:/communityBoard/view/"+communityBoardId;
+    }
+
+    @GetMapping("/commentUpdate/{commentId}")
+    public String commentUpdate(
+            @PathVariable("commentId") int commentId,
+            Model model
+    ){
+        CommunityBoardComment communityBoardComment=communityBoardCommentService.getSelectOneById(commentId);
+        if(communityBoardComment==null){
+            model.addAttribute("errorCode", "에러0005");
+            model.addAttribute("errorMsg", "해당 댓글이 존재하지 않습니다.");
+            return "error/error";
+        }
+        model.addAttribute("communityBoardComment",communityBoardComment);
+        return "communityBoard/commentUpdate";
+    }
+
+
+    @PostMapping("/updateProc")
+    public String updateProc(
+            CommunityBoardCommentDTO communityBoardCommentDTO,
+            Model model
+    ){
+        CommunityBoardComment communityBoardComment=communityBoardCommentService.getSelectOneById(communityBoardCommentDTO.getId());
+        if(communityBoardComment==null){
+            model.addAttribute("errorCode", "에러0005");
+            model.addAttribute("errorMsg", "해당 댓글이 존재하지 않습니다.");
+            return "error/error";
+        }
+
+
+
+        int communityBoardId=communityBoardComment.getCommunityBoard().getId();
+
+        communityBoardCommentService.setUpdate(communityBoardCommentDTO);
         return "redirect:/communityBoard/view/"+communityBoardId;
     }
 

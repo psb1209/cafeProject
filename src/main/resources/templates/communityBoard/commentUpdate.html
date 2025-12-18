@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center'">
+
+<body>
+
+<h1 layout:fragment="pageTitle">My Cafe</h1>
+<span layout:fragment="pageSubTitle">first page</span>
+
+<div layout:fragment="content">
+    <!-- 본문 내용 시작 -->
+    <h2>댓글 수정</h2>
+    <form name="form">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+        <input type="hidden" name="id" th:value="${communityBoardComment.id}">
+        <input type="hidden" name="communityBoardId"
+               th:value="${communityBoardComment.communityBoard.id}">
+
+        <div class="mb-3">
+            <label for="content">content:</label>
+            <input type="text" class="form-control" id="content" name="content" th:value="${communityBoardComment.content}">
+        </div>
+
+
+        <button type="button" class="btn btn-secondary" onclick="save();">댓글수정</button>
+    </form>
+
+    <script>
+        function save() {
+            if (confirm('수정할까요?')) {
+                document.form.action = "/communityBoardComment/updateProc";
+                document.form.method = "post";
+                document.form.submit();
+            }
+        }
+    </script>
+    <!-- 본문 내용 종료 -->
+</div>
+
+</body>
+</html>
