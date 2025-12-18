@@ -3,13 +3,17 @@ package com.example.cafeProject._boardTest;
 import com.example.base.BaseImageService;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.member.RoleType;
+import com.example.exception.DuplicateValueException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,13 +72,19 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
 
     @Override
     protected void updateEntity(Board board, BoardDTO dto) {
-        board.setName(dto.getName());
         board.setDescription(dto.getDescription());
         board.setWriteRole(dto.getWriteRole());
+        board.setReadRole(dto.getReadRole());
+        board.setEnabled(dto.isEnabled());
+
+        if (dto.getImgName() != null && !dto.getImgName().isBlank()) {
+            board.setImgName(dto.getImgName());
+        }
     }
 
     @Override
     protected void beforeInsert(BoardDTO dto) {
+        dto.normalize();
         dto.setId(null);
         dto.setCreateDate(null);
         dto.setMemberId(null);
@@ -85,14 +95,40 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         if (dto.getReadRole() == null)  dto.setReadRole(RoleType.GUEST);
         if (dto.getWriteRole() == null) dto.setWriteRole(RoleType.USER);
 
-        if (dto.getReadRole() == RoleType.BANNED || dto.getWriteRole() == RoleType.BANNED) {
+        if (dto.getReadRole() == RoleType.BANNED || dto.getWriteRole() == RoleType.BANNED)
             throw new IllegalArgumentException("읽기/쓰기 권한에 BANNED는 사용할 수 없습니다.");
-        }
 
         // 읽기 권한은 쓰기 권한보다 높을 수 없음
-        if (roleRank(dto.getReadRole()) > roleRank(dto.getWriteRole())) {
-            throw new IllegalArgumentException("보기 권한은 쓰기 권한보다 높을 수 없습니다.");
-        }
+        if (roleRank(dto.getReadRole()) > roleRank(dto.getWriteRole()))
+            throw new IllegalArgumentException("읽기 권한은 쓰기 권한보다 높을 수 없습니다.");
+
+        if (boardRepository.existsByName(dto.getName())) throw new DuplicateValueException("이미 존재하는 게시판 이름입니다.", "name", dto.getName());
+        if (boardRepository.existsByCode(dto.getCode())) throw new DuplicateValueException("이미 사용 중인 게시판 코드입니다.", "code", dto.getCode());
+    }
+
+    @Override
+    protected void beforeUpdate(BoardDTO dto, Board board) {
+        if (dto.getId() == null) throw new IllegalArgumentException("수정 대상 ID가 없습니다.");
+
+        dto.setCreateDate(null);
+        dto.setMemberId(null);
+        dto.setUsername(null);
+
+        if (dto.getImgName() == null || dto.getImgName().isBlank()) dto.setImgName(board.getImgName());
+        if (dto.getReadRole() == null)  dto.setReadRole(board.getReadRole());
+        if (dto.getWriteRole() == null) dto.setWriteRole(board.getWriteRole());
+
+        if (dto.getReadRole() == RoleType.BANNED || dto.getWriteRole() == RoleType.BANNED)
+            throw new IllegalArgumentException("읽기/쓰기 권한에 BANNED는 사용할 수 없습니다.");
+
+        // 읽기 권한은 쓰기 권한보다 높을 수 없음
+        if (roleRank(dto.getReadRole()) > roleRank(dto.getWriteRole()))
+            throw new IllegalArgumentException("읽기 권한은 쓰기 권한보다 높을 수 없습니다.");
+    }
+
+    @Override
+    protected void beforeDelete(Board board) {
+        throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "게시판 삭제는 허용되지 않습니다.");
     }
 
     private int roleRank(RoleType role) {

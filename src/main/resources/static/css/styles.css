@@ -10879,3 +10879,12 @@ body.no-header #mainNav .navbar-toggler {
 @media (max-width: 992px) { .board-grid{ grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 576px) { .board-grid{ grid-template-columns: repeat(2, 1fr); } }
 
+.td-ellipsis{
+  max-width: 360px;        /* 숨기기 시작할 폭 */
+  white-space: nowrap;     /* 한 줄로 고정시키기 */
+  overflow: hidden;        /* 넘치면 숨김 */
+  text-overflow: ellipsis; /* ... */
+}
+
+@media (max-width: 992px){ .td-ellipsis{ max-width: 240px; } }
+@media (max-width: 576px){ .td-ellipsis{ max-width: 120px; } }

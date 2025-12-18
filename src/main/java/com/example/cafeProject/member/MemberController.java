@@ -2,9 +2,7 @@ package com.example.cafeProject.member;
 
 import com.example.cafeProject.validation.ManagementOnly;
 import com.example.cafeProject.validation.ValidationGroups;
-import com.example.exception.EntityNotFoundException;
-import com.example.exception.PermissionDeniedException;
-import com.example.exception.WrongPasswordException;
+import com.example.exception.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -131,7 +129,9 @@ public class MemberController {
      * 2) 검증 실패 시: 공통 메서드(logValidationErrors)로 로그 남기고 회원가입 폼으로 복귀
      * 3) 서비스 레벨에서 회원 저장 시도
      * 4) 예외 유형별 처리:
-     *    - IllegalArgumentException : id / email 중복 → 폼에 필드 에러 표시
+     *    -ForbiddenUsernameException : 금지된 username → 폼에 필드 에러 표시
+     *    - DuplicateValueException : id / email 중복 → 폼에 필드 에러 표시
+     *    - IllegalArgumentException : 이외의 기타 유효성 / 인자 오류들
      *    - 그 외 예외 → 런타임 에러 페이지
      */
     @PreAuthorize("isAnonymous()")
@@ -146,22 +146,19 @@ public class MemberController {
         try {
             memberService.setInsert(dto); // 서비스에 회원 가입 처리 위임
             return "redirect:/" + basePath + "/login"; // 가입 성공 시 로그인 페이지로 이동
-        } catch (IllegalArgumentException e) { // 이미 사용중인 id / email 오류
+        } catch (ForbiddenUsernameException e) { // 금지된 username으로 가입 시도
+            bindingResult.rejectValue("username", "forbidden", e.getMessage());
+            return basePath + "/create";
+        } catch (DuplicateValueException e) { // 이미 사용중인 id / email 오류
+            if (e.getField() != null) bindingResult.rejectValue(e.getField(), "duplicate", e.getMessage());
+            else bindingResult.reject("duplicate", e.getMessage());
+            return basePath + "/create";
+        } catch (IllegalArgumentException e) { // 남아있는 기타 유효성/인자 오류들
             log.warn(e.getMessage());
-
-            // 메시지 내용에 따라 username / email 중 어떤 필드 에러로 보여줄지 결정
-            if (e.getMessage().contains("id")) {
-                bindingResult.rejectValue("username", "duplicate", e.getMessage());
-            } else if (e.getMessage().contains("email")) {
-                bindingResult.rejectValue("email", "duplicate", e.getMessage());
-            } else {
-                // 위 두 가지 유형이 아닌 경우, 글로벌 에러로 처리
-                bindingResult.reject("joinError", e.getMessage());
-            }
-
+            bindingResult.reject("joinError", e.getMessage());
             return basePath + "/create";
         } catch (Exception e) { // 그 외 치명적인 오류
-            log.error("[createProc] 예상하지 못 한 오류 : {}", e.getMessage());
+            log.error("[createProc] 예상하지 못 한 오류 : {}", e.getMessage(), e);
             return "redirect:/error/runtimeErrorPage";
         }
     }

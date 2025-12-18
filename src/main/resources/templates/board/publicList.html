@@ -15,7 +15,7 @@
            th:each="data : ${list.content}"
            th:href="@{|/board/${data.code}|}">
 
-            <div class="board-thumb">
+            <div class="board-thumb" style="max-height:150px;">
                 <img th:src="${#strings.isEmpty(data.imgName)}
                              ? @{/assets/img/post-sample-image.jpg}
                              : @{|${imageUrlPrefix}${data.imgName}|}"

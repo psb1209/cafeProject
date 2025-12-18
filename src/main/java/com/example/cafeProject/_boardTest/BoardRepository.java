@@ -21,4 +21,7 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
           and b.readRole in :roles
     """)
     Page<Board> findVisible(@Param("roles") Collection<RoleType> roles, Pageable pageable);
+
+    boolean existsByCode(String code);
+    boolean existsByName(String name);
 }

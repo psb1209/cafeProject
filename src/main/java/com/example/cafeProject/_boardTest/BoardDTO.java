@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import java.util.Locale;
 
 @Getter
 @Setter
@@ -19,11 +20,11 @@ public class BoardDTO extends BaseDTO {
 
     @NotBlank(
             message = "게시판 이름은 필수입니다.",
-            groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class}
+            groups = ValidationGroups.OnCreate.class
     )
     @Size(
             max = 100, message = "게시판 이름은 100자 이하여야 합니다.",
-            groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class}
+            groups = ValidationGroups.OnCreate.class
     )
     private String name;
 
@@ -63,4 +64,9 @@ public class BoardDTO extends BaseDTO {
             groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class}
     )
     private RoleType readRole; // 보기 권한
+
+    public void normalize() {
+        if (name != null) name = name.trim();
+        if (code != null) code = code.trim().toLowerCase(Locale.ROOT);
+    }
 }

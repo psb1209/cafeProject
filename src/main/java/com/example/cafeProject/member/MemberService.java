@@ -1,9 +1,6 @@
 package com.example.cafeProject.member;
 
-import com.example.exception.EntityNotFoundException;
-import com.example.exception.ForbiddenUsernameException;
-import com.example.exception.PermissionDeniedException;
-import com.example.exception.WrongPasswordException;
+import com.example.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,12 +185,12 @@ public class MemberService {
         // username 중복 체크
         if (memberRepository.existsByUsername(dto.getUsername())) {
             log.warn("회원가입 실패(아이디 중복): username={}", dto.getUsername());
-            throw new IllegalArgumentException("이미 사용 중인 id");
+            throw new DuplicateValueException("이미 사용 중인 id", "username", dto.getUsername());
         }
         // email 중복 체크
         if (memberRepository.existsByEmail(dto.getEmail())) {
             log.warn("회원가입 실패(이메일 중복): username={}", dto.getEmail());
-            throw new IllegalArgumentException("이미 사용 중인 email");
+            throw new DuplicateValueException("이미 사용 중인 email", "email", dto.getEmail());
         }
 
         // role 기본값: USER

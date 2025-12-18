@@ -25,11 +25,11 @@
         </thead>
         <tbody>
         <tr th:each="data, loop : ${list}"
-            th:onclick="|location.href='@{|/member/view/${data.id}|}'|"
+            th:onclick="|location.href='@{|/boardManagement/view/${data.id}|}'|"
             style="cursor: pointer;">
             <td th:text="${loop.index+1}"></td>
             <td th:text="${data.name}"></td>
-            <td th:text="${data.description}"></td>
+            <td class="td-ellipsis" th:text="${data.description}"></td>
             <td th:text="${data.username}"></td>
             <td th:text="${data.writeRole}"></td>
             <td th:text="${#dates.format(data.createDate, 'yyyy-MM-dd')}"></td>
