@@ -25,19 +25,30 @@
             <input type="text"
                    class="form-control"
                    th:field="*{name}"
+                   th:classappend="${#fields.hasErrors('name')} ? ' is-invalid'"
                    id="name"
                    placeholder="게시판 이름을 입력해주세요."
                    required>
+            <div class="invalid-feedback d-block"
+                 th:if="${#fields.hasErrors('name')}"
+                 th:errors="*{name}">
+            </div>
         </div>
+
 
         <div class="mb-3 mt-3">
             <label for="description"> 게시판 설명:</label>
             <input type="text"
                    class="form-control"
                    th:field="*{description}"
+                   th:classappend="${#fields.hasErrors('description')} ? ' is-invalid'"
                    id="description"
                    placeholder="게시판 설명을 입력해주세요."
                    required>
+            <div class="invalid-feedback d-block"
+                 th:if="${#fields.hasErrors('description')}"
+                 th:errors="*{description}">
+            </div>
         </div>
 
         <div>
@@ -45,9 +56,14 @@
             <input type="text"
                    class="form-control"
                    th:field="*{code}"
+                   th:classappend="${#fields.hasErrors('code')} ? ' is-invalid'"
                    id="code"
                    placeholder="게시판 링크를 입력해주세요."
                    required>
+            <div class="invalid-feedback d-block"
+                 th:if="${#fields.hasErrors('code')}"
+                 th:errors="*{code}">
+            </div>
         </div>
 
         <div class="mb-3 mt-3">
@@ -56,16 +72,38 @@
             <img id="imagePreview" style="max-width:200px; display:none; margin-top:8px;">
         </div>
 
-        <div>
-            <label for="writeRole" class="form-label">Role</label>
+        <div class="mb-3 mt-3">
+            <label for="writeRole" class="form-label">쓰기 권한 (Write Role)</label>
             <select class="form-select"
                     th:field="*{writeRole}"
+                    th:classappend="${#fields.hasErrors('writeRole')} ? ' is-invalid'"
                     id="writeRole">
-                <option th:each="r : ${roles}"
+                <option
+                        th:each="r : ${roles}"
                         th:value="${r}"
-                        th:text="${r}">
-                </option>
+                        th:text="${r}"></option>
             </select>
+            <div class="invalid-feedback d-block"
+                 th:if="${#fields.hasErrors('writeRole')}"
+                 th:errors="*{writeRole}">
+            </div>
+        </div>
+
+        <div class="mb-3 mt-3">
+            <label for="readRole" class="form-label">보기 권한 (Read Role)</label>
+            <select class="form-select"
+                    th:field="*{readRole}"
+                    th:classappend="${#fields.hasErrors('readRole')} ? ' is-invalid'"
+                    id="readRole">
+                <option
+                        th:each="r : ${roles}"
+                        th:value="${r}"
+                        th:text="${r}"></option>
+            </select>
+            <div class="invalid-feedback d-block"
+                 th:if="${#fields.hasErrors('readRole')}"
+                 th:errors="*{readRole}">
+            </div>
         </div>
 
         <button type="button" id="btn-save" class="btn btn-secondary" onclick="save();">

@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
 
                                 .requestMatchers("/").permitAll()
-                                .requestMatchers("/css/**", "/js/**", "/assets/**", "/favicon.ico").permitAll()
+                                .requestMatchers("/css/**", "/js/**", "/assets/**", "/attach/summernote/**", "/favicon.ico").permitAll()
                                 .requestMatchers("/noLogin/login", "/member/login", "/member/login/error").permitAll()
                                 //.requestMatchers("/admin/**").hasRole("ADMIN")
                                 //.anyRequest().authenticated() // 인증이 필요함

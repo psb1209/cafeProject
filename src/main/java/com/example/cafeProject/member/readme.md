@@ -491,6 +491,7 @@ Bean Validation으로 애매한 규칙은 컨트롤러에서 직접 검증한다
         - 회원가입: `setInsert(MemberDTO)`
         - 비밀번호 변경: `setUpdate(Authentication, PasswordChangeDTO)`
         - 탈퇴: `setDelete(Authentication, MemberDeleteDTO)`
+        - 인증/권한 유틸: `isNotLogin(authentication)`, `getEffectiveRoles(Authentication)`
         - 권한 변경(관리자): `updateRoleType(MemberDTO, Member admin)`
 
 - **Controller**
@@ -501,7 +502,7 @@ Bean Validation으로 애매한 규칙은 컨트롤러에서 직접 검증한다
         - 예외를 폼 재표시/redirect로 변환
 
 - **Enum**
-    - `RoleType` : `BANNED, USER, MANAGER, ADMIN`
+    - `RoleType` : `GUEST, BANNED, USER, MANAGER, ADMIN`
     - `ReasonType` : `PRIVACY, CONTENT, SERVICE, ETC, NONE`
 
 ---

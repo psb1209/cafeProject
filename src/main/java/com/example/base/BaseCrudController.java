@@ -25,7 +25,7 @@ public abstract class BaseCrudController<E, D> {
 
     protected BaseCrudController(BaseCrudService<E, D> service, String basePath) {
         this.service = service;
-        this.basePath = basePath;
+        this.basePath = normalizeBasePath(basePath);
     }
 
     /** 목록 화면 */
@@ -35,7 +35,7 @@ public abstract class BaseCrudController<E, D> {
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        Page<E> list = service.list(pageable);
+        Page<D> list = service.listDTO(pageable);
         model.addAttribute("list", list);
         return basePath + "/list"; // ex) "memo/list"
     }
@@ -52,6 +52,7 @@ public abstract class BaseCrudController<E, D> {
     /** 등록 폼 화면 */
     @GetMapping("/create")
     public String create(Model model) {
+        model.addAttribute("data", service.newDTO());
         return basePath + "/create";
     }
 
@@ -157,5 +158,13 @@ public abstract class BaseCrudController<E, D> {
     protected String getNotFoundRedirectPath() {
         // 기본값: 메인
         return "redirect:/";
+    }
+
+    /** 들어오는 basePath 값을 정규화하는 메서드 */
+    private static String normalizeBasePath(String raw) throws IllegalArgumentException {
+        if (raw == null) throw new IllegalArgumentException("basePath is null");
+        String s = raw.trim().replaceAll("^/+", "").replaceAll("/+$", "");
+        if (s.isBlank()) throw new IllegalArgumentException("basePath is blank: " + raw);
+        return s;
     }
 }
