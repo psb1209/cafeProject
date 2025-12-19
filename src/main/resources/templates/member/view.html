@@ -31,6 +31,7 @@
     <div>
         <a th:href="@{/}" class="btn btn-secondary">메인 페이지</a>
         <a th:href="@{|/member/roleUpdate/${data.id}|}" sec:authorize="hasAnyRole('MANAGER','ADMIN')" class="btn btn-secondary">권한 수정</a>
+        <a th:href="@{/member/passwordUpdate}" sec:authorize="${#authentication.name == #vars.data.username}" class="btn btn-danger">비밀번호 변경</a>
         <a th:href="@{/member/delete}" sec:authorize="${#authentication.name == #vars.data.username}" class="btn btn-danger">회원 탈퇴</a>
     </div>
     <!-- 본문 내용 종료 -->
