@@ -51,19 +51,26 @@
             </thead>
             <!--========================================================================================-->
             <tbody>
-            <tr align="right">
-                <td th:if="${operationBoardCommentUpdate == null}">
-                    <textarea id="comment-content" rows="1" class="form-control" name="content"></textarea>
-                    <button type="button" id="btn-save-comment" class="btn btn-secondary"
-                            style="margin-top: 10px" onclick="commentSave();">댓글 등록</button>
-                </td>
-                <td th:if="${operationBoardCommentUpdate != null}">
-                    <textarea id="comment-content1" rows="1" class="form-control" name="content"
-                            th:text="${operationBoardCommentUpdate.content}"></textarea>
-                    <button type="button" id="btn-save-comment1" class="btn btn-secondary"
-                            style="margin-top: 10px" onclick="updateComment('${reply.id}' );">댓글 수정</button>
-                </td>
-            </tr>
+                <tr align="right">
+                    <td th:if="${operationBoardCommentUpdate == null}">
+                        <textarea id="comment-content" rows="1" class="form-control" name="content"></textarea>
+                        <button type="button" id="btn-save-comment" class="btn btn-secondary"
+                                style="margin-top: 10px" onclick="commentSave();">댓글 등록</button>
+                    </td>
+                    <!--Thymeleaf if문을 사용시 스크립트에서 form의 name, id를 못 찾음-->
+                    <td th:if="${operationBoardCommentUpdate != null}">
+                        <form>
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <input type="hidden" name="operationBoardCommentId" th:value="${operationBoardCommentUpdate.id}">
+
+                            <textarea rows="1" class="form-control" name="content"
+                                    th:text="${operationBoardCommentUpdate.content}"></textarea>
+                            <!--스크립트 호출할 때 this.form을 넣어 이 폼임을 알림-->
+                            <button type="button" class="btn btn-secondary"
+                                    style="margin-top: 10px" onclick="updateComment(this.form);">댓글 수정</button>
+                        </form>
+                    </td>
+                </tr>
             </tbody>
             <!--========================================================================================-->
         </table>
@@ -86,7 +93,7 @@
                 </td>
                 <td>
                     <!--========================================================================================-->
-                    <form id="selectOfDelete">
+                    <form id="selectOfDeleteOrUpdate">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <input type="hidden" name="operationBoardId" th:value="${operationBoard.id}">
                         <input type="hidden" name="operationBoardCommentId" th:value="${operationBoardComment.id}">
@@ -128,34 +135,22 @@
         </ul>
     </div>
 
-    <!--게시글 작성-->
-    <script>
-        function save() {
-            if (document.DirForm.content.value.trim() === '') {
-                alert('내용을 입력해주세요');
-                document.DirForm.content.focus();
-                return;
-            }
-
-            if (confirm('추가하시겠습니까?')) {
-                document.getElementById('DirForm').submit();
-            }
-        }
-    </script>
-
     <!--댓글 작성-->
     <script>
         function commentSave() {
-            if (document.commentForm.content.value.trim() === '') {
+
+            const commentForm = document.commentForm;
+
+            if (commentForm.content.value.trim() === '') {
                 alert('내용을 입력해주세요');
-                document.commentForm.content.focus();
+                commentForm.content.focus();
                 return;
             }
 
             if (confirm('추가하시겠습니까?')) {
-                document.commentForm.action = "/operationBoardComment/createProc";
-                document.commentForm.method = "post";
-                document.commentForm.submit();
+                commentForm.action = "/operationBoardComment/createProc";
+                commentForm.method = "post";
+                commentForm.submit();
             }
         }
     </script>
@@ -164,50 +159,48 @@
     <!--삭제처리 및 수정 값 불러오기-->
     <script>
         function selectOption() {
-            if (document.getElementById('actionSelect').value === 'deleteProc') {
+
+            const selectOfDeleteOrUpdate = document.getElementById('selectOfDeleteOrUpdate');
+            const actionSelect = document.getElementById('actionSelect');
+
+
+            if (actionSelect.value === 'deleteProc') {
                 if (confirm('삭제하시겠습니까?')) {
-                    document.getElementById('selectOfDelete').action = "/operationBoardComment/deleteProc";
-                    document.getElementById('selectOfDelete').method = "post";
-                    document.getElementById('selectOfDelete').submit();
+                    selectOfDeleteOrUpdate.action = "/operationBoardComment/deleteProc";
+                    selectOfDeleteOrUpdate.method = "post";
+                    selectOfDeleteOrUpdate.submit();
                 }
-                 document.getElementById('actionSelect').value = "";
+                 actionSelect.value = "";
             }
 
-             if (document.getElementById('actionSelect').value === 'updateProc') {
-                document.getElementById('selectOfDelete').action = "/operationBoardComment/update";
-                document.getElementById('selectOfDelete').method = "post";
-                document.getElementById('selectOfDelete').submit();
+             if (actionSelect.value === 'updateProc') {
+                selectOfDeleteOrUpdate.action = "/operationBoardComment/update";
+                selectOfDeleteOrUpdate.method = "post";
+                selectOfDeleteOrUpdate.submit();
             }
         }
     </script>
 
     <!--수정 처리-->
     <script>
-        function updateComment() {
-            if (document.updateComment.content.value.trim() === '') {
+        function updateComment(form) {
+
+            // 반복되는 코드 변수에 담기
+            const content = form.content.value.trim();
+
+            if (content === '') {
                 alert('내용을 입력해주세요');
-                document.updateComment.content.focus();
+                form.content.focus();
                 return;
             }
 
             if (confirm('수정하시겠습니까?')) {
-                document.getElementById('selectOfUpdate').action = "/operationBoardComment/updateProc";
-                document.getElementById('selectOfUpdate').method = "post";
-                document.getElementById('selectOfUpdate').submit();
+                form.action = "/operationBoardComment/updateProc";
+                form.method = "post";
+                form.submit();
             }
         }
     </script>
-
-<!--    <script>
-        function updateComment() {
-            if (confirm('수정하시겠습니까?')) {
-                document.getElementById('selectOfDelOrUp').action = "/operationBoardComment/updateProc";
-                document.getElementById('selectOfDelOrUp').method = "post";
-                document.getElementById('selectOfDelOrUp').submit();
-            }
-            document.getElementById('actionSelect').value = "";
-        }
-    </script>-->
     <!--========================================================================================-->
 
     <!-- 본문 내용 종료 -->
