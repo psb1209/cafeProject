@@ -5,6 +5,7 @@ import com.example.base.BaseUtility;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.member.RoleType;
 import com.example.exception.DuplicateValueException;
+import com.example.exception.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -29,6 +29,14 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         super(repository, modelMapper, Board.class, BoardDTO.class);
         this.boardRepository = repository;
         this.memberService = memberService;
+    }
+
+    public Board viewByCode(String code) {
+        return boardRepository.findByCode(code)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시판 code=" + code));
+    }
+    public BoardDTO viewDTOByCode(String code) {
+        return toDTO(viewByCode(code));
     }
 
     public Page<Board> listVisible(Pageable pageable, RoleType[] roles) {

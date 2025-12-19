@@ -19,8 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/boardManagement")
 public class BoardAdminController extends BaseImageController<Board, BoardDTO> {
 
+    private final BoardService boardService;
+
     public BoardAdminController(BoardService service) {
         super(service, "boardManagement");
+        this.boardService = service;
     }
 
     @ModelAttribute("roles")
@@ -36,7 +39,7 @@ public class BoardAdminController extends BaseImageController<Board, BoardDTO> {
         if (bindingResult.hasErrors()) return logValidationErrors("생성", "create", bindingResult);
 
         try {
-            service.setInsert(dto);
+            boardService.setInsert(dto);
             return "redirect:/" + basePath + "/list";
         } catch (DuplicateValueException e) {
             bindingResult.rejectValue(e.getField(), "duplicate", e.getMessage());
@@ -58,8 +61,8 @@ public class BoardAdminController extends BaseImageController<Board, BoardDTO> {
     ) {
         if (bindingResult.hasErrors()) return logValidationErrors("수정", "update", bindingResult);
         try {
-            service.setUpdate(dto);
-            return "redirect:/" + basePath + "/view/" + service.getIdFromDTO(dto);
+            boardService.setUpdate(dto);
+            return "redirect:/" + basePath + "/view/" + boardService.getIdFromDTO(dto);
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("readRole", "invalid", e.getMessage());
             return basePath + "/update";

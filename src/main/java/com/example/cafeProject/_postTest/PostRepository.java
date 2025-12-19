@@ -15,9 +15,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @EntityGraph(attributePaths = {"board", "member"})
     Optional<Post> findDetailById(Integer id);
 
-
+    @EntityGraph(attributePaths = {"board", "member"})
     Page<Post> findByBoard_Code(String code, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"board", "member"})
     @Query("""
         select p
         from Post p
@@ -26,4 +27,14 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
           and lower(p.title) like lower(concat('%', :keyword, '%'))
     """)
     Page<Post> searchByTitle(@Param("code") String code, @Param("keyword") String keyword, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"board", "member"})
+    @Query("""
+        select p
+        from Post p
+        join p.board b
+        where b.code = :code
+          and lower(p.titleKey) like lower(concat('%', :keyword, '%'))
+    """)
+    Page<Post> searchByChosungTitle(@Param("code") String code, @Param("keyword") String keyword, Pageable pageable);
 }

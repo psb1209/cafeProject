@@ -38,9 +38,8 @@ public class BaseUtility {
                 continue;
             }
 
-            // 영문은 소문자, 숫자는 유지
+            // 영문 소문자, 숫자는 유지, 그 외는 버림
             if (Character.isAlphabetic(ch)) out.append(Character.toLowerCase(ch));
-            // 그 외 특수문자는 버림
             else if (Character.isDigit(ch)) out.append(ch);
         }
         return out.toString();

@@ -11,7 +11,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "Posts")
+@Table(name = "posts")
 @Getter
 @Setter
 @SuperBuilder
@@ -22,7 +22,7 @@ public class Post extends BaseEntity {
     private String title;
 
     @Column(nullable = false, length = 300)
-    private String titleKey; // 검색용 초/중/종성 깬 문자열
+    private String titleKey; // 검색용 초성 깬 문자열
 
     @Lob
     @Column(nullable = false, columnDefinition = "longtext")

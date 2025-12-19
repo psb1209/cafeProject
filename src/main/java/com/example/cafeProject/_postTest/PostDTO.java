@@ -16,7 +16,7 @@ public class PostDTO extends BaseDTO {
 
     private String title;
 
-    private String titleKey; // 검색용 초/중/종성 깬 문자열
+    private String titleKey; // 검색용 초성 깬 문자열
 
     private String content;
 
@@ -24,7 +24,9 @@ public class PostDTO extends BaseDTO {
 
     private boolean notice;
 
-    private String boardCode;
+    private Integer boardId;
 
     private String boardName;
+
+    private String boardCode;
 }
