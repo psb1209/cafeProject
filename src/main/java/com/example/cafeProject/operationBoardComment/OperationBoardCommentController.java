@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequiredArgsConstructor
 @RequestMapping("/operationBoardComment")
@@ -89,6 +90,52 @@ public class OperationBoardCommentController {
             model.addAttribute("errMsg", "삭제 중 문제가 발생했습니다."); // e.getMessage() 기본적으로 나오는 메세지
             return "error/error";
         }
+    }
 
+    @PostMapping("/update")
+    public String update(
+            OperationBoardCommentDTO operationBoardCommentDTO,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            OperationBoardComment operationBoardCommentUpdate = operationBoardCommentService.getOperationBoardCommentId(operationBoardCommentDTO);
+            redirectAttributes.addFlashAttribute("operationBoardCommentUpdate", operationBoardCommentUpdate);
+            return "redirect:/operationBoard/view/" + operationBoardCommentDTO.getOperationBoardId();
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "err1111");
+            model.addAttribute("errMsg", e.getMessage());
+            return "error/error";
+        }
+    }
+
+
+    @PostMapping("/updateProc")
+    public String updateProc(
+            Model model,
+            OperationBoardCommentDTO operationBoardCommentDTO
+    ) {
+        try {
+            OperationBoardDTO operationBoardDTO = new OperationBoardDTO();
+            operationBoardDTO.setId(operationBoardCommentDTO.getOperationBoardId());
+            operationBoardService.getSelectOneById(operationBoardDTO);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "err1111");
+            model.addAttribute("errMsg", e.getMessage());
+            return "error/error";
+        }
+        
+        try {
+            operationBoardCommentService.setUpdate(operationBoardCommentDTO);
+            return "redirect:/" + dirName + "/view/" + operationBoardCommentDTO.getOperationBoardId();
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "err1111");
+            model.addAttribute("errMsg", e.getMessage()); // e.getMessage() 기본적으로 나오는 메세지
+            return "error/error";
+        } catch (Exception e) {
+            model.addAttribute("errCode", "err2242");
+            model.addAttribute("errMsg", "수정 중 문제가 발생했습니다."); // e.getMessage() 기본적으로 나오는 메세지
+            return "error/error";
+        }
     }
  }
