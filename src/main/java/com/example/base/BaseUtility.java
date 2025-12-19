@@ -23,7 +23,7 @@ public class BaseUtility {
         for (int i = 0; i < s.length(); i++) {
             char ch = s.charAt(i);
 
-            // 공백/구분자 제거(원하면 더 엄격히)
+            // 공백 제거
             if (Character.isWhitespace(ch)) continue;
 
             // 한글 음절

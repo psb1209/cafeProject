@@ -28,6 +28,8 @@ public class BoardDTO extends BaseDTO {
     )
     private String name;
 
+    private String nameKey;
+
     @NotBlank(
             message = "게시판 설명은 필수입니다.",
             groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class}

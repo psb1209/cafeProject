@@ -21,6 +21,9 @@ public class Board extends BaseEntity {
     @Column(nullable = false, length = 100, unique = true)
     private String name;
 
+    @Column(nullable = false, length = 300)
+    private String nameKey;
+
     @Lob
     @Column(nullable = false, columnDefinition = "longtext")
     private String description;

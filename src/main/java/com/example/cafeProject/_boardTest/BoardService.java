@@ -1,6 +1,7 @@
 package com.example.cafeProject._boardTest;
 
 import com.example.base.BaseImageService;
+import com.example.base.BaseUtility;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.member.RoleType;
 import com.example.exception.DuplicateValueException;
@@ -43,7 +44,7 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         List<RoleType> roleList = normalizeRoles(roles);
         if (roleList.isEmpty()) return Page.empty(pageable);
         if (!StringUtils.hasText(keyword)) return boardRepository.findVisible(roleList, pageable);
-        return boardRepository.searchVisible(roleList, keyword.trim(), pageable);
+        return boardRepository.searchVisible(roleList, keyword.trim(), BaseUtility.toKey(keyword), pageable);
     }
     public Page<BoardDTO> listVisibleDTO(Pageable pageable, RoleType[] roles, String keyword) {
         return listVisible(pageable, roles, keyword).map(this::toDTO);
@@ -99,6 +100,9 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         // 기본값
         if (dto.getReadRole() == null)  dto.setReadRole(RoleType.GUEST);
         if (dto.getWriteRole() == null) dto.setWriteRole(RoleType.USER);
+
+        // 초성 검색을 위한 nameKey 세팅
+        dto.setNameKey(BaseUtility.toKey(dto.getName()));
 
         if (dto.getReadRole() == RoleType.BANNED || dto.getWriteRole() == RoleType.BANNED)
             throw new IllegalArgumentException("읽기/쓰기 권한에 BANNED는 사용할 수 없습니다.");
