@@ -1,10 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center'">
 <body>
+<h1 layout:fragment="pageTitle">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">근육 빵빵!!</span>
+
+<div layout:fragment="content">
+    <!-- 본문 내용 시작 -->
+
+    <h2>정보게시판</h2>
+
+    <!--사용자에게 목록에 보여질 갯수 선택하도록-->
+    <div style="text-align: right; margin-bottom: 10px;">
+    <select onchange="location.href='?page=0&size=' + this.value">
+        <option value="5" th:selected="${informationBoardList.size == 5}">5개씩 보기</option>
+        <option value="10" th:selected="${informationBoardList.size == 10}">10개씩 보기</option>
+        <option value="15" th:selected="${informationBoardList.size == 15}">15개씩 보기</option>
+        <option value="20" th:selected="${informationBoardList.size == 20}">20개씩 보기</option>
+    </select>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>순번</th>
+            <th>제목</th>
+            <th>조회수</th>
+            <th>작성자</th>
+            <th>작성일</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="informationBoard, loop : ${informationBoardList}"
+            th:onclick="|location.href='@{|/informationBoard/view/${informationBoard.id}|}'|"
+            style="cursor: pointer;">
+            <td th:text="${loop.index+1}"></td>
+            <td th:text="${informationBoard.subject}"></td>
+            <td th:text="${informationBoard.cnt}"></td>
+            <td th:text="${informationBoard.member.username}"></td>
+            <!--<td> - </td>-->
+            <td th:text="${#dates.format(informationBoard.createDate, 'yyyy-MM-dd')}"></td> <!--build.gradle 추가-->
+        </tr>
+        </tbody>
+    </table>
+
+    <div style="margin-top: 20px;" th:if="${!informationBoardList.isEmpty()}">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${informationBoardList.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${informationBoardList.first} ? '#' : @{|?page=${informationBoardList.number-1}|}">
+                    이전
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="page: ${#numbers.sequence(0, informationBoardList.totalPages-1)}"
+                th:classappend="${page == informationBoardList.number} ? 'active'">
+                <a class="page-link" th:text="${page + 1}" th:href="@{|?page=${page}|}"></a>
+            </li>
+
+            <li class="page-item" th:classappend="${informationBoardList.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${informationBoardList.last} ? '#' : @{|?page=${informationBoardList.number+1}|}">
+                    다음
+                </a>
+            </li>
+        </ul>
+    </div>
+
+   <div style="text-align: right; margin-bottom: 10px;">
+      <a href="/informationBoard/create" class="btn btn-secondary">글쓰기</a>
+   </div>
+
+    <!-- 본문 내용 종료 -->
+</div>
+
+<script th:if="${informationBoard.isEmpty()}">
+    alert([[${errMsg}]]);
+</script>
 
 </body>
 </html>
