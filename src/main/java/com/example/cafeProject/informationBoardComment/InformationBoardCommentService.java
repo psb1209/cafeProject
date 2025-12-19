@@ -5,6 +5,8 @@ import com.example.cafeProject.informationBoard.InformationBoardRepository;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -37,6 +39,11 @@ public class InformationBoardCommentService {
         return memberRepository.findByUsername(username).orElseThrow(()-> new IllegalArgumentException("해당 맴버 없음"));
     }
 
+    @Transactional(readOnly = true)
+    public Page<InformationBoardComment> getSelectAllPage(int id, Pageable pageable) {
+        return informationBoardCommentRepository.findByInformationBoard_Id(id, pageable);
+    }
+
 
     //카페회원만 댓글 입력
     @Transactional
@@ -47,16 +54,6 @@ public class InformationBoardCommentService {
         informationBoardCommentRepository.save(informationBoardComment);
     }
 
-    //작성자만 댓글 수정
-    @Transactional
-    public void setUpdate(InformationBoardCommentDTO informationBoardCommentDTO, User user) {
-
-        InformationBoardComment informationBoardComment = getSelectOneById(informationBoardCommentDTO.getId());
-        if(!user.getUsername().equals(informationBoardComment.getMember().getUsername())) {
-            throw new AccessDeniedException("수정 권한이 없습니다.");
-        }
-        informationBoardComment.setContent(informationBoardCommentDTO.getContent());
-    }
 
     //작성자 & 관리자 & 매니저만 댓글 삭제
     @Transactional

@@ -1,10 +1,188 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center'">
 <body>
+<h1 layout:fragment="pageTitle">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
+<div layout:fragment="content">
+    <!-- 본문 내용 시작 -->
+
+    <!--<h2 th:text="${informationBoard.subject}"></h2>-->
+
+    <div class="mb-3 mt-3">
+        <label for="subject">제목:</label>
+        <span class="form-control" id="subject" name="subject" th:text="${informationBoard.subject}"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="content">내용:</label>
+        <span class="form-control" id="content" name="content" th:utext="${informationBoard.content}"></span>
+    </div>
+
+    <div class="mb-3 mt-3">
+        <label for="cnt">조회수:</label>
+        <span class="form-control" id="cnt" th:text="${informationBoard.cnt}"></span>
+    </div>
+
+    <div class="mb-3 mt-3">
+        <label for="createDate">작성일:</label>
+        <span class="form-control" id="createDate" th:text="${#dates.format(informationBoard.createDate, 'yyyy-MM-dd')}"></span>
+    </div>
+
+    <a href="/informationBoard/create" class="btn btn-secondary">등록</a>
+    <a href="/informationBoard/list" class="btn btn-secondary">목록</a>
+
+    <!--게시글 작성자만 수정-->
+    <a th:href="@{|/informationBoard/update/${informationBoard.id}|}" class="btn btn-secondary"
+       th:if="${#authentication.name == informationBoard.member.username}">수정</a>
+
+    <!--삭제버튼 구분 : 작성자(아이디) 체크-->
+    <form name="informationBoardDelete" style="display: inline-block;" th:if="${#authentication.name == informationBoard.member.username}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input type="hidden" name="id" th:value="${informationBoard.id}">
+        <button type="button" onclick="confirmDelete();" class="btn btn-secondary">삭제</button>
+    </form>
+    <!--삭제버튼 구분 : 권한(역할) 체크-->
+    <form name="informationBoardDeleteAdmin" style="display: inline-block;" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input type="hidden" name="id" th:value="${informationBoard.id}">
+        <button type="button" onclick="adminConfirmDelete();" class="btn btn-secondary">삭제</button>
+    </form>
+
+    <script>
+        // 작성자용
+        function confirmDelete() {
+            if (confirm('삭제된 글은 복구할 수 없습니다. 삭제하시겠습니까?')) {
+                document.informationBoardDelete.action = "/informationBoard/deleteProc";
+                document.informationBoardDelete.method = "post";
+                document.informationBoardDelete.submit();
+            }
+        }
+         // 관리자용
+         function adminConfirmDelete() {
+            if (confirm('관리자 전용_삭제된 글은 복구할 수 없습니다. 삭제하시겠습니까?')) {
+                document.informationBoardDeleteAdmin.action = "/informationBoard/deleteProc";
+                document.informationBoardDeleteAdmin.method = "post";
+                document.informationBoardDeleteAdmin.submit();
+            }
+        }
+    </script>
+
+    <!--댓글 등록-->
+    <form name="commentForm">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input type="hidden" name="informationBoardId" th:value="${informationBoard.id}">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>댓글 목록</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr align="right">
+                <td>
+                    <textarea id="comment-content" rows="1" class="form-control" name="content"></textarea>
+                    <button type="button" id="btn-save-comment" class="btn btn-secondary"
+                            style="margin-top: 10px" onclick="commentSave();">댓글 등록</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <script>
+        function commentSave() {
+            if (document.commentForm.content.value.trim() === '') {
+                alert('내용을 입력해주세요');
+                document.commentForm.content.focus();
+                return;
+            }
+
+            if (confirm('추가하시겠습니까?')) {
+                document.commentForm.action = "/informationBoardComment/createProc";
+                document.commentForm.method = "post";
+                document.commentForm.submit();
+            }
+        }
+    </script>
+    <!--댓글 등록 종료-->
+
+    <!-- 댓글 목록 시작 -->
+    <div th:if="${commentList.totalPages > 0}" >
+        <table class="table">
+            <thead>
+            <tr>
+                <th width="80%">내용</th>
+                <th width="10%">작성자</th>
+                <th width="10%" sec:authorize="isAuthenticated()">삭제</th> <!--로그인한 사용자만 보이도록-->
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="informationBoardComment : ${commentList}">
+                <td th:text="${informationBoardComment.content}"></td>
+                <td>
+                    <span th:text="${informationBoardComment.member.username}"></span>
+                    <!--<span> - </span>-->
+                </td>
+                <td th:if="${#authentication.name == informationBoardComment.member.username}"> <!--댓글작성자만 삭제가능-->
+                    <a href="#" th:onclick="|submitInformationBoardCommentId('${informationBoardComment.id}')|">X</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <form name="submitInformationBoardId">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input type="hidden" name="informationBoardId" th:value="${informationBoard.id}">
+        <input type="hidden" name="informationBoardCommentId" id="informationBoardCommentId">
+    </form>
+
+    <script>
+        function submitInformationBoardCommentId(value1) {
+            if (confirm('삭제하시겠습니까?')) {
+                document.getElementById("informationBoardCommentId").value = value1;
+
+                document.submitInformationBoardId.action = "/informationBoardComment/deleteProc";
+                document.submitInformationBoardId.method = "post";
+                document.submitInformationBoardId.submit();
+            }
+        }
+    </script>
+    <!-- 댓글 목록 종료 -->
+
+    <!--댓글 목록 페이지 버튼 시작-->
+    <div style="margin-top: 20px;" th:if="${!commentList.isEmpty()}">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${commentList.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${commentList.first} ? '#' : @{|?page=${commentList.number-1}|}">
+                    이전
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="page: ${#numbers.sequence(0, commentList.totalPages-1)}"
+                th:classappend="${page == commentList.number} ? 'active'">
+                <a class="page-link" th:text="${page + 1}" th:href="@{|?page=${page}|}"></a>
+            </li>
+
+            <li class="page-item" th:classappend="${commentList.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${commentList.last} ? '#' : @{|?page=${commentList.number+1}|}">
+                    다음
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!--댓글 목록 페이지 버튼 종료-->
+
+    <!-- 본문 내용 종료 -->
+</div>
 
 </body>
 </html>

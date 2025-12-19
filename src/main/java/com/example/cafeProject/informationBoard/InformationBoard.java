@@ -2,12 +2,14 @@ package com.example.cafeProject.informationBoard;
 
 
 import com.example.cafeProject.member.Member;
+import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @NoArgsConstructor
 @Data

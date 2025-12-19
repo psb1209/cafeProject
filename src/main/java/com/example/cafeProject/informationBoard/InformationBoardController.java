@@ -1,5 +1,7 @@
 package com.example.cafeProject.informationBoard;
 
+import com.example.cafeProject.informationBoardComment.InformationBoardComment;
+import com.example.cafeProject.informationBoardComment.InformationBoardCommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @RequestMapping("/informationBoard")
 @RequiredArgsConstructor
@@ -20,10 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class InformationBoardController {
 
     private final InformationBoardService informationBoardService;
+    private final InformationBoardCommentService informationBoardCommentService;
 
 
     @GetMapping("/list")
-    public String list(Model model, @PageableDefault(size=8, sort="id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public String list(Model model, @PageableDefault(size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         try {
             Page<InformationBoard> informationBoardList = informationBoardService.getSelectAllPage(pageable);
             model.addAttribute("informationBoardList", informationBoardList);
@@ -38,10 +42,13 @@ public class InformationBoardController {
     }
 
     @GetMapping("/view/{id}")
-    public String view(Model model, InformationBoardDTO informationBoardDTO) {
+    public String view(Model model, InformationBoardDTO informationBoardDTO, @PageableDefault(size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         try {
             InformationBoard informationBoard = informationBoardService.getSelectOneById(informationBoardDTO.getId());
             model.addAttribute("informationBoard", informationBoard);
+            Page<InformationBoardComment> CommentList = informationBoardCommentService.getSelectAllPage(informationBoardDTO.getId(), pageable);
+            model.addAttribute("commentList", CommentList);
+            informationBoardService.increaseViewCount(informationBoardDTO.getId());
             return "informationBoard/view";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "error404");
@@ -51,7 +58,9 @@ public class InformationBoardController {
     }
 
     @GetMapping("/create")
-    public String create() { return "informationBoard/create"; }
+    public String create() {
+        return "informationBoard/create";
+    }
 
     @GetMapping("/update/{id}")
     public String update(Model model, InformationBoardDTO informationBoardDTO) {
@@ -59,12 +68,14 @@ public class InformationBoardController {
             InformationBoard informationBoard = informationBoardService.getSelectOneById(informationBoardDTO.getId());
             model.addAttribute("informationBoard", informationBoard);
             return "informationBoard/update";
-        }  catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "error404");
             model.addAttribute("errMsg", "요청하신 게시글을 찾을 수 없습니다.");
             return "error/error";
         }
     }
+
+    //---> 삭제페이지 없이 삭제버튼으로만 경고창 띄어서 삭제여부확인 뒤 바로 삭제처리.
 
     // Proc --------------------------------------------------------------------------------------------
 
@@ -92,17 +103,21 @@ public class InformationBoardController {
         }
     }
 
+    @ResponseBody
     @PostMapping("/deleteProc")
-    public String deleteProc(Model model, InformationBoardDTO informationBoardDTO, @AuthenticationPrincipal User user) {
+    public String deleteProc(InformationBoardDTO informationBoardDTO, @AuthenticationPrincipal User user) {
         try {
             informationBoardService.setDelete(informationBoardDTO, user);
-            return "redirect:/informationBoard/list";
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("errCode", "error404");
-            model.addAttribute("errMsg", "요청하신 게시글을 찾을 수 없습니다.");
-            return "error/error";
+            return "<script>" +
+                    "alert('성공적으로 삭제되었습니다.');" +
+                    "location.href='/informationBoard/list';" +
+                    "</script>";
+        } catch (Exception e) {
+            return "<script>" +
+                    "alert('삭제에 실패했습니다: " + e.getMessage() + "');" +
+                    "history.back();" + // 이전 상세 페이지로 되돌리기
+                    "</script>";
         }
     }
-
 
 }
