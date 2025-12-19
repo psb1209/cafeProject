@@ -17,16 +17,15 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
     @EntityGraph(attributePaths = "member")
     Page<Board> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = "member")
     @Query("""
         select b
         from Board b
         where b.enabled = true
           and b.readRole in :roles
     """)
-    Page<Board> findVisible(@Param("roles") Collection<RoleType> roles, Pageable pageable);
+    Page<Board> findVisible(@Param("roles") Collection<RoleType> roles,
+                            Pageable pageable);
 
-    @EntityGraph(attributePaths = {"member"})
     @Query("""
     select b
     from Board b
@@ -37,6 +36,13 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
          or lower(b.code) like lower(concat('%', :keyword, '%'))
          or b.nameKey like concat('%', :keywordKey, '%')
       )
+    order by
+      case
+        when lower(b.name) like lower(concat('%', :keyword, '%'))
+          or lower(b.code) like lower(concat('%', :keyword, '%'))
+        then 0 else 1
+      end,
+    b.id desc
     """)
     Page<Board> searchVisible(@Param("roles") Collection<RoleType> roles,
                               @Param("keyword") String keyword,
