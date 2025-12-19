@@ -34,20 +34,22 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
           and (
                 lower(b.name) like lower(concat('%', :keyword, '%'))
              or lower(b.code) like lower(concat('%', :keyword, '%'))
-             or b.nameKey like concat('%', :keywordKey, '%')
           )
-        order by
-          case
-            when lower(b.name) like lower(concat('%', :keyword, '%'))
-              or lower(b.code) like lower(concat('%', :keyword, '%'))
-            then 0 else 1
-          end,
-        b.id desc
     """)
     Page<Board> searchVisible(@Param("roles") Collection<RoleType> roles,
                               @Param("keyword") String keyword,
-                              @Param("keywordKey") String keywordKey,
                               Pageable pageable);
+
+    @Query("""
+        select b
+        from Board b
+        where b.enabled = true
+          and b.readRole in :roles
+          and b.nameKey like concat('%', :keyword, '%')
+    """)
+    Page<Board> searchVisibleByChosung(@Param("roles") Collection<RoleType> roles,
+                                       @Param("keyword") String keyword,
+                                       Pageable pageable);
 
 
     boolean existsByCode(String code);

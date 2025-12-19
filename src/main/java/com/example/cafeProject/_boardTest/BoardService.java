@@ -42,9 +42,17 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
 
     public Page<Board> listVisible(Pageable pageable, RoleType[] roles, String keyword) {
         List<RoleType> roleList = normalizeRoles(roles);
-        if (roleList.isEmpty()) return Page.empty(pageable);
-        if (!StringUtils.hasText(keyword)) return boardRepository.findVisible(roleList, pageable);
-        return boardRepository.searchVisible(roleList, keyword.trim(), BaseUtility.toKey(keyword), pageable);
+
+        if (roleList.isEmpty())
+            return Page.empty(pageable);
+
+        if (keyword == null || keyword.isBlank())
+            return boardRepository.findVisible(roleList, pageable);
+
+        if (BaseUtility.isChosungQuery(keyword.trim()))
+            return boardRepository.searchVisibleByChosung(roleList, BaseUtility.jaeumBreaker(keyword), pageable);
+
+        return boardRepository.searchVisible(roleList, keyword.trim(), pageable);
     }
     public Page<BoardDTO> listVisibleDTO(Pageable pageable, RoleType[] roles, String keyword) {
         return listVisible(pageable, roles, keyword).map(this::toDTO);
@@ -102,7 +110,7 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         if (dto.getWriteRole() == null) dto.setWriteRole(RoleType.USER);
 
         // 초성 검색을 위한 nameKey 세팅
-        dto.setNameKey(BaseUtility.toKey(dto.getName()));
+        dto.setNameKey(BaseUtility.toChosungKey(dto.getName()));
 
         if (dto.getReadRole() == RoleType.BANNED || dto.getWriteRole() == RoleType.BANNED)
             throw new IllegalArgumentException("읽기/쓰기 권한에 BANNED는 사용할 수 없습니다.");
@@ -111,8 +119,10 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         if (roleRank(dto.getReadRole()) > roleRank(dto.getWriteRole()))
             throw new IllegalArgumentException("읽기 권한은 쓰기 권한보다 높을 수 없습니다.");
 
-        if (boardRepository.existsByName(dto.getName())) throw new DuplicateValueException("이미 존재하는 게시판 이름입니다.", "name", dto.getName());
-        if (boardRepository.existsByCode(dto.getCode())) throw new DuplicateValueException("이미 사용 중인 게시판 코드입니다.", "code", dto.getCode());
+        if (boardRepository.existsByName(dto.getName()))
+            throw new DuplicateValueException("이미 존재하는 게시판 이름입니다.", "name", dto.getName());
+        if (boardRepository.existsByCode(dto.getCode()))
+            throw new DuplicateValueException("이미 사용 중인 게시판 코드입니다.", "code", dto.getCode());
     }
 
     @Override
