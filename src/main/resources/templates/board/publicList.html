@@ -10,6 +10,16 @@
 
 <div layout:fragment="content">
     <!-- 본문 내용 시작 -->
+    <div class="input-group mb-3">
+        <input class="form-control"
+               type="search"
+               name="keyword"
+               placeholder="게시판 검색"
+               th:value="${keyword}">
+        <button class="btn btn-primary" type="submit">검색</button>
+        <a class="btn btn-outline-secondary" th:href="@{/board/list}">초기화</a>
+    </div>
+
     <div class="board-grid">
         <a class="board-tile"
            th:each="data : ${list.content}"
@@ -25,6 +35,42 @@
 
             <div class="board-title" th:text="${data.name}">게시판명</div>
         </a>
+    </div>
+
+    <!-- 비었을 때 메시지 -->
+    <div th:if="${#lists.isEmpty(list.content)}" class="alert alert-info text-center mt-3">
+        <h2 th:text="${#strings.isEmpty(keyword) ? '확인 가능한 게시판이 없습니다.' : '검색 결과가 없습니다.'}">
+            안내 메시지</h2>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div style="margin-top: 25px;" th:if="${list.totalPages > 0}"
+         th:with="kw=${#strings.isEmpty(keyword) ? '' : '&keyword=' + keyword}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${list.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${list.first} ? '#'
+                                          : @{|?page=${list.number-1}${kw}|}">
+                    Prev</a>
+            </li>
+
+            <li class="page-item"
+                th:each="page : ${#numbers.sequence(0, list.totalPages-1)}"
+                th:if="${page >= (list.number/5)*5 and page <= (list.number/5)*5 + 4}"
+                th:classappend="${page == list.number} ? 'active'">
+                <a class="page-link"
+                   th:text="${page + 1}"
+                   th:href="@{|?page=${page}${kw}|}">
+                </a>
+            </li>
+
+            <li class="page-item" th:classappend="${list.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${list.last} ? '#'
+                                         : @{|?page=${list.number+1}${kw}|}">
+                    Next</a>
+            </li>
+        </ul>
     </div>
     <!-- 본문 내용 종료 -->
 </div>

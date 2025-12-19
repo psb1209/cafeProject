@@ -12,6 +12,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -30,18 +31,22 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
     }
 
     public Page<Board> listVisible(Pageable pageable, RoleType[] roles) {
-        if (roles == null || roles.length == 0) return Page.empty(pageable);
-        List<RoleType> roleList = new ArrayList<>(roles.length);
-        for (RoleType r : roles) {
-            if (r == null) continue; // null 방어
-            if (roleList.contains(r)) continue; // 중복값 방어
-            roleList.add(r);
-        }
+        List<RoleType> roleList = normalizeRoles(roles);
         if (roleList.isEmpty()) return Page.empty(pageable);
         return boardRepository.findVisible(roleList, pageable);
     }
     public Page<BoardDTO> listVisibleDTO(Pageable pageable, RoleType[] roles) {
         return listVisible(pageable, roles).map(this::toDTO);
+    }
+
+    public Page<Board> listVisible(Pageable pageable, RoleType[] roles, String keyword) {
+        List<RoleType> roleList = normalizeRoles(roles);
+        if (roleList.isEmpty()) return Page.empty(pageable);
+        if (!StringUtils.hasText(keyword)) return boardRepository.findVisible(roleList, pageable);
+        return boardRepository.searchVisible(roleList, keyword.trim(), pageable);
+    }
+    public Page<BoardDTO> listVisibleDTO(Pageable pageable, RoleType[] roles, String keyword) {
+        return listVisible(pageable, roles, keyword).map(this::toDTO);
     }
 
 
@@ -129,6 +134,17 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
     @Override
     protected void beforeDelete(Board board) {
         throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "게시판 삭제는 허용되지 않습니다.");
+    }
+
+    private List<RoleType> normalizeRoles(RoleType[] roles) {
+        if (roles == null || roles.length == 0) return List.of();
+        List<RoleType> roleList = new ArrayList<>(roles.length);
+        for (RoleType r : roles) {
+            if (r == null) continue;
+            if (roleList.contains(r)) continue;
+            roleList.add(r);
+        }
+        return roleList;
     }
 
     private int roleRank(RoleType role) {

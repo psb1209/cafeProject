@@ -1,6 +1,6 @@
 package com.example.cafeProject._postTest;
 
-import com.example.cafeProject._boardTest.Board;
+import com.example.base.BaseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,9 +12,11 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostDTO {
+public class PostDTO extends BaseDTO {
 
     private String title;
+
+    private String titleKey; // 검색용 초/중/종성 깬 문자열
 
     private String content;
 

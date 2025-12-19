@@ -18,8 +18,11 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Post extends BaseEntity {
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false, length = 100)
     private String title;
+
+    @Column(nullable = false, length = 300)
+    private String titleKey; // 검색용 초/중/종성 깬 문자열
 
     @Lob
     @Column(nullable = false, columnDefinition = "longtext")
