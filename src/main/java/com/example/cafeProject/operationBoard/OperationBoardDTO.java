@@ -23,4 +23,5 @@ public class OperationBoardDTO {
 
     private int operationBoardCommentId;
 
+    private String operationBoardCommentContent;
 }

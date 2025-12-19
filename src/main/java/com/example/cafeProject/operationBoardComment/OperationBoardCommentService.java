@@ -23,15 +23,15 @@ public class OperationBoardCommentService {
     private final MemberService memberService;
 
     @Transactional
-    public void setInsert (OperationBoardCommentDTO operationBoardCommentDTO) {
+    public void setInsert (OperationBoardCommentDTO paramDTO) {
         OperationBoardComment operationBoardComment = new OperationBoardComment();
-        Optional<OperationBoard> optionOperationBoard = operationBoardRepository.findById(operationBoardCommentDTO.getOperationBoardId());
+        Optional<OperationBoard> optionOperationBoard = operationBoardRepository.findById(paramDTO.getOperationBoardId());
         OperationBoard operationBoard = null;
         if (optionOperationBoard.isPresent()) {
             operationBoard = optionOperationBoard.get();
             operationBoardComment.setOperationBoard(operationBoard);
-            operationBoardComment.setContent(operationBoardCommentDTO.getContent());
-            operationBoardComment.setMember(memberService.view(operationBoardCommentDTO.getMemberId()));
+            operationBoardComment.setContent(paramDTO.getContent());
+            operationBoardComment.setMember(memberService.view(paramDTO.getMemberId()));
 
             operationBoardCommentRepository.save(operationBoardComment);
         }
@@ -43,18 +43,32 @@ public class OperationBoardCommentService {
     }
 
     @Transactional
-    public void setDelete(OperationBoardCommentDTO operationBoardCommentDTO) {
-        OperationBoardComment operationBoardComment = operationBoardCommentRepository.findById(operationBoardCommentDTO.getOperationBoardCommentId())
+    public void setDelete(OperationBoardCommentDTO paramDTO) {
+        OperationBoardComment operationBoardComment = operationBoardCommentRepository.findById(paramDTO.getOperationBoardCommentId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 답변을 찾을 수 없습니다."));
 
         operationBoardCommentRepository.delete(operationBoardComment);
     }
 
     @Transactional
-    public void setDeleteAll(OperationBoardDTO operationBoardDTO) {
-        List<OperationBoardComment> operationBoardComment = operationBoardCommentRepository.findByOperationBoardId(operationBoardDTO.getId());
+    public void setDeleteAll(OperationBoardDTO paramDTO) {
+        List<OperationBoardComment> operationBoardComment = operationBoardCommentRepository.findByOperationBoardId(paramDTO.getId());
 
         operationBoardCommentRepository.deleteAll(operationBoardComment);
+    }
+
+    @Transactional
+    public OperationBoardComment setUpdate(OperationBoardCommentDTO paramDTO) {
+        OperationBoardComment operationBoardComment = operationBoardCommentRepository.findById(paramDTO.getOperationBoardCommentId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 답변을 찾을 수 없습니다."));
+
+        operationBoardComment.setContent(paramDTO.getContent());
+        return operationBoardComment;
+    }
+
+    public OperationBoardComment getOperationBoardCommentId(OperationBoardCommentDTO paramDTO) {
+        return operationBoardCommentRepository.findById(paramDTO.getOperationBoardCommentId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 답변을 찾을 수 없습니다."));
     }
 
 }
