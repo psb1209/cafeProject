@@ -13,7 +13,7 @@
 
     <h2>정보게시판</h2>
 
-    <!--사용자에게 목록에 보여질 갯수 선택하도록-->
+    <!--사용자가 게시글의 정렬조건 선택-->
     <div style="text-align: right; margin-bottom: 10px;">
     <select onchange="location.href='?page=0&sort=' + this.value">
         <option value="cnt,desc" th:selected="${param.sort != null and param.sort[0] == 'cnt,desc'}">조회수 높은 순</option>
@@ -22,6 +22,7 @@
         <option value="createDate,asc" th:selected="${param.sort != null and param.sort[0] == 'createDate,asc'}">오래된 순</option>
     </select>
 
+    <!--사용자에게 목록에 보여질 갯수 선택-->
     <select onchange="location.href='?page=0&size=' + this.value">
         <option value="5" th:selected="${informationBoardList.size == 5}">5개씩 보기</option>
         <option value="10" th:selected="${informationBoardList.size == 10}">10개씩 보기</option>
