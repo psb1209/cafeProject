@@ -12,19 +12,20 @@
 <span layout:fragment="pageSubTitle" th:text="${board?.description} ?: 'first page'">first page</span>
 
 <div layout:fragment="content" class="container mt-3">
-    <!-- 본문 내용 시작 -->
 
-    <form method="post" th:action="@{/post/updateProc}" th:object="${data}">
+    <h2 class="mb-3">글 수정</h2>
+
+    <form name="form" method="post" th:action="@{/post/updateProc}" th:object="${data}">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-        <input type="hidden" name="boardId"   th:value="${board?.id}"/>
-        <input type="hidden" name="boardCode" th:value="${board?.code}"/>
-        <input type="hidden" name="boardName" th:value="${board?.name}"/>
+        <input type="hidden" th:field="*{id}"/>
+        <input type="hidden" th:field="*{boardId}"/>
+        <input type="hidden" th:field="*{boardCode}"/>
+        <input type="hidden" th:field="*{boardName}"/>
 
         <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
             입력값을 다시 확인해주세요.
         </div>
 
-        <!-- 제목 -->
         <div class="mb-3">
             <label for="title" class="form-label">제목</label>
             <input id="title"
@@ -36,19 +37,16 @@
             <div class="invalid-feedback" th:errors="*{title}">제목 에러</div>
         </div>
 
-        <!-- 내용 -->
         <div class="mb-3">
             <label for="content" class="form-label">내용</label>
             <textarea id="content"
                       class="form-control"
                       rows="12"
                       th:field="*{content}"
-                      th:classappend="${#fields.hasErrors('content')} ? 'is-invalid' : ''"
-                      placeholder="내용을 입력하세요"></textarea>
+                      th:classappend="${#fields.hasErrors('content')} ? 'is-invalid' : ''"></textarea>
             <div class="invalid-feedback" th:errors="*{content}">내용 에러</div>
         </div>
 
-        <!-- 공지 -->
         <div class="form-check mb-4">
             <input class="form-check-input"
                    type="checkbox"
@@ -59,18 +57,75 @@
             </label>
         </div>
 
-        <!-- 버튼 -->
         <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-primary">등록</button>
+            <button type="submit" class="btn btn-primary">수정 완료</button>
 
             <a class="btn btn-outline-secondary"
-               th:href="@{/post/list(b=${board?.code})}">
+               th:href="@{|/post/view/${data.id}?b=${data.boardCode}|}">
+                취소
+            </a>
+
+            <a class="btn btn-outline-secondary"
+               th:href="@{/post/list(b=${data.boardCode})}">
                 목록으로
             </a>
         </div>
     </form>
-    <!-- 본문 내용 종료 -->
-</div>
 
+    <script>
+        $(document).ready(function() {
+
+            // CSRF META 태그에서 값 읽기
+            let header = $("meta[name='_csrf_header']").attr("content");
+            let token = $("meta[name='_csrf']").attr("content");
+
+            // 모든 AJAX 요청마다 CSRF 자동 추가
+            $.ajaxSetup({
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+            });
+
+            $("#content").summernote({
+                height: 300,
+                // (선택적) Summernote 설정 보완
+                lang: 'ko-KR', // 언어 설정
+                placeholder: '내용을 입력하세요',
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture']]
+                ],
+                callbacks: {
+                    onImageUpload: function(files) {
+                        uploadSummernoteImageFile(files[0], this);
+                    }
+                }
+            });
+        });
+
+        function uploadSummernoteImageFile(file, editor) {
+            let data = new FormData();
+            data.append("file", file);
+
+            $.ajax({
+                url: "/post/uploadImage",   // 업로드 URL
+                type: "POST",
+                enctype: 'multipart/form-data',  // 첨부파일 사용 시 필수
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    // 업로드된 이미지 URL을 에디터에 삽입
+                    $(editor).summernote('insertImage', response.url);
+                },
+                error: function() {
+                    alert("이미지 업로드 실패");
+                }
+            });
+        }
+    </script>
+</div>
 </body>
 </html>

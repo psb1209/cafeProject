@@ -244,13 +244,14 @@
   }
 }
 
-/* 사이드바 숨긴 페이지에서 콘텐츠 폭을 넓게 */
+/* 사이드바 숨긴 페이지 */
 .layout-main.no-sidebar {
   grid-template-columns: 1fr;
   padding-inline: clamp(1rem, 4vw, 2rem);
 }
 
 .layout-main.no-sidebar .layout-content {
+  grid-column: 1;
   min-width: 0;
   max-width: 1140px;
   width: 100%;

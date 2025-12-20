@@ -2,6 +2,7 @@ package com.example.cafeProject._postTest;
 
 import com.example.cafeProject._boardTest.BoardDTO;
 import com.example.cafeProject._boardTest.BoardService;
+import com.example.cafeProject.validation.ValidationGroups;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -75,8 +77,6 @@ public class PostController {
             @PathVariable int id
     ) {
         PostDTO dto = postService.viewDetailDTO(id);
-        log.debug("=============================================");
-        log.debug("view id={} title={} content={}", id, dto.getTitle(), dto.getContent());
         model.addAttribute("data", dto);
         return "post/view";
     }
@@ -88,13 +88,34 @@ public class PostController {
         return "post/create";
     }
 
+    @GetMapping("/update/{id}")
+    public String updateForm(@PathVariable int id, Model model) {
+        PostDTO dto = postService.viewDetailDTO(id);
+        model.addAttribute("data", dto);
+        return "post/update";
+    }
+
     @PostMapping("/createProc")
-    public String createProc(@ModelAttribute("data") PostDTO dto, BindingResult bindingResult) {
+    public String createProc(
+            @Validated(ValidationGroups.OnCreate.class) @ModelAttribute("data") PostDTO dto,
+            BindingResult bindingResult
+    ) {
         if (bindingResult.hasErrors()) return "post/create";
         postService.setInsert(dto);
         String code = boardService.view(dto.getBoardId()).getCode();
         return "redirect:/post/list?b=" + code;
     }
+
+    @PostMapping("/updateProc")
+    public String updateProc(
+            @Validated(ValidationGroups.OnCreate.class) @ModelAttribute("data") PostDTO dto,
+            BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) return "post/update";
+        postService.setUpdate(dto);
+        return "redirect:/post/view/" + dto.getId() + "?b=" + dto.getBoardCode();
+    }
+
 
     @ResponseBody
     @PostMapping(value = "/uploadImage", produces = "application/json")

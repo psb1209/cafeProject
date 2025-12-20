@@ -84,6 +84,7 @@ public class PostService extends BaseImageService<Post, PostDTO> {
         post.setTitle(dto.getTitle());
         post.setTitleKey(dto.getTitleKey());
         post.setContent(dto.getContent());
+        post.setNotice(dto.isNotice());
     }
 
     @Override

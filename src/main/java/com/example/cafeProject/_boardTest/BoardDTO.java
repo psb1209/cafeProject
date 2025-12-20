@@ -3,10 +3,7 @@ package com.example.cafeProject._boardTest;
 import com.example.base.BaseDTO;
 import com.example.cafeProject.member.RoleType;
 import com.example.cafeProject.validation.ValidationGroups;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import java.util.Locale;
@@ -28,6 +25,7 @@ public class BoardDTO extends BaseDTO {
     )
     private String name;
 
+    @Null
     private String nameKey;
 
     @NotBlank(

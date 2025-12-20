@@ -38,9 +38,13 @@
     </div>
 
     <div class="mt-4">
-        <a class="btn btn-outline-secondary"
+        <a class="btn btn-secondary"
            th:href="@{/post/list(b=${board?.code})}">
             목록으로
+        </a>
+        <a class="btn btn-secondary"
+           th:href="@{|/post/update/${data.id}?b=${data.boardCode}|}">
+            수정
         </a>
     </div>
 
