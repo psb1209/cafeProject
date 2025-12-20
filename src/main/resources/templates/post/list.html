@@ -21,25 +21,23 @@
 
     <!-- 게시글이 없을 때 -->
     <div class="alert alert-info" th:if="${list.totalElements == 0}">
-        아직 등록된 게시글이 없습니다. 첫 글을 작성해보자!
+        아직 등록된 게시글이 없습니다.
     </div>
 
     <!-- 게시글 목록 -->
     <div th:if="${list.totalElements > 0}">
-        <div class="post-preview" th:each="p : ${list.content}">
-            <a th:href="@{|/post/view/${p.id}?b=${code}|}">
-                <h2 class="post-title" th:text="${p.title}">Post title</h2>
+        <div class="post-preview" th:each="data : ${list.content}">
+            <a th:href="@{|/post/view/${data.id}?b=${code}|}">
+                <h2 class="post-title" th:text="${data.title}">Post title</h2>
             </a>
 
-            <p class="post-meta d-flex justify-content-between align-items-center">
+            <p class="post-meta d-flex justify-content-end align-items-center gap-2">
                 <span>
                     Writer :
-                    <a th:text="${p.username} ?: '알 수 없음'">Writer</a></span>
+                    <a th:text="${data.username} ?: '알 수 없음'">Writer</a></span>
                 <span class="text-muted small"
-                      th:if="${p.createDate != null}"
-                      th:text="${#dates.format(p.createDate, 'yyyy-MM-dd')}"></span>
+                      th:text="${#dates.format(data.createDate, 'yyyy-MM-dd')}"></span>
             </p>
-
 
             <!-- Divider-->
             <hr class="my-4" />

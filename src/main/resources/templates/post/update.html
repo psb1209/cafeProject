@@ -14,7 +14,7 @@
 <div layout:fragment="content" class="container mt-3">
     <!-- 본문 내용 시작 -->
 
-    <form name="form" method="post" th:action="@{/post/createProc}" th:object="${data}">
+    <form method="post" th:action="@{/post/updateProc}" th:object="${data}">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <input type="hidden" name="boardId"   th:value="${board?.id}"/>
         <input type="hidden" name="boardCode" th:value="${board?.code}"/>
@@ -43,7 +43,8 @@
                       class="form-control"
                       rows="12"
                       th:field="*{content}"
-                      th:classappend="${#fields.hasErrors('content')} ? 'is-invalid' : ''"></textarea>
+                      th:classappend="${#fields.hasErrors('content')} ? 'is-invalid' : ''"
+                      placeholder="내용을 입력하세요"></textarea>
             <div class="invalid-feedback" th:errors="*{content}">내용 에러</div>
         </div>
 
@@ -68,61 +69,6 @@
             </a>
         </div>
     </form>
-
-    <script>
-        $(document).ready(function() {
-
-            // CSRF META 태그에서 값 읽기
-            let header = $("meta[name='_csrf_header']").attr("content");
-            let token = $("meta[name='_csrf']").attr("content");
-
-            // 모든 AJAX 요청마다 CSRF 자동 추가
-            $.ajaxSetup({
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader(header, token);
-                }
-            });
-
-            $("#content").summernote({
-                height: 300,
-                // (선택적) Summernote 설정 보완
-                lang: 'ko-KR', // 언어 설정
-                placeholder: '내용을 입력하세요',
-                toolbar: [
-                    ['style', ['style']],
-                    ['font', ['bold', 'italic', 'underline', 'clear']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link', 'picture']]
-                ],
-                callbacks: {
-                    onImageUpload: function(files) {
-                        uploadSummernoteImageFile(files[0], this);
-                    }
-                }
-            });
-        });
-
-        function uploadSummernoteImageFile(file, editor) {
-            let data = new FormData();
-            data.append("file", file);
-
-            $.ajax({
-                url: "/post/uploadImage",   // 업로드 URL
-                type: "POST",
-                enctype: 'multipart/form-data',  // 첨부파일 사용 시 필수
-                data: data,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    // 업로드된 이미지 URL을 에디터에 삽입
-                    $(editor).summernote('insertImage', response.url);
-                },
-                error: function() {
-                    alert("이미지 업로드 실패");
-                }
-            });
-        }
-    </script>
     <!-- 본문 내용 종료 -->
 </div>
 

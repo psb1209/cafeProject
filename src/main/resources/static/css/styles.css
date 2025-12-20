@@ -10827,6 +10827,13 @@ body.no-header #mainNav .navbar-toggler {
   border-color: #fff !important;
 }
 
+/* 서머노트 안내메세지 복사 방지 */
+.note-placeholder{
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+
 /* 게시판 모음용 */
 .board-grid{
   display: grid;

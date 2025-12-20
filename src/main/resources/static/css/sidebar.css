@@ -206,46 +206,53 @@
   background-color: #e9ecef;
 }
 
-.layout-main {
-  display: flex;
-  align-items: flex-start;
-  gap: 2rem;
+.layout-main{
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 1100px) 1fr;
+  column-gap: 2rem;
   margin: 2rem 0;
 }
 
-.layout-sidebar {
-  flex: 0 0 250px;
+.layout-sidebar{
+  grid-column: 1;
+  justify-self: start;   /* 왼쪽 끝 */
+  width: 250px;          /* 고정 폭 */
   position: sticky;
-  top: 1rem;          /* 혹은 navbar 높이에 맞춰서 70px, 80px 이런 식으로 조정 */
-  align-self: flex-start;
+  top: 1rem;
+  align-self: start;
 }
 
-.layout-content {
-  flex: 1 1 auto;
+.layout-content{
+  grid-column: 2;
   min-width: 0;
-  max-width: 1100px;
 }
 
 @media (max-width: 991.98px) {
-  .layout-sidebar {
+  .layout-main{
+    grid-template-columns: 1fr;
+    padding-inline: 1rem;
+  }
+  .layout-sidebar{
     display: none;
   }
-  .layout-main {
-    justify-content: center;
-    padding: 0 1rem;
-  }
-  .layout-main .layout-content {
-    max-width: 100%;
+  .layout-content{
+    grid-column: 1;
+    min-width: 0;
+    max-width: 1140px;
     width: 100%;
+    margin-inline: auto;
   }
 }
 
 /* 사이드바 숨긴 페이지에서 콘텐츠 폭을 넓게 */
 .layout-main.no-sidebar {
-  justify-content: center;      /* 하나 남은 content를 가운데로 */
+  grid-template-columns: 1fr;
+  padding-inline: clamp(1rem, 4vw, 2rem);
 }
 
 .layout-main.no-sidebar .layout-content {
+  min-width: 0;
   max-width: 1140px;
   width: 100%;
+  margin-inline: auto;
 }

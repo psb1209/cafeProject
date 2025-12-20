@@ -4,6 +4,7 @@ import com.example.base.BaseImageService;
 import com.example.base.BaseUtility;
 import com.example.cafeProject._boardTest.BoardService;
 import com.example.cafeProject.member.MemberService;
+import com.example.exception.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +43,12 @@ public class PostService extends BaseImageService<Post, PostDTO> {
     }
     public Page<PostDTO> listByBoardCodeDTO(String code, String keyword, Pageable pageable) {
         return listByBoardCode(code, keyword, pageable).map(this::toDTO);
+    }
+
+    public PostDTO viewDetailDTO(int id) {
+        Post post = postRepository.findDetailById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 id=" + id));
+        return toDTO(post);
     }
 
     @Override
