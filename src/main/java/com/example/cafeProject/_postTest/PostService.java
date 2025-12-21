@@ -2,9 +2,12 @@ package com.example.cafeProject._postTest;
 
 import com.example.base.BaseImageService;
 import com.example.base.BaseUtility;
+import com.example.cafeProject._boardTest.Board;
 import com.example.cafeProject._boardTest.BoardService;
 import com.example.cafeProject.member.MemberService;
+import com.example.cafeProject.member.RoleType;
 import com.example.exception.EntityNotFoundException;
+import com.example.exception.PermissionDeniedException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +15,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 @Service
 public class PostService extends BaseImageService<Post, PostDTO> {
@@ -54,12 +59,16 @@ public class PostService extends BaseImageService<Post, PostDTO> {
     @Override
     protected Post toEntity(PostDTO dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (memberService.isNotLogin(authentication)) throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
+        RoleType[] roles = memberService.getEffectiveRoles(authentication);
+        if (roles.length == 0) throw new PermissionDeniedException("Banned 사용자입니다.");
         if (dto.getBoardId() == null) throw new IllegalArgumentException("현재 게시판 정보가 존재하지 않습니다.");
+
+        Board board = boardService.view(dto.getBoardId());
+        if (!Arrays.asList(roles).contains(board.getWriteRole())) throw new AccessDeniedException("쓰기 권한이 없습니다.");
 
         Post post = super.toEntity(dto);
         post.setMember(memberService.viewCurrentMember(authentication));
-        post.setBoard(boardService.view(dto.getBoardId()));
+        post.setBoard(board);
         return post;
     }
 
