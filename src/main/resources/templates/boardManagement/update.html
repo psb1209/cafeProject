@@ -89,7 +89,9 @@
                     th:field="*{writeRole}"
                     th:classappend="${#fields.hasErrors('writeRole')} ? ' is-invalid'"
                     id="writeRole">
-                <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option>
+                <option th:each="r : ${writeRoles}"
+                        th:value="${r}"
+                        th:text="${r}"></option>
             </select>
             <div class="invalid-feedback d-block"
                  th:if="${#fields.hasErrors('writeRole')}"
@@ -103,7 +105,9 @@
                     th:field="*{readRole}"
                     th:classappend="${#fields.hasErrors('readRole')} ? ' is-invalid'"
                     id="readRole">
-                <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option>
+                <option th:each="r : ${readRoles}"
+                        th:value="${r}"
+                        th:text="${r}"></option>
             </select>
             <div class="invalid-feedback d-block"
                  th:if="${#fields.hasErrors('readRole')}"

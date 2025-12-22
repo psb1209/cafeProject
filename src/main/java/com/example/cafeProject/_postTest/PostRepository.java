@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
@@ -15,6 +14,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @EntityGraph(attributePaths = {"board", "member"})
     Optional<Post> findDetailById(Integer id);
 
+    /** Board 엔티티의 code 필드를 기준으로 찾는 페이지 리스트 */
     @EntityGraph(attributePaths = {"board", "member"})
     Page<Post> findByBoard_Code(String code, Pageable pageable);
 

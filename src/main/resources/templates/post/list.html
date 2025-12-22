@@ -14,7 +14,7 @@
     <!-- 본문 내용 시작 -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <a class="btn btn-primary"
-           th:href="@{/post/create(b=${code})}">
+           th:href="@{/post/create(b=${board?.code})}">
             글쓰기
         </a>
     </div>
@@ -27,7 +27,7 @@
     <!-- 게시글 목록 -->
     <div th:if="${list.totalElements > 0}">
         <div class="post-preview" th:each="data : ${list.content}">
-            <a th:href="@{|/post/view/${data.id}?b=${code}|}">
+            <a th:href="@{|/post/view/${data.id}?b=${board?.code}|}">
                 <h2 class="post-title" th:text="${data.title}">Post title</h2>
             </a>
 

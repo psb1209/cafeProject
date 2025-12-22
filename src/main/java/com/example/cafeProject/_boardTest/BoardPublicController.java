@@ -42,6 +42,7 @@ public class BoardPublicController {
         return "board/publicList";
     }
 
+    // "/board/{code} 형식으로 오는 링크를 post 컨트롤러에게 떠넘김
     @GetMapping("/{code}")
     public String enter(@PathVariable String code) {
         return "redirect:/post/list?b=" + code;

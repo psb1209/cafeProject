@@ -79,7 +79,7 @@
                     th:classappend="${#fields.hasErrors('writeRole')} ? ' is-invalid'"
                     id="writeRole">
                 <option
-                        th:each="r : ${roles}"
+                        th:each="r : ${writeRoles}"
                         th:value="${r}"
                         th:text="${r}"></option>
             </select>
@@ -96,7 +96,7 @@
                     th:classappend="${#fields.hasErrors('readRole')} ? ' is-invalid'"
                     id="readRole">
                 <option
-                        th:each="r : ${roles}"
+                        th:each="r : ${readRoles}"
                         th:value="${r}"
                         th:text="${r}"></option>
             </select>

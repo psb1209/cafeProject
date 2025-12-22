@@ -19,6 +19,8 @@ public class BaseUtility {
     public static String toKey(String s) {
         if (s == null || s.isBlank()) return "";
 
+        // StringBuilder를 통해 문자열 합치기
+        // "내용" + "내용" 문자열 합치기랑 똑같음
         StringBuilder out = new StringBuilder(s.length() * 3);
         for (int i = 0; i < s.length(); i++) {
             char ch = s.charAt(i);
@@ -26,7 +28,7 @@ public class BaseUtility {
             // 공백 제거
             if (Character.isWhitespace(ch)) continue;
 
-            // 한글 음절
+            // 한글 음절을 잘라서 저장
             if (ch >= BASE && ch <= LAST) {
                 int code = ch - BASE;
                 int l = code / (21 * 28);        // 초성
@@ -49,10 +51,13 @@ public class BaseUtility {
     public static String toChosungKey(String s) {
         if (s == null || s.isBlank()) return "";
 
+        // StringBuilder를 통해 문자열 합치기
+        // "내용" + "내용" 문자열 합치기랑 똑같음
         StringBuilder out = new StringBuilder(s.length());
         for (char ch : s.toCharArray()) {
             if (Character.isWhitespace(ch)) continue;
 
+            // 초성 음절을 잘라서 저장
             if (ch >= BASE && ch <= LAST) {
                 int code = ch - BASE;
                 int l = code / (21 * 28);

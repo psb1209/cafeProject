@@ -26,7 +26,7 @@ public class BoardDTO extends BaseDTO {
     private String name;
 
     @Null
-    private String nameKey;
+    private String nameKey; // 검색용 초성 깬 문자열
 
     @NotBlank(
             message = "게시판 설명은 필수입니다.",

@@ -22,7 +22,7 @@ public class Board extends BaseEntity {
     private String name;
 
     @Column(nullable = false, length = 300)
-    private String nameKey;
+    private String nameKey; // 검색용 초성 깬 문자열
 
     @Lob
     @Column(nullable = false, columnDefinition = "longtext")

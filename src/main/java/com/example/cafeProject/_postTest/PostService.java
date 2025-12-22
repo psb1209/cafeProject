@@ -15,7 +15,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.util.Arrays;
 
 @Service
@@ -37,23 +36,35 @@ public class PostService extends BaseImageService<Post, PostDTO> {
         return dto.getId();
     }
 
+    /**
+     * 게시판 코드(code)에 속한 게시글 목록 조회 + 검색 지원
+     * 1) keyword 없음/공백 -> 전체 목록(게시판 기준)
+     * 2) 초성 검색(예: "ㅅㄱ") -> titleKey 기반 초성 검색
+     * 3) 일반 검색 -> title like 검색
+     */
     public Page<Post> listByBoardCode(String code, String keyword, Pageable pageable) {
-        if (keyword == null || keyword.isBlank())
+        if (keyword == null || keyword.isBlank()) // 검색을 안 했을 경우
             return postRepository.findByBoard_Code(code, pageable);
 
-        if (BaseUtility.isChosungQuery(keyword.trim()))
+        if (BaseUtility.isChosungQuery(keyword.trim())) // 초성 검색
             return postRepository.searchByChosungTitle(code, BaseUtility.jaeumBreaker(keyword), pageable);
 
-        return postRepository.searchByTitle(code, keyword.trim(), pageable);
+        return postRepository.searchByTitle(code, keyword.trim(), pageable); // 일반 검색
     }
     public Page<PostDTO> listByBoardCodeDTO(String code, String keyword, Pageable pageable) {
         return listByBoardCode(code, keyword, pageable).map(this::toDTO);
     }
 
-    public PostDTO viewDetailDTO(int id) {
-        Post post = postRepository.findDetailById(id)
+    /**
+     * 게시글 상세 조회
+     * - 없으면 EntityNotFoundException 발생
+     */
+    public Post viewDetail(int id) {
+        return postRepository.findDetailById(id)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 id=" + id));
-        return toDTO(post);
+    }
+    public PostDTO viewDetailDTO(int id) {
+        return toDTO(viewDetail(id));
     }
 
     @Override
@@ -66,7 +77,9 @@ public class PostService extends BaseImageService<Post, PostDTO> {
         Board board = boardService.view(dto.getBoardId());
         if (!Arrays.asList(roles).contains(board.getWriteRole())) throw new AccessDeniedException("쓰기 권한이 없습니다.");
 
+        // 기본 필드 매핑(제목/내용/공지 등)은 super.toEntity(dto)가 담당
         Post post = super.toEntity(dto);
+
         post.setMember(memberService.viewCurrentMember(authentication));
         post.setBoard(board);
         return post;
@@ -74,6 +87,7 @@ public class PostService extends BaseImageService<Post, PostDTO> {
 
     @Override
     protected PostDTO toDTO(Post post) {
+        // 기본 필드 매핑(제목/내용/공지 등)은 super.toDTO(entity)가 담당
         PostDTO dto = super.toDTO(post);
 
         if (post.getBoard() != null) {

@@ -26,8 +26,13 @@ public class BoardAdminController extends BaseImageController<Board, BoardDTO> {
         this.boardService = service;
     }
 
-    @ModelAttribute("roles")
-    public RoleType[] roles() {
+    @ModelAttribute("writeRoles")
+    public RoleType[] writeRoles() {
+        return new RoleType[]{RoleType.USER, RoleType.MANAGER, RoleType.ADMIN};
+    }
+
+    @ModelAttribute("readRoles")
+    public RoleType[] readRoles() {
         return new RoleType[]{RoleType.GUEST, RoleType.USER, RoleType.MANAGER, RoleType.ADMIN};
     }
 
@@ -54,7 +59,6 @@ public class BoardAdminController extends BaseImageController<Board, BoardDTO> {
     }
 
     @Override
-    @PostMapping("/updateProc")
     public String updateProc(
             @Validated(ValidationGroups.OnUpdate.class) @ModelAttribute("data") BoardDTO dto,
             BindingResult bindingResult

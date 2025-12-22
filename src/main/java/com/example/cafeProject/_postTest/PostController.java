@@ -41,14 +41,23 @@ public class PostController {
     @Value("${app.image.url-prefix}")
     protected String urlPrefix; // 클라이언트에 반환할 URL
 
-    /** 모든 링크에 자동으로 imageUrlPrefix를 모델에 담아서 보냄 */
+    /**
+     * 모든 핸들러 메서드 실행 전에 모델에 "imageUrlPrefix"를 자동 주입
+     * - 뷰(Thymeleaf)에서 이미지 경로를 만들 때 공통으로 사용
+     * - 설정값이 / 로 끝나지 않으면 /를 붙여서 보정
+     */
     @ModelAttribute("imageUrlPrefix")
     public String imageUrlPrefix() {
         // /attach/summernote/ 형태로 끝에 / 보정
         return urlPrefix.endsWith("/") ? urlPrefix : urlPrefix + "/";
     }
 
-    /** 모든 링크에 자동으로 board에 대한 정보를 모델에 담아서 보냄 */
+    /**
+     * 모든 핸들러 메서드 실행 전에 모델에 "board"를 자동 주입
+     * - 요청 파라미터 b(=board code)가 있으면 해당 게시판 DTO를 조회해서 모델에 담음
+     * - b 없이 들어오는 요청(예: /post/view/1 같이 b를 안 붙인 경우)은 null 반환
+     * 뷰에서 `${board}`를 바로 참조할 수 있게 만들기 위한 전역 모델 세팅용 훅
+     */
     @ModelAttribute("board")
     public BoardDTO board(
             @RequestParam(name = "b", required = false) String b
@@ -66,31 +75,40 @@ public class PostController {
     ) {
         Page<PostDTO> dto = postService.listByBoardCodeDTO(code, keyword, pageable);
         model.addAttribute("list", dto);
-        model.addAttribute("code", code);
         model.addAttribute("keyword", keyword);
         return "post/list";
     }
 
     @GetMapping("/view/{id}")
     public String view(
-            Model model,
-            @PathVariable int id
+            @RequestParam(name="b", required = false) String code,
+            @PathVariable int id,
+            Model model
     ) {
         PostDTO dto = postService.viewDetailDTO(id);
+        if (code == null || code.isBlank()) return "redirect:/post/view" + id + "?b=" + dto.getBoardCode();
         model.addAttribute("data", dto);
         return "post/view";
     }
 
     @GetMapping("/create")
-    public String create(@RequestParam(name="b") String code, Model model) {
+    public String create(
+            @RequestParam(name="b") String code,
+            Model model)
+    {
         PostDTO dto = postService.newDTO();
         model.addAttribute("data", dto);
         return "post/create";
     }
 
     @GetMapping("/update/{id}")
-    public String updateForm(@PathVariable int id, Model model) {
+    public String update(
+            @RequestParam(name="b", required = false) String code,
+            @PathVariable int id,
+            Model model
+    ) {
         PostDTO dto = postService.viewDetailDTO(id);
+        if (code == null || code.isBlank()) return "redirect:/post/view" + id + "?b=" + dto.getBoardCode();
         model.addAttribute("data", dto);
         return "post/update";
     }
@@ -108,14 +126,13 @@ public class PostController {
 
     @PostMapping("/updateProc")
     public String updateProc(
-            @Validated(ValidationGroups.OnCreate.class) @ModelAttribute("data") PostDTO dto,
+            @Validated(ValidationGroups.OnUpdate.class) @ModelAttribute("data") PostDTO dto,
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) return "post/update";
         postService.setUpdate(dto);
         return "redirect:/post/view/" + dto.getId() + "?b=" + dto.getBoardCode();
     }
-
 
     @ResponseBody
     @PostMapping(value = "/uploadImage", produces = "application/json")

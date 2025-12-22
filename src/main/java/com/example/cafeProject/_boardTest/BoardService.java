@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,6 +126,7 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         if (roleRank(dto.getReadRole()) > roleRank(dto.getWriteRole()))
             throw new IllegalArgumentException("읽기 권한은 쓰기 권한보다 높을 수 없습니다.");
 
+        // 중복 체크
         if (boardRepository.existsByName(dto.getName()))
             throw new DuplicateValueException("이미 존재하는 게시판 이름입니다.", "name", dto.getName());
         if (boardRepository.existsByCode(dto.getCode()))
@@ -153,11 +153,13 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
             throw new IllegalArgumentException("읽기 권한은 쓰기 권한보다 높을 수 없습니다.");
     }
 
+    /** 모종의 방법으로 delete 메서드 접근시 차단 */
     @Override
     protected void beforeDelete(Board board) {
         throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "게시판 삭제는 허용되지 않습니다.");
     }
 
+    /** 배열로 들어온 RoleType을 리스트로 변환 */
     private List<RoleType> normalizeRoles(RoleType[] roles) {
         if (roles == null || roles.length == 0) return List.of();
         List<RoleType> roleList = new ArrayList<>(roles.length);
@@ -169,6 +171,7 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         return roleList;
     }
 
+    /** RoleType마다 점수를 부여해서 비교하기 쉽게 하는 메서드 */
     private int roleRank(RoleType role) {
         if (role == null) return Integer.MIN_VALUE;
 
