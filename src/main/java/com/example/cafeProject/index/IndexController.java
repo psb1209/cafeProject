@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class IndexController {
     private final NoticeBoardService noticeBoardService;
 
-    @GetMapping({"cafeProject/", "cafeProject"})
+    @GetMapping({"healthCafe/", "healthCafe"})
     public String list(
             Model model,
             @PageableDefault(size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable

@@ -12,16 +12,302 @@
 <div layout:fragment="content">
     <!-- 본문 내용 시작 -->
 
-    <h4>카페 홈</h4><br><br>
+    <style>
+        /* ===== 기본 설정 ===== */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic",
+            "Apple SD Gothic Neo", Arial, sans-serif;
+            background: #fff; /* 페이지 전체 배경 흰색 */
+        }
 
-    <a class="main-category" style="border: 1px solid #666; border-radius: 15px; padding:5px;">내 카페</a>
-    <a class="main-category" style="border: 1px solid #666; border-radius: 15px; padding:5px; margin-right:440px">즐겨찾는 게시판</a>
-    <a class="main-category" style="color:#666; padding:5px;">내 카페 관리</a>
+        .cafe-list {
+            max-width: 720px; /* 왼쪽 카페 리스트 최대 너비 */
+            margin: 0;
+        }
 
+        /* ===== 카페 항목 ===== */
+        .cafe-item {
+            display: flex; /* 이미지와 텍스트를 가로 정렬 */
+            gap: 14px; /* 이미지와 텍스트 사이 간격 */
+            padding: 18px 0;
+            border-bottom: 1px solid #eaeaea;
+            cursor: pointer;
+            transition: background-color 0.15s ease; /* hover 부드럽게 */
+        }
 
+        .cafe-item:last-child {
+            border-bottom: none;
+        }
 
-    <!-- 본문 내용 종료 -->
+        .cafe-item:hover {
+            background-color: #f6faff; /* 항목 hover 시 하늘색 배경 */
+        }
+
+        .cafe-thumb {
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0; /* 이미지 크기 고정 */
+        }
+
+        .cafe-thumb img {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px; /* 이미지 둥근 모서리 */
+            object-fit: cover; /* 이미지 비율 유지하며 꽉 채우기 */
+            border: 1px solid #e5e5e5;
+        }
+
+        .cafe-content {
+            flex: 1; /* 텍스트 영역 가변 폭 */
+        }
+
+        .cafe-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 6px;
+            display: inline-block;
+        }
+
+        .cafe-item:hover .cafe-title {
+            text-decoration: underline;
+            color: #1e6fd9; /* hover 시 제목 색상 변경 */
+        }
+
+        .cafe-desc {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.45;
+            margin-bottom: 8px;
+        }
+
+        .cafe-meta {
+            font-size: 13px;
+            color: #888;
+            display: flex;
+            gap: 12px;
+        }
+
+        .badge {
+            font-size: 12px;
+            padding: 2px 6px;
+            background: #1e6fd9;
+            color: #fff;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* ===== 상단 탭 ===== */
+        .cafe-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cafe-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tab {
+            padding: 6px 14px;
+            border-radius: 18px;
+            border: 1px solid #dcdcdc;
+            background: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            color: #333;
+            transition: all 0.15s ease;
+        }
+
+        .tab.active {
+            background: linear-gradient(90deg, #eaf4ff, #d6eaff); /* 선택된 탭 배경 */
+            color: #1e6fd9;
+            border-color: #cfe5ff;
+            font-weight: 600;
+        }
+
+        .tab.active:hover {
+            background: linear-gradient(90deg, #ddeeff, #c2dbff);
+        }
+
+        .tab:hover:not(.active) {
+            background: #f2f8ff;
+            color: #1e6fd9;
+        }
+
+        .cafe-manage a {
+            font-size: 14px;
+            color: #555;
+            text-decoration: none;
+        }
+
+        .cafe-manage a:hover {
+            text-decoration: underline;
+            color: #1e6fd9;
+        }
+
+        /* ===== 전체 레이아웃 (왼쪽 리스트 + 오른쪽 사이드) ===== */
+        .cafe-layout {
+            display: flex; /* 왼쪽/오른쪽 가로 배치 */
+            align-items: flex-start;
+            gap: 40px; /* 좌우 간격 */
+        }
+
+        .cafe-list-wrap {
+            flex: 1; /* 왼쪽 카페 리스트 영역 가변 폭 */
+            max-width: 720px;
+        }
+
+        .cafe-side {
+            width: 260px; /* 오른쪽 고정 폭 */
+        }
+
+        /* ===== 오른쪽 카드 (로그인 / 카페 만들기) ===== */
+        .side-card {
+            background: #fff; /* 카드 배경 흰색 */
+            border-radius: 12px; /* 둥근 모서리 */
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* 그림자 */
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .side-card:hover {
+            transform: translateY(-2px); /* hover 시 살짝 위로 이동 */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+        }
+
+        .side-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .side-input {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            border: 1px solid #dcdcdc;
+            border-radius: 8px; /* 입력창 둥근 모서리 */
+            font-size: 14px;
+            transition: border 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .side-input:focus {
+            border-color: #1e6fd9; /* 포커스 시 파란색 강조 */
+            outline: none;
+            box-shadow: 0 0 4px rgba(30,111,217,0.3);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 10px;
+            background: #1e6fd9; /* 파란 버튼 배경 */
+            color: #fff;
+            border: none;
+            border-radius: 8px; /* 버튼 둥근 모서리 */
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .login-btn:hover {
+            background: #155fc0; /* hover 시 진한 파랑 */
+        }
+
+        .create-btn {
+            width: 100%;
+            padding: 10px;
+            background: #fff; /* 흰색 배경 */
+            border: 1px solid #1e6fd9;
+            color: #1e6fd9;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .create-btn:hover {
+            background: #eaf4ff; /* hover 시 연한 파랑 */
+            border-color: #1c6cd9;
+        }
+
+    </style>
+
+    <h4>카페 홈</h4><br>
+
+    <div class="cafe-layout">
+
+        <!-- 왼쪽 카페 리스트 -->
+        <div class="cafe-list-wrap">
+
+            <div class="cafe-topbar">
+                <div class="cafe-tabs">
+                    <button class="tab active">내 카페</button>
+                    <button class="tab">즐겨찾는 게시판</button>
+                </div>
+
+                <div class="cafe-manage">
+                    <a href="#">⚙ 내 카페 관리</a>
+                </div>
+            </div>
+
+            <div class="cafe-list">
+                <div class="cafe-item" th:onclick="|location.href='@{/healthCafe}'|">
+                    <div class="cafe-thumb">
+                        <img src="/assets/img/main.jpg" alt="헬사모">
+                    </div>
+                    <div class="cafe-content">
+                        <div class="cafe-title">헬사모</div>
+                        <div class="cafe-desc">헬스를 사랑하는 사람들의 모임</div>
+                        <div class="cafe-meta">
+                            <span>주제 | 건강/다이어트</span>
+                            <span>👤 5,325</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cafe-item" th:onclick="|location.href='@{/studyCafe}'|">
+                    <div class="cafe-thumb">
+                        <img src="/assets/img/home-bg.jpg" alt="스터디 카페">
+                    </div>
+                    <div class="cafe-content">
+                        <div class="cafe-title">스터디 카페</div>
+                        <div class="cafe-desc">문제풀이 및 공부 팁을 공유해요</div>
+                        <div class="cafe-meta">
+                            <span>주제 | 공부/자습</span>
+                            <span>👤 743</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <aside class="cafe-side">
+
+            <!-- 로그인 -->
+            <div class="side-card">
+                <div class="side-title">로그인</div>
+                <input class="side-input" placeholder="아이디">
+                <input class="side-input" type="password" placeholder="비밀번호">
+                <button class="login-btn">로그인</button>
+            </div>
+
+            <!-- 카페 만들기 -->
+            <div class="side-card">
+                <button class="create-btn">카페 만들기</button>
+            </div>
+
+        </aside>
+
+    </div>
+
 </div>
 
+    <!-- 본문 내용 종료 -->
 </body>
 </html>
