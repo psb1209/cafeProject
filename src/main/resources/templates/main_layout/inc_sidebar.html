@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="inc_sidebar"
+     class="sb-sidenav accordion sb-sidenav-light"
+     id="sidenavAccordion"
+     style="background-color: white;">
+    <div class="sb-sidenav-menu">
+        <div class="nav" style="border-right: 1px solid #666;">
+            <a class="nav-link" th:href="@{/}">
+                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                카페 홈
+            </a>
+            <a class="nav-link" th:href="@{/}">
+                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                이웃
+            </a>
+            <a class="nav-link" th:href="@{/}">
+                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                구독
+            </a>
+            <a class="nav-link" th:href="@{/}">
+                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                내 소식
+            </a>
+
+            <div style="border-top: 1px solid #666;"></div>
+
+            <div class="sb-sidenav-menu-heading" style="padding:5px">
+                <a class="nav-link" href="imsi1/imsi1">주제별 카페</a>
+            </div>
+            <div class="sb-sidenav-menu-heading" style="padding:5px">
+                <a class="nav-link" href="imsi2/imsi2">지역별 카페</a>
+            </div>
+            <div class="sb-sidenav-menu-heading" style="padding:5px">
+                <a class="nav-link" href="imsi4/imsi4">대표 카페</a>
+            </div>
+            <div class="sb-sidenav-menu-heading" style="padding:5px">
+                <a class="nav-link" href="imsi5/imsi5">카페 랭킹</a>
+            </div>
+        </div>
+    </div>
+</nav>
+</body>
+</html>
