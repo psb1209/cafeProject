@@ -6,324 +6,346 @@
                headerPosition='center center'">
 
 <body>
-<h1 layout:fragment="pageTitle">1팀 카페</h1>
-<span layout:fragment="pageSubTitle">여러분들의 일상을 공유해요~!</span>
-
 <div layout:fragment="content">
-    <!-- 본문 내용 시작 -->
 
     <style>
-        /* ===== 기본 설정 ===== */
+        /* ===== 전체 페이지 ===== */
         body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic",
-            "Apple SD Gothic Neo", Arial, sans-serif;
-            background: #fff; /* 페이지 전체 배경 흰색 */
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', Arial, sans-serif;
+            line-height: 1.6;
+            font-size: 15px;
+            color: #333;
+            margin:0;
+            padding:0;
+            background:#f9f9f9;
+        }
+
+        /* ===== 페이지 컨테이너: 좌-중-우 ===== */
+        .page-container {
+            display:flex;
+            gap:20px;
+            max-width:1600px;
+            margin:20px auto;
+            padding:0 20px;
+            overflow-x: hidden; /* 아래 스크롤 제거 */
+        }
+
+        /* ===== 좌측 사이드바 ===== */
+        .sb-sidenav-menu {
+            width:220px;
+            background:#fff;
+            border-radius:12px;
+            padding:12px 0;
+            flex-shrink:0;
+        }
+        .sb-sidenav-menu .nav {
+            display:flex;
+            flex-direction:column;
+        }
+        .sb-sidenav-menu .nav-link {
+            display:flex;
+            align-items:center;
+            gap:10px;
+            padding:10px 18px;
+            margin:2px 8px;
+            color:#333;
+            border-radius:6px;
+            text-decoration:none;
+            transition:0.15s;
+        }
+        .sb-sidenav-menu .nav-link:hover {
+            background:#f2f8ff;
+            color:#1e6fd9;
+        }
+        .sb-sidenav-menu .nav-link.active {
+            background:linear-gradient(90deg,#eaf4ff,#d6eaff);
+            color:#1e6fd9;
+            font-weight:600;
+            position:relative;
+        }
+        .sb-sidenav-menu .nav-link.active::before {
+            content:"";
+            position:absolute;
+            left:0;
+            top:20%;
+            width:3px;
+            height:60%;
+            background:#4aa8ff;
+            border-radius:2px;
+        }
+        .sidenav-section-title {
+            font-size:12px;
+            color:#888;
+            padding:8px 18px;
+            font-weight:600;
+        }
+        .sb-sidenav-menu .nav-emoji {
+            width:18px;
+            text-align:center;
+            font-size:16px;
+        }
+
+        /* ===== 중앙 콘텐츠 ===== */
+        .cafe-layout {
+            display:flex;
+            gap:20px;
+            flex:1;
+        }
+        .cafe-list-wrap {
+           flex: 1 1 0;  /* 1 1 auto → shrink 허용 */
+           min-width: 500px; /* 너무 작아지면 안 읽히니까 최소폭 500px 정도 */
+        }
+
+        .cafe-topbar {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:20px;
+        }
+        .cafe-tabs {
+            display:flex;
+            gap:8px;
+        }
+        .tab {
+            padding:6px 14px;
+            border-radius:18px;
+            border:1px solid #dcdcdc;
+            background:#fff;
+            font-size:14px;
+            cursor:pointer;
+            transition:0.15s;
+            color:#333;
+        }
+        .tab.active {
+            background:linear-gradient(90deg,#eaf4ff,#d6eaff);
+            color:#1e6fd9;
+            border-color:#cfe5ff;
+            font-weight:600;
+        }
+        .tab:hover:not(.active) {
+            background:#f2f8ff;
+            color:#1e6fd9;
         }
 
         .cafe-list {
-            margin: 0;
+            display:flex;
+            flex-direction:column;
+            gap:12px;
         }
-
-        /* ===== 카페 항목 ===== */
         .cafe-item {
-            display: flex; /* 이미지와 텍스트를 가로 정렬 */
-            gap: 14px; /* 이미지와 텍스트 사이 간격 */
-            padding: 18px 0;
-            border-bottom: 1px solid #eaeaea;
-            cursor: pointer;
-            transition: background-color 0.15s ease; /* hover 부드럽게 */
+            display:flex;
+            gap:14px;
+            padding:20px;
+            background:#fff;
+            border-radius:16px;
+            border:1px solid #e5e5e5;
+            cursor:pointer;
+            transition:0.15s;
         }
-
-        .cafe-item:last-child {
-            border-bottom: none;
-        }
-
         .cafe-item:hover {
-            background-color: #f6faff; /* 항목 hover 시 하늘색 배경 */
+            background:#f6faff;
         }
-
         .cafe-thumb {
-            width: 80px;
-            height: 80px;
-            flex-shrink: 0; /* 이미지 크기 고정 */
+            width:80px;
+            height:80px;
+            flex-shrink:0;
         }
-
         .cafe-thumb img {
-            width: 100%;
-            height: 100%;
-            border-radius: 12px; /* 이미지 둥근 모서리 */
-            object-fit: cover; /* 이미지 비율 유지하며 꽉 채우기 */
-            border: 1px solid #e5e5e5;
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            border-radius:12px;
+            border:1px solid #e5e5e5;
         }
-
         .cafe-content {
-            flex: 1; /* 텍스트 영역 가변 폭 */
+            flex:1;
         }
-
         .cafe-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #222;
-            margin-bottom: 6px;
-            display: inline-block;
+            font-size: 17px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom:6px;
         }
-
         .cafe-item:hover .cafe-title {
-            text-decoration: underline;
-            color: #1e6fd9; /* hover 시 제목 색상 변경 */
+            color:#1e6fd9;
+            text-decoration:underline;
         }
-
         .cafe-desc {
-            font-size: 14px;
             color: #555;
-            line-height: 1.45;
-            margin-bottom: 8px;
+            font-size: 14px;
+            line-height:1.4;
+            margin-bottom:6px;
         }
-
         .cafe-meta {
-            font-size: 13px;
-            color: #888;
-            display: flex;
-            gap: 12px;
+            font-size:13px;
+            color:#888;
+            display:flex;
+            gap:12px;
         }
 
-        .badge {
-            font-size: 12px;
-            padding: 2px 6px;
-            background: #1e6fd9;
-            color: #fff;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        /* ===== 상단 탭 ===== */
-        .cafe-topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .cafe-tabs {
-            display: flex;
-            gap: 8px;
-        }
-
-        .tab {
-            padding: 6px 14px;
-            border-radius: 18px;
-            border: 1px solid #dcdcdc;
-            background: #fff;
-            font-size: 14px;
-            cursor: pointer;
-            color: #333;
-            transition: all 0.15s ease;
-        }
-
-        .tab.active {
-            background: linear-gradient(90deg, #eaf4ff, #d6eaff); /* 선택된 탭 배경 */
-            color: #1e6fd9;
-            border-color: #cfe5ff;
-            font-weight: 600;
-        }
-
-        .tab.active:hover {
-            background: linear-gradient(90deg, #ddeeff, #c2dbff);
-        }
-
-        .tab:hover:not(.active) {
-            background: #f2f8ff;
-            color: #1e6fd9;
-        }
-
-        .cafe-manage a {
-            font-size: 14px;
-            color: #555;
-            text-decoration: none;
-        }
-
-        .cafe-manage a:hover {
-            text-decoration: underline;
-            color: #1e6fd9;
-        }
-
-        /* ===== 전체 레이아웃: 왼쪽 리스트 + 오른쪽 사이드바 ===== */
-        .cafe-layout {
-            display: flex;             /* 좌우 배치 */
-            align-items: flex-start;    /* 위쪽 정렬 */
-            gap: 40px;                  /* 리스트와 카드 간 최소 간격 */
-            width: 100%;
-            max-width: 1600px;          /* 최대 폭 제한 */
-            margin: 0 auto;             /* 화면 가운데 정렬 */
-            padding: 0 20px;            /* 좌우 여백 */
-            position: relative;
-        }
-
-        /* 왼쪽 카페 리스트: 폭 늘림 */
-        .cafe-list-wrap {
-            flex: 1;        /* 남는 공간을 리스트가 최대한 사용 */
-            max-width: none;
-        }
-
-        /* ===== 오른쪽 로그인/카페 만들기: 화면 오른쪽 끝 붙이기 ===== */
+        /* ===== 오른쪽 카드 ===== */
         .cafe-side {
-            width: 260px;             /* 고정 폭 */
-            position: sticky;           /* 화면 오른쪽 고정 */
-            left: 1200px;               /* 오른쪽 끝에서 20px 떨어짐 */
-            bottom:30px                /* 헤더 아래 위치 */
+            width:260px;
+            flex-shrink: 0; /* 카드 폭은 고정 */
+            position:sticky;
+            top:20px;
+            height:max-content;
         }
-
-        /* ===== 오른쪽 카드 (로그인 / 카페 만들기) ===== */
         .side-card {
-            background: #fff; /* 카드 배경 흰색 */
-            border-radius: 12px; /* 둥근 모서리 */
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* 그림자 */
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            background:#fff;
+            border-radius:12px;
+            padding:20px;
+            margin-bottom:16px;
+            box-shadow:0 4px 8px rgba(0,0,0,0.05);
+            transition:0.15s;
         }
-
         .side-card:hover {
-            transform: translateY(-2px); /* hover 시 살짝 위로 이동 */
-            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+            transform:translateY(-2px);
+            box-shadow:0 6px 12px rgba(0,0,0,0.08);
         }
-
         .side-title {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #333;
+            font-size:15px;
+            font-weight:600;
+            margin-bottom:12px;
+            color:#333;
         }
-
         .side-input {
-            width: 100%;
-            padding: 10px 12px;
-            margin-bottom: 12px;
-            border: 1px solid #dcdcdc;
-            border-radius: 8px; /* 입력창 둥근 모서리 */
-            font-size: 14px;
-            transition: border 0.15s ease, box-shadow 0.15s ease;
+            width:100%;
+            padding:10px 12px;
+            margin-bottom:12px;
+            border:1px solid #dcdcdc;
+            border-radius:8px;
+            font-size:14px;
         }
-
         .side-input:focus {
-            border-color: #1e6fd9; /* 포커스 시 파란색 강조 */
-            outline: none;
-            box-shadow: 0 0 4px rgba(30,111,217,0.3);
+            border-color:#1e6fd9;
+            outline:none;
+            box-shadow:0 0 4px rgba(30,111,217,0.3);
         }
-
         .login-btn {
-            width: 100%;
-            padding: 10px;
-            background: #1e6fd9; /* 파란 버튼 배경 */
-            color: #fff;
-            border: none;
-            border-radius: 8px; /* 버튼 둥근 모서리 */
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s ease;
+            width:100%;
+            padding:10px;
+            background:#1e6fd9;
+            color:#fff;
+            border:none;
+            border-radius:8px;
+            font-weight:600;
+            cursor:pointer;
         }
-
         .login-btn:hover {
-            background: #155fc0; /* hover 시 진한 파랑 */
+            background:#155fc0;
         }
-
         .create-btn {
-            width: 100%;
-            padding: 10px;
-            background: #fff; /* 흰색 배경 */
-            border: 1px solid #1e6fd9;
-            color: #1e6fd9;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            width:100%;
+            padding:10px;
+            background:#fff;
+            border:1px solid #1e6fd9;
+            color:#1e6fd9;
+            font-weight:600;
+            border-radius:8px;
+            cursor:pointer;
         }
-
         .create-btn:hover {
-            background: #eaf4ff; /* hover 시 연한 파랑 */
-            border-color: #1c6cd9;
+            background:#eaf4ff;
+            border-color:#1c6cd9;
         }
 
-        /* ===== 반응형 ===== */
-        @media (max-width: 900px) {
-            .cafe-layout {
-                flex-direction: column; /* 세로로 쌓기 */
-                gap: 20px;
+       @media (max-width: 1000px) {
+            .sb-sidenav-menu {
+                display: none; /* 좌측 사이드바 숨김 */
             }
-
             .cafe-side {
-                position: static; /* 작은 화면에서는 일반 흐름 */
-                width: 100%;
-                margin-top: 20px;
+                display: none; /* 오른쪽 카드 숨김 */
             }
-        }
+            .cafe-list-wrap {
+                min-width: 700px; /* 리스트 최소폭 유지 */
+            }
+       }
     </style>
 
-    <h4>카페 홈</h4><br><br>
 
-    <div class="cafe-topbar">
-        <div class="cafe-tabs">
-            <button class="tab active">내 카페</button>
-            <button class="tab">즐겨찾는 게시판</button>
-        </div>
+    <div class="page-container">
 
-        <div class="cafe-manage">
-            <a href="#">⚙ 내 카페 관리</a>
-        </div>
-    </div>
+        <!-- 좌측 사이드바 -->
+        <nav class="sb-sidenav-menu">
+            <div class="nav">
+                <a class="nav-link active" href="#"><span class="nav-emoji">🏠</span>카페 홈</a>
+                <a class="nav-link" href="#"><span class="nav-emoji">👥</span>이웃</a>
+                <a class="nav-link" href="#"><span class="nav-emoji">⭐</span>구독</a>
+                <a class="nav-link" href="#"><span class="nav-emoji">🔔</span>내 소식</a>
+                <div class="sidenav-section-title">카페 탐색</div>
+                <a class="nav-link sub" href="#"><span class="nav-emoji">📂</span>주제별 카페</a>
+                <a class="nav-link sub" href="#"><span class="nav-emoji">📍</span>지역별 카페</a>
+                <a class="nav-link sub" href="#"><span class="nav-emoji">👑</span>대표 카페</a>
+                <a class="nav-link sub" href="#"><span class="nav-emoji">📈</span>카페 랭킹</a>
+            </div>
+        </nav>
 
-    <div class="cafe-layout">
-        <!-- 왼쪽 카페 리스트 -->
-        <div class="cafe-list-wrap">
-            <div class="cafe-list">
-                <div class="cafe-item">
-                    <div class="cafe-thumb">
-                        <img src="/assets/img/main.jpg" alt="헬사모">
+        <!-- 중앙 콘텐츠 + 오른쪽 카드 -->
+        <div class="cafe-layout">
+
+            <!-- 중앙 카페 리스트 -->
+            <div class="cafe-list-wrap">
+                <h4>카페 홈</h4>
+
+                <div class="cafe-topbar">
+                    <div class="cafe-tabs">
+                        <button class="tab active">내 카페</button>
+                        <button class="tab">즐겨찾는 게시판</button>
                     </div>
-                    <div class="cafe-content" th:onclick="|location.href='@{/healthCafe}'|"
-                         style="cursor: pointer;">
-                        <div class="cafe-title">헬사모</div>
-                        <div class="cafe-desc">헬스를 사랑하는 사람들의 모임</div>
-                        <div class="cafe-meta">
-                            <span>주제 | 건강/다이어트</span>
-                            <span>👤 5,325</span>
-                        </div>
+                    <div class="cafe-manage">
+                        <a href="#">⚙ 내 카페 관리</a>
                     </div>
                 </div>
 
-                <div class="cafe-item">
-                    <div class="cafe-thumb">
-                        <img src="/assets/img/home-bg.jpg" alt="스터디 카페">
+                <div class="cafe-list">
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/main.jpg" alt="헬사모">
+                        </div>
+                        <div class="cafe-content" th:onclick="|location.href='@{/healthCafe}'|">
+                            <div class="cafe-title">헬사모</div>
+                            <div class="cafe-desc">헬스를 사랑하는 사람들의 모임</div>
+                            <div class="cafe-meta">
+                                <span>주제 | 건강/다이어트</span>
+                                <span>👤 5,325</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="cafe-content">
-                        <div class="cafe-title">스터디 카페</div>
-                        <div class="cafe-desc">문제풀이 및 공부 팁을 공유해요</div>
-                        <div class="cafe-meta">
-                            <span>주제 | 공부/자습</span>
-                            <span>👤 743</span>
+
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/home-bg.jpg" alt="스터디 카페">
+                        </div>
+                        <div class="cafe-content" th:onclick="|location.href='@{/studyCafe}'|">
+                            <div class="cafe-title">스터디 카페</div>
+                            <div class="cafe-desc">문제풀이 및 공부 팁을 공유해요</div>
+                            <div class="cafe-meta">
+                                <span>주제 | 공부/자습</span>
+                                <span>👤 743</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- 오른쪽 로그인/카페 만들기 -->
+            <aside class="cafe-side">
+                <div class="side-card">
+                    <div class="side-title">로그인</div>
+                    <input class="side-input" placeholder="아이디">
+                    <input class="side-input" type="password" placeholder="비밀번호">
+                    <button class="login-btn">로그인</button>
+                </div>
+                <div class="side-card">
+                    <button class="create-btn">카페 만들기</button>
+                </div>
+            </aside>
+
         </div>
-
-        <!-- 오른쪽 로그인/카페 만들기: 화면 오른쪽 끝 -->
-        <aside class="cafe-side">
-            <div class="side-card">
-                <div class="side-title">로그인</div>
-                <input class="side-input" placeholder="아이디">
-                <input class="side-input" type="password" placeholder="비밀번호">
-                <button class="login-btn">로그인</button>
-            </div>
-
-            <div class="side-card">
-                <button class="create-btn">카페 만들기</button>
-            </div>
-        </aside>
     </div>
 </div>
-<!-- 본문 내용 종료 -->
+
+
 </body>
 </html>
