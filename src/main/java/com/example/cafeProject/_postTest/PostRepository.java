@@ -34,7 +34,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
         from Post p
         join p.board b
         where b.code = :code
-          and lower(p.titleKey) like lower(concat('%', :keyword, '%'))
+          and (
+               p.titleKey like concat('%', :key, '%')
+            or p.title like concat('%', :raw, '%')
+          )
     """)
-    Page<Post> searchByChosungTitle(@Param("code") String code, @Param("keyword") String keyword, Pageable pageable);
+    Page<Post> searchByChosungTitle(@Param("code") String code, @Param("key") String key, @Param("raw") String raw, Pageable pageable);
 }

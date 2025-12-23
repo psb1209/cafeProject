@@ -1,5 +1,6 @@
 package com.example.cafeProject.member;
 
+import com.example.cafeProject._boardTest.Board;
 import com.example.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -100,6 +101,21 @@ public class MemberService {
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 username=" + authentication.getName()));
         log.debug("[{}] currentMember 조회 성공, name={}", memberServiceClass.getSimpleName(), authentication.getName());
         return entity;
+    }
+
+    /**
+     * 연관관계 연결용 "가짜 엔티티(프록시)"를 가져온다.
+     * - findById(id) 처럼 DB를 조회해서 값을 가져오는 게 아니라,
+     *   "id = ?" 인 Member가 있다고 가정하고 그 Member를 가리키는 대리 객체(proxy)를 만들어 반환한다.
+     * - 따라서 이 메서드 호출 자체로는 보통 SELECT가 나가지 않는다. (쿼리 절약용)
+     * - 단, 반환된 객체에서 username/email 같은 "id 외의 필드"를 실제로 읽는 순간
+     *   그때 DB를 조회(SELECT)해서 값을 채울 수 있다. (지연 로딩처럼 동작)
+     * - 주의:
+     *   1) DB에 해당 id가 실제로 없으면, 프록시를 초기화하려는 시점에 예외가 날 수 있다.
+     *   2) 트랜잭션 밖에서 프록시의 필드를 읽으면 LazyInitializationException이 날 수 있다.
+     */
+    public Member getReference(Integer id) {
+        return memberRepository.getReferenceById(id);
     }
 
     /**

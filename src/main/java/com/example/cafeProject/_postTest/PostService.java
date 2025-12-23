@@ -47,7 +47,7 @@ public class PostService extends BaseImageService<Post, PostDTO> {
             return postRepository.findByBoard_Code(code, pageable);
 
         if (BaseUtility.isChosungQuery(keyword.trim())) // 초성 검색
-            return postRepository.searchByChosungTitle(code, BaseUtility.jaeumBreaker(keyword), pageable);
+            return postRepository.searchByChosungTitle(code, BaseUtility.jaeumBreaker(keyword), keyword.trim(), pageable);
 
         return postRepository.searchByTitle(code, keyword.trim(), pageable); // 일반 검색
     }
@@ -69,19 +69,9 @@ public class PostService extends BaseImageService<Post, PostDTO> {
 
     @Override
     protected Post toEntity(PostDTO dto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        RoleType[] roles = memberService.getEffectiveRoles(authentication);
-        if (roles.length == 0) throw new PermissionDeniedException("Banned 사용자입니다.");
-        if (dto.getBoardId() == null) throw new IllegalArgumentException("현재 게시판 정보가 존재하지 않습니다.");
-
-        Board board = boardService.view(dto.getBoardId());
-        if (!Arrays.asList(roles).contains(board.getWriteRole())) throw new AccessDeniedException("쓰기 권한이 없습니다.");
-
-        // 기본 필드 매핑(제목/내용/공지 등)은 super.toEntity(dto)가 담당
         Post post = super.toEntity(dto);
-
-        post.setMember(memberService.viewCurrentMember(authentication));
-        post.setBoard(board);
+        post.setBoard(boardService.getReference(dto.getBoardId()));
+        post.setMember(memberService.getReference(dto.getMemberId()));
         return post;
     }
 
@@ -117,13 +107,46 @@ public class PostService extends BaseImageService<Post, PostDTO> {
         dto.setMemberId(null);
         dto.setCnt(0);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        RoleType[] roles = memberService.getEffectiveRoles(authentication);
+        if (roles.length == 0) throw new PermissionDeniedException("Banned 사용자입니다.");
+        if (dto.getBoardId() == null) throw new IllegalArgumentException("현재 게시판 정보가 존재하지 않습니다.");
+
+        Board board = boardService.view(dto.getBoardId());
+
+        // 권한 검사
+        if (!Arrays.asList(roles).contains(board.getWriteRole())) throw new AccessDeniedException("쓰기 권한이 없습니다.");
+        if (dto.isNotice() && !canSetNotice(board, authentication, roles)) throw new AccessDeniedException("공지 권한이 없습니다.");
+
         // 초성 검색을 위한 titleKey 세팅
         dto.setTitleKey(BaseUtility.toChosungKey(dto.getTitle()));
+
+        dto.setMemberId(memberService.viewCurrentMember(authentication).getId());
     }
 
     @Override
     protected void beforeUpdate(PostDTO dto, Post entity) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        RoleType[] roles = memberService.getEffectiveRoles(authentication);
+        if (roles.length == 0) throw new PermissionDeniedException("Banned 사용자입니다.");
+
+        // 권한 검사
+        if (!canEdit(entity, authentication, roles)) throw new AccessDeniedException("수정 권한이 없습니다.");
+        if (dto.isNotice() != entity.isNotice() && !canSetNotice(entity.getBoard(), authentication, roles)) throw new AccessDeniedException("공지 변경 권한이 없습니다.");
+
         // 초성 검색을 위한 titleKey 갱신
         dto.setTitleKey(BaseUtility.toChosungKey(dto.getTitle()));
+    }
+
+    public boolean isManagerOrAbove(RoleType[] effectiveRoles) {
+        return Arrays.asList(effectiveRoles).contains(RoleType.MANAGER);
+    }
+    public boolean canSetNotice(Board board, Authentication authentication, RoleType[] roles) {
+        if (isManagerOrAbove(roles)) return true;
+        return board.getMember().getUsername().equals(authentication.getName());
+    }
+    public boolean canEdit(Post post, Authentication authentication, RoleType[] roles) {
+        if (isManagerOrAbove(roles)) return true;
+        return post.getMember().getUsername().equals(authentication.getName());
     }
 }
