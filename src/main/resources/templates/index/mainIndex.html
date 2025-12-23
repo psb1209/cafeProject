@@ -15,13 +15,14 @@
     <style>
         /* ===== 기본 설정 ===== */
         body {
+            margin: 0;
+            padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic",
             "Apple SD Gothic Neo", Arial, sans-serif;
             background: #fff; /* 페이지 전체 배경 흰색 */
         }
 
         .cafe-list {
-            max-width: 720px; /* 왼쪽 카페 리스트 최대 너비 */
             margin: 0;
         }
 
@@ -148,20 +149,30 @@
             color: #1e6fd9;
         }
 
-        /* ===== 전체 레이아웃 (왼쪽 리스트 + 오른쪽 사이드) ===== */
+        /* ===== 전체 레이아웃: 왼쪽 리스트 + 오른쪽 사이드바 ===== */
         .cafe-layout {
-            display: flex; /* 왼쪽/오른쪽 가로 배치 */
-            align-items: flex-start;
-            gap: 40px; /* 좌우 간격 */
+            display: flex;             /* 좌우 배치 */
+            align-items: flex-start;    /* 위쪽 정렬 */
+            gap: 40px;                  /* 리스트와 카드 간 최소 간격 */
+            width: 100%;
+            max-width: 1600px;          /* 최대 폭 제한 */
+            margin: 0 auto;             /* 화면 가운데 정렬 */
+            padding: 0 20px;            /* 좌우 여백 */
+            position: relative;
         }
 
+        /* 왼쪽 카페 리스트: 폭 늘림 */
         .cafe-list-wrap {
-            flex: 1; /* 왼쪽 카페 리스트 영역 가변 폭 */
-            max-width: 720px;
+            flex: 1;        /* 남는 공간을 리스트가 최대한 사용 */
+            max-width: none;
         }
 
+        /* ===== 오른쪽 로그인/카페 만들기: 화면 오른쪽 끝 붙이기 ===== */
         .cafe-side {
-            width: 260px; /* 오른쪽 고정 폭 */
+            width: 260px;             /* 고정 폭 */
+            position: sticky;           /* 화면 오른쪽 고정 */
+            left: 1200px;               /* 오른쪽 끝에서 20px 떨어짐 */
+            bottom:30px                /* 헤더 아래 위치 */
         }
 
         /* ===== 오른쪽 카드 (로그인 / 카페 만들기) ===== */
@@ -235,32 +246,44 @@
             border-color: #1c6cd9;
         }
 
+        /* ===== 반응형 ===== */
+        @media (max-width: 900px) {
+            .cafe-layout {
+                flex-direction: column; /* 세로로 쌓기 */
+                gap: 20px;
+            }
+
+            .cafe-side {
+                position: static; /* 작은 화면에서는 일반 흐름 */
+                width: 100%;
+                margin-top: 20px;
+            }
+        }
     </style>
 
-    <h4>카페 홈</h4><br>
+    <h4>카페 홈</h4><br><br>
+
+    <div class="cafe-topbar">
+        <div class="cafe-tabs">
+            <button class="tab active">내 카페</button>
+            <button class="tab">즐겨찾는 게시판</button>
+        </div>
+
+        <div class="cafe-manage">
+            <a href="#">⚙ 내 카페 관리</a>
+        </div>
+    </div>
 
     <div class="cafe-layout">
-
         <!-- 왼쪽 카페 리스트 -->
         <div class="cafe-list-wrap">
-
-            <div class="cafe-topbar">
-                <div class="cafe-tabs">
-                    <button class="tab active">내 카페</button>
-                    <button class="tab">즐겨찾는 게시판</button>
-                </div>
-
-                <div class="cafe-manage">
-                    <a href="#">⚙ 내 카페 관리</a>
-                </div>
-            </div>
-
             <div class="cafe-list">
-                <div class="cafe-item" th:onclick="|location.href='@{/healthCafe}'|">
+                <div class="cafe-item">
                     <div class="cafe-thumb">
                         <img src="/assets/img/main.jpg" alt="헬사모">
                     </div>
-                    <div class="cafe-content">
+                    <div class="cafe-content" th:onclick="|location.href='@{/healthCafe}'|"
+                         style="cursor: pointer;">
                         <div class="cafe-title">헬사모</div>
                         <div class="cafe-desc">헬스를 사랑하는 사람들의 모임</div>
                         <div class="cafe-meta">
@@ -270,7 +293,7 @@
                     </div>
                 </div>
 
-                <div class="cafe-item" th:onclick="|location.href='@{/studyCafe}'|">
+                <div class="cafe-item">
                     <div class="cafe-thumb">
                         <img src="/assets/img/home-bg.jpg" alt="스터디 카페">
                     </div>
@@ -283,13 +306,11 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
 
+        <!-- 오른쪽 로그인/카페 만들기: 화면 오른쪽 끝 -->
         <aside class="cafe-side">
-
-            <!-- 로그인 -->
             <div class="side-card">
                 <div class="side-title">로그인</div>
                 <input class="side-input" placeholder="아이디">
@@ -297,17 +318,12 @@
                 <button class="login-btn">로그인</button>
             </div>
 
-            <!-- 카페 만들기 -->
             <div class="side-card">
                 <button class="create-btn">카페 만들기</button>
             </div>
-
         </aside>
-
     </div>
-
 </div>
-
-    <!-- 본문 내용 종료 -->
+<!-- 본문 내용 종료 -->
 </body>
 </html>
