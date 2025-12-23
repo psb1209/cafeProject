@@ -32,7 +32,28 @@ public class Member {
     @Column(nullable = false, length = 20)
     private RoleType role;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Grade grade;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Timestamp createDate;
+
+    private int postCount;
+
+    private int replyCount;
+
+    public void increasePostCount() {
+        postCount++;
+    }
+
+    public void increaseReplyCount() {
+        replyCount++;
+    }
+
+
+
+
+
 }

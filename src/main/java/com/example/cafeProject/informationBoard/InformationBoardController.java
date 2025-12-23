@@ -2,7 +2,10 @@ package com.example.cafeProject.informationBoard;
 
 import com.example.cafeProject.informationBoardComment.InformationBoardComment;
 import com.example.cafeProject.informationBoardComment.InformationBoardCommentService;
+import com.example.cafeProject.member.RoleType;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping("/informationBoard")
 @RequiredArgsConstructor
@@ -24,6 +28,8 @@ public class InformationBoardController {
 
     private final InformationBoardService informationBoardService;
     private final InformationBoardCommentService informationBoardCommentService;
+
+    private static final Logger log = LoggerFactory.getLogger(InformationBoardController.class);
 
 
     @GetMapping("/list")
@@ -80,13 +86,19 @@ public class InformationBoardController {
     // Proc --------------------------------------------------------------------------------------------
 
     @PostMapping("/createProc")
-    public String createProc(Model model, InformationBoardDTO informationBoardDTO, @AuthenticationPrincipal User user) {
+    public String createProc(Model model, InformationBoardDTO informationBoardDTO,
+                             @AuthenticationPrincipal User user, RedirectAttributes redirectAttributes) { //리다이텍트할때 데이터를 같이 보내기 위해서 객체주입
         try {
-            informationBoardService.setInsert(informationBoardDTO, user);
-            return "redirect:/informationBoard/list";
-        } catch (Exception e) {
-            model.addAttribute("errCode", "error000");
-            model.addAttribute("errMsg", "에러 발생"); // @ControllerAdvice를 통한 전역적인 예외처리 ??
+            boolean isUpgraded = informationBoardService.setInsert(informationBoardDTO, user);
+            if(isUpgraded) { //등급 상승시 "msg" 데이터를 같이 리다이렉트 시킴
+                redirectAttributes.addFlashAttribute("msg","축하합니다! 등급이 올랐습니다!🎉"); //윈도우 로고 키(⊞) + 마침표(.) --> 임티창
+                return "redirect:/informationBoard/list";
+            }
+            return "redirect:/informationBoard/list"; //등급 안올랐으면 걍 조용히 이동
+
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "error404");
+            model.addAttribute("errMsg", "요청하신 게시글을 찾을 수 없습니다.");
             return "error/error";
         }
     }

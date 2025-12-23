@@ -2,8 +2,10 @@ package com.example.cafeProject.informationBoardComment;
 
 import com.example.cafeProject.informationBoard.InformationBoard;
 import com.example.cafeProject.informationBoard.InformationBoardRepository;
+import com.example.cafeProject.member.Grade;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberRepository;
+import com.example.cafeProject.member.RoleType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,20 +27,24 @@ public class InformationBoardCommentService {
 
 
     //댓글 기본키로 댓글 레코드 한줄 찾기
+    @Transactional(readOnly = true)
     public InformationBoardComment getSelectOneById(int id) {
         return informationBoardCommentRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("해당 댓글 없음"));
     }
 
     //게시글 기본키로 게시글 레코드 한줄 찾기
+    @Transactional(readOnly = true)
     public InformationBoard getSelectOneById_informationBoard(int id) {
         return informationBoardRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("해당 게시글 없음"));
     }
 
     //아이디로 맴버 레코드 한줄 찾기
+    @Transactional(readOnly = true)
     public Member getSelectOneById_member(String username) {
         return memberRepository.findByUsername(username).orElseThrow(()-> new IllegalArgumentException("해당 맴버 없음"));
     }
 
+    //댓글 페이지
     @Transactional(readOnly = true)
     public Page<InformationBoardComment> getSelectAllPage(int id, Pageable pageable) {
         return informationBoardCommentRepository.findByInformationBoard_Id(id, pageable);
@@ -47,11 +53,28 @@ public class InformationBoardCommentService {
 
     //카페회원만 댓글 입력
     @Transactional
-    public void setInsert(InformationBoardCommentDTO informationBoardCommentDTO, User user) {
+    public boolean setInsert(InformationBoardCommentDTO informationBoardCommentDTO, User user) {
         InformationBoard informationBoard = getSelectOneById_informationBoard(informationBoardCommentDTO.getInformationBoardId());
         Member member = getSelectOneById_member(user.getUsername());
+        RoleType oldRole = member.getRole(); //예전 등급
+
         InformationBoardComment informationBoardComment = InformationBoardComment.dtoToEntity(informationBoardCommentDTO, member, informationBoard);
+        member.increaseReplyCount(); //댓글작성 +1
         informationBoardCommentRepository.save(informationBoardComment);
+        if (informationBoard.getMember().getPostCount() >= 50 && informationBoard.getMember().getReplyCount() >= 100) {
+            informationBoard.getMember().setGrade(Grade.SPECIAL); //최우수회원
+
+        } else if(informationBoard.getMember().getPostCount() >= 20 && informationBoard.getMember().getReplyCount() >= 50) {
+            informationBoard.getMember().setGrade(Grade.BEST); //우수회원
+
+        } else if(informationBoard.getMember().getPostCount() >= 3 && informationBoard.getMember().getReplyCount() >= 5) {
+            informationBoard.getMember().setGrade(Grade.REGULAR); //성실회원
+
+        }  else {
+            informationBoard.getMember().setGrade(Grade.USER); //일반회원
+        }
+        RoleType newRole = informationBoard.getMember().getRole(); //새로운 등급
+        return oldRole != newRole; //등급이 바뀌었으면 true 반환
     }
 
 

@@ -1,8 +1,12 @@
 package com.example.cafeProject.informationBoard;
 
+import com.example.cafeProject.member.Grade;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberRepository;
+import com.example.cafeProject.member.RoleType;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -50,11 +54,27 @@ public class InformationBoardService {
 
     //카페 회원만 게시글 작성
     @Transactional
-    public void setInsert(InformationBoardDTO informationBoardDTO, User user) {
-
+    public boolean setInsert(InformationBoardDTO informationBoardDTO, User user) {
        Member member = getSelectOneById_member(user.getUsername());
+       Grade oldGrade = member.getGrade(); //예전 등급
+
        InformationBoard informationBoard = InformationBoard.dtoToEntity(informationBoardDTO, member);
+       member.increasePostCount(); //게시글 작성 +1
        informationBoardRepository.save(informationBoard);
+        if (informationBoard.getMember().getPostCount() >= 50 && informationBoard.getMember().getReplyCount() >= 100) {
+            informationBoard.getMember().setGrade(Grade.SPECIAL); //최우수회원
+
+        } else if(informationBoard.getMember().getPostCount() >= 20 && informationBoard.getMember().getReplyCount() >= 50) {
+            informationBoard.getMember().setGrade(Grade.BEST); //우수회원
+
+        } else if(informationBoard.getMember().getPostCount() >= 3 && informationBoard.getMember().getReplyCount() >= 5) {
+            informationBoard.getMember().setGrade(Grade.REGULAR); //성실회원
+
+        } else {
+            informationBoard.getMember().setGrade(Grade.USER); //일반회원
+        }
+        Grade newGrade = informationBoard.getMember().getGrade(); //새로운 등급
+        return oldGrade != newGrade; //비교해서 등급이 바뀌었으면 true 반환
     }
 
     //작성자만 게시글 수정

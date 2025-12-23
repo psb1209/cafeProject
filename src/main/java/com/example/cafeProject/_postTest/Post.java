@@ -4,10 +4,7 @@ import com.example.base.BaseEntity;
 import com.example.cafeProject._boardTest.Board;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -30,7 +27,7 @@ public class Post extends BaseEntity {
 
     private Integer cnt;
 
-    @Column(nullable = false)
+    @Builder.Default
     private boolean notice = false;
 
     @NotNull
