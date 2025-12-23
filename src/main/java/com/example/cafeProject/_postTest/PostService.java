@@ -47,7 +47,7 @@ public class PostService extends BaseImageService<Post, PostDTO> {
             return postRepository.findByBoard_Code(code, pageable);
 
         if (BaseUtility.isChosungQuery(keyword.trim())) // 초성 검색
-            return postRepository.searchByChosungTitle(code, BaseUtility.jaeumBreaker(keyword), pageable);
+            return postRepository.searchByChosungTitle(code, BaseUtility.jaeumBreaker(keyword), keyword.trim(), pageable);
 
         return postRepository.searchByTitle(code, keyword.trim(), pageable); // 일반 검색
     }

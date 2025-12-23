@@ -31,11 +31,10 @@ public class BoardPublicController {
 
     @GetMapping("/list")
     public String list(
-            Model model,
-            @PageableDefault(size = 30, sort = "id", direction = Sort.Direction.DESC)
-            Pageable pageable,
+            @PageableDefault(size = 30, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false) String keyword,
-            Authentication authentication
+            Authentication authentication,
+            Model model
     ) {
         model.addAttribute("list", boardService.listVisibleDTO(pageable, memberService.getEffectiveRoles(authentication), keyword));
         model.addAttribute("keyword", keyword);

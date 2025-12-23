@@ -75,7 +75,7 @@ public class PostController {
     public String list(
             @RequestParam(name = "b") String code,
             @RequestParam(required = false) String keyword,
-            @PageableDefault(size = 30, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             Model model
     ) {
         Page<PostDTO> dto = postService.listByBoardCodeDTO(code, keyword, pageable);

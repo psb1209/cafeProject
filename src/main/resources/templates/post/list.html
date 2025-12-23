@@ -12,12 +12,18 @@
 
 <div layout:fragment="content">
     <!-- 본문 내용 시작 -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <a class="btn btn-primary"
-           th:href="@{/post/create(b=${board?.code})}">
-            글쓰기
-        </a>
-    </div>
+    <form name="form" method="get" th:action="@{/post/list}" class="mb-3">
+        <input type="hidden" name="b" th:value="${board?.code}">
+        <div class="input-group mb-3">
+            <input class="form-control"
+                   type="search"
+                   name="keyword"
+                   placeholder="게시판 검색"
+                   th:value="${keyword}">
+            <button class="btn btn-primary" type="submit">검색</button>
+            <a class="btn btn-outline-secondary" th:href="@{|/post/list?b=${board?.code}|}">초기화</a>
+        </div>
+    </form>
 
     <!-- 게시글이 없을 때 -->
     <div class="alert alert-info" th:if="${list.totalElements == 0}">
@@ -42,6 +48,44 @@
             <!-- Divider-->
             <hr class="my-4" />
         </div>
+    </div>
+
+    <div class="d-flex justify-content-end align-items-center mb-3">
+        <a class="btn btn-primary"
+           th:href="@{/post/create(b=${board?.code})}">
+            글쓰기
+        </a>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div style="margin-top: 25px;" th:if="${list.totalPages > 0}"
+         th:with="cd=${#strings.isEmpty(board?.code) ? '' : '&b=' + board?.code},
+                  kw=${#strings.isEmpty(keyword) ? '' : '&keyword=' + keyword}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${list.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${list.first} ? '#'
+                                          : @{|?page=${list.number-1}${cd}${kw}|}">
+                    Prev</a>
+            </li>
+
+            <li class="page-item"
+                th:each="page : ${#numbers.sequence(0, list.totalPages-1)}"
+                th:if="${page >= (list.number/5)*5 and page <= (list.number/5)*5 + 4}"
+                th:classappend="${page == list.number} ? 'active'">
+                <a class="page-link"
+                   th:text="${page + 1}"
+                   th:href="@{|?page=${page}${cd}${kw}|}">
+                </a>
+            </li>
+
+            <li class="page-item" th:classappend="${list.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${list.last} ? '#'
+                                         : @{|?page=${list.number+1}${cd}${kw}|}">
+                    Next</a>
+            </li>
+        </ul>
     </div>
     <!-- 본문 내용 종료 -->
 </div>
