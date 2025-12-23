@@ -4,10 +4,12 @@ package com.example.cafeProject.communityBoardComment;
 import com.example.cafeProject.communityBoard.CommunityBoard;
 import com.example.cafeProject.communityBoard.CommunityBoardDTO;
 import com.example.cafeProject.communityBoard.CommunityBoardRepository;
+import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,16 +22,16 @@ import java.util.Optional;
 public class CommunityBoardCommentService {
     private final CommunityBoardCommentRepository communityBoardCommentRepository;
     private final CommunityBoardRepository communityBoardRepository;
-
-
+    private final MemberRepository memberRepository;
 
     public Page<CommunityBoardComment> communityBoardCommentPage(int communityBoardCommentId,Pageable pageable){
-        return communityBoardCommentRepository.findByCommunityBoardId(communityBoardCommentId,pageable);
+        return communityBoardCommentRepository.findByCommunityBoardIdOrderByRefDescLevelAsc(communityBoardCommentId,pageable);
     }
 
 
     public void setInsert(
-            CommunityBoardCommentDTO communityBoardCommentDTO
+            CommunityBoardCommentDTO communityBoardCommentDTO,
+            UserDetails userDetails
     ){
 
         CommunityBoard communityBoard=null;
@@ -38,10 +40,19 @@ public class CommunityBoardCommentService {
             communityBoard=communityBoardOptional.get(); //부모글 존재유무판단
         }
 
+        Member member=memberRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원 없음"));
+
+
         //새로운 댓글 엔티티 객체 생성해서 담은후 댓글 db저장
         CommunityBoardComment communityBoardComment=new CommunityBoardComment();
+        int ref = communityBoardCommentRepository.getMaxRef()+1;
         communityBoardComment.setContent(communityBoardCommentDTO.getContent());
         communityBoardComment.setCommunityBoard(communityBoard);
+        communityBoardComment.setRef(ref);
+        communityBoardComment.setStep(0);
+        communityBoardComment.setLevel(0);
+        communityBoardComment.setMember(member);
         communityBoardCommentRepository.save(communityBoardComment);
 
     }
@@ -76,4 +87,41 @@ public class CommunityBoardCommentService {
 
     }
 
+    @Transactional
+    public void replysetInsert(
+            CommunityBoardCommentDTO communityBoardCommentDTO,
+            UserDetails userDetails
+    ){
+        CommunityBoardComment communityBoardComment_=communityBoardCommentRepository.findById(communityBoardCommentDTO.getCommunityBoardCommentId())
+                .orElseThrow(() -> new IllegalArgumentException("부모 댓글 없음"));
+
+        Member member=memberRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원 없음"));
+
+        communityBoardCommentRepository.updateRelevel(
+                communityBoardComment_.getRef(),
+                communityBoardComment_.getLevel()
+        );
+
+        int ref=communityBoardComment_.getRef();
+        int step=communityBoardComment_.getStep()+1;
+        int level=communityBoardComment_.getLevel()+1;
+
+        CommunityBoard communityBoard=null;
+        Optional<CommunityBoard> communityBoardOptional=communityBoardRepository.findById(communityBoardCommentDTO.getCommunityBoardId());
+        if(communityBoardOptional.isPresent()){
+            communityBoard=communityBoardOptional.get(); //부모글 존재유무판단
+        }
+
+
+        CommunityBoardComment communityBoardComment=new CommunityBoardComment();
+        communityBoardComment.setContent(communityBoardCommentDTO.getContent());
+        communityBoardComment.setCommunityBoard(communityBoard);
+        communityBoardComment.setMember(member);
+        communityBoardComment.setRef(ref);
+        communityBoardComment.setStep(step);
+        communityBoardComment.setLevel(level);
+
+        communityBoardCommentRepository.save(communityBoardComment);
+    }
 }

@@ -14,43 +14,57 @@
     <!-- 본문 내용 시작 -->
     <h2>자유게시판 상세보기</h2>
 
-        <form name="form">
-            <div class="mb-3 mt-3">
-                <label for="subject">subject:</label>
-                <span  class="form-control" id="subject"  th:text="${communityBoard.subject}"></span>
-            </div>
-            <div class="mb-3">
-                <label for="content">content:</label>
-                <span  class="form-control" id="content"  th:text="${communityBoard.content}" ></span>
-            </div>
-<!--            <div class="mb-3">-->
-<!--                <label for="member">member:</label>-->
-<!--                <span type="text" class="form-control" id="member" name="member" th:text="${communityBoard.member}" ></span>-->
-<!--            </div>-->
-            <div class="mb-3">
-                <label for="cnt">cnt:</label>
-                <span  class="form-control" id="cnt" th:text="${communityBoard.cnt}"  ></span>
-            </div>
-            <div class="mb-3">
-                <label for="createDate">createDate:</label>
-                <span  class="form-control" id="createDate" th:text="${#dates.format(communityBoard.createDate, 'yyyy-MM-dd')}" ></span>
-            </div>
+    <form name="form">
+        <div class="mb-3 mt-3">
+            <label for="subject">subject:</label>
+            <span  class="form-control" id="subject"  th:text="${communityBoard.subject}"></span>
+        </div>
+        <div class="mb-3">
+            <label for="content">content:</label>
+            <span  class="form-control" id="content"  th:text="${communityBoard.content}" ></span>
+        </div>
+        <!--            <div class="mb-3">-->
+        <!--                <label for="member">member:</label>-->
+        <!--                <span type="text" class="form-control" id="member" name="member" th:text="${communityBoard.member}" ></span>-->
+        <!--            </div>-->
+        <div class="mb-3">
+            <label for="cnt">cnt:</label>
+            <span  class="form-control" id="cnt" th:text="${communityBoard.cnt}"  ></span>
+        </div>
+        <div class="mb-3">
+            <label for="createDate">createDate:</label>
+            <span  class="form-control" id="createDate" th:text="${#dates.format(communityBoard.createDate, 'yyyy-MM-dd')}" ></span>
+        </div>
 
 
-        </form>
+    </form>
 
 
 
     <a href="/communityBoard/list" class="btn btn-secondary">목록</a>
     <a href="/communityBoard/create" class="btn btn-secondary">등록</a>
     <a th:href="@{|/communityBoard/update/${communityBoard.id}|}" class="btn btn-secondary">수정</a>
-    <a th:href="@{|/communityBoard/delete/${communityBoard.id}|}" class="btn btn-secondary">삭제</a>
+    <form id= "sakjeForm" th:action="@{/communityBoard/deleteProc}" method="POST" style="display:inline;">
+        <input type="hidden" name="id" th:value="${communityBoard.id}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <button type="button" class="btn btn-danger" onclick="sakje();">삭제</button>
+    </form>
+
+    <script>
+        function sakje(){
+        if(confirm('정말로 삭제하시겠습니까?')){
+        document.getElementById("sakjeForm").submit();
+        }
+        }
+    </script>
+
 
     <hr>
 
     <div style="margin-top: 20px;">
         <form name="commentForm">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+            <!--            <input type="text" name="_csrf" th:value="${_csrf.token}">-->
             <input type="hidden" id="communityBoardId" name="communityBoardId" th:value="${communityBoard.id}">
             <textarea id="reply-content" rows="1" class="form-control" name="content" ></textarea>
             <button id="btn-save-replay" class="btn btn-secondary" type="button" onclick="commentSave();">코멘트 등록</button>
@@ -67,59 +81,75 @@
         </script>
     </div>
 
-        <div style="margin-top": 20px; id="commentList">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th width="80%">내용</th>
-                    <th width="10%">작성자</th>
-                    <th width="10%">수정</th>
-                    <th width="10%">삭제</th>
-                </tr>
-                </thead>
-                <tbody>
+    <div style="margin-top: 20px;" id="commentList">
+        <table class="table">
 
-                <tr th:each="communityBoardComment:${communityBoardCommentPage}">
-                    <td th:text="${communityBoardComment.content}"></td>
-<!--                    <td th:text="${communityBoardComment.member}"></td>-->
-                    <td> - </td>
-                    <td>
-                        <a th:href="@{|/communityBoardComment/commentUpdate/${communityBoardComment.id}|}"> 수정 </a>
-                    </td>
-                    <td>
-                        <a th:href="@{|/communityBoardComment/deleteProc/${communityBoardComment.id}|}"> x </a>
-                    </td>
+            <thead>
+            <tr>
+                <th> 내용</th>
+                <th>ref</th>
+                <th>step</th>
+                <th>level</th>
+                <th>작성자</th>
+                <th>수정</th>
+                <th>삭제</th>
+                <th>답글</th>
+            </tr>
+            </thead>
 
-                </tr>
-                </tbody>
-            </table>
-        </div>
+            <tbody>
 
-        <div>
-            <ul class="pagination" th:if="${communityBoardCommentPage.totalPages > 0}">
-                <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${postList.number-1}|}">Prev</a></li>-->
-                <li class="page-item" th:classappend="${communityBoardCommentPage.first} ? 'disabled'">
-                    <a class="page-link"
-                       th:href="${communityBoardCommentPage.first} ? '#' : @{|?page=${communityBoardCommentPage.number-1}|}">
-                        Prev
-                    </a>
-                </li>
+            <tr th:each="communityBoardComment:${communityBoardCommentPage}">
 
-                <li class="page-item"
-                    th:each="page: ${#numbers.sequence(0, communityBoardCommentPage.totalPages-1)}"
-                    th:classappend="${page == communityBoardCommentPage.number} ? 'active'">
-                    <a class="page-link" th:text="${page + 1}" th:href="@{|?page=${page}|}"></a>
-                </li>
+                <td th:text="${communityBoardComment.content}"
+                    th:style="'padding-left:' + (${communityBoardComment.step} * 30) + 'px'"></td>
+                <td th:text="${communityBoardComment.ref}"></td>
+                <td th:text="${communityBoardComment.step}"></td>
+                <td th:text="${communityBoardComment.level}"></td>
+                <td th:text="${communityBoardComment.member.username}"></td>
+                <td>
+                    <a th:href="@{|/communityBoardComment/commentUpdate/${communityBoardComment.id}|}"> 수정 </a>
+                </td>
+                <td>
+                    <a th:href="@{|/communityBoardComment/deleteProc/${communityBoardComment.id}|}"> x </a>
+                </td>
+                <td>
+                    <a th:href="@{|/communityBoardComment/replyComment/${communityBoardComment.id}|}"> 답글 </a>
+                </td>
 
-                <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${postList.number+1}|}">Next</a></li>-->
-                <li class="page-item" th:classappend="${communityBoardCommentPage.last} ? 'disabled'">
-                    <a class="page-link"
-                       th:href="${communityBoardCommentPage.last} ? '#' : @{|?page=${communityBoardCommentPage.number+1}|}">
-                        Next
-                    </a>
-                </li>
-            </ul>
-        </div>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+    <div>
+        <ul class="pagination">
+            <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${postList.number-1}|}">Prev</a></li>-->
+            <li class="page-item" th:classappend="${communityBoardCommentPage.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${communityBoardCommentPage.first} ? '#' : @{|?page=${communityBoardCommentPage.number-1}|}">
+                    Prev
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="page: ${#numbers.sequence(0, communityBoardCommentPage.totalPages-1)}"
+                th:classappend="${page == communityBoardCommentPage.number} ? 'active'">
+                <a class="page-link"  th:text="${page}" th:href="@{|?page=${page}|}"></a>
+            </li>
+
+            <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${postList.number+1}|}">Next</a></li>-->
+            <li class="page-item" th:classappend="${communityBoardCommentPage.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${communityBoardCommentPage.last} ? '#' : @{|?page=${communityBoardCommentPage.number+1}|}">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </div>
 
 
     <!-- 본문 내용 종료 -->

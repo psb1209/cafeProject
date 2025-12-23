@@ -2,6 +2,8 @@ package com.example.cafeProject.communityBoardComment;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +20,14 @@ public class CommunityBoardCommentController {
     @PostMapping("/createProc")
     public String CreateProc(
             CommunityBoardCommentDTO communityBoardCommentDTO,
-            Model model
+            Model model,
+            Authentication authentication
     ){
             try{
-                communityBoardCommentService.setInsert(communityBoardCommentDTO);
+                UserDetails userDetails=(UserDetails)authentication.getPrincipal();
+                communityBoardCommentService.setInsert(communityBoardCommentDTO,userDetails);
                 return "redirect:/communityBoard/view/"+communityBoardCommentDTO.getCommunityBoardId();
+
             } catch (Exception e) {
                 model.addAttribute("errorCode", "에러0005");
                 model.addAttribute("errorMsg", e.getMessage());
@@ -82,6 +87,42 @@ public class CommunityBoardCommentController {
 
         communityBoardCommentService.setUpdate(communityBoardCommentDTO);
         return "redirect:/communityBoard/view/"+communityBoardId;
+    }
+
+    @GetMapping("/replyComment/{communityBoardCommentId}")
+    public String replyComment(
+            @PathVariable("communityBoardCommentId") int communityBoardCommentId,
+            Model model,
+            Authentication authentication
+
+    ) {
+        CommunityBoardComment CommunityBoardComment = communityBoardCommentService.getSelectOneById
+                (communityBoardCommentId);
+
+        CommunityBoardComment communityBoardComment=communityBoardCommentService.getSelectOneById(communityBoardCommentId);
+        model.addAttribute("communityBoardCommentId",communityBoardCommentId);
+        model.addAttribute("communityBoardId", CommunityBoardComment.getCommunityBoard().getId());
+        return "communityBoard/replyComment";
+    }
+
+
+    @PostMapping("/replyCreateProc")
+    public String replyCreateProc(
+            CommunityBoardCommentDTO communityBoardCommentDTO,
+            Model model,
+            Authentication authentication
+
+    ){
+        try {
+           UserDetails userDetails=(UserDetails)authentication.getPrincipal();
+
+            communityBoardCommentService.replysetInsert(communityBoardCommentDTO,userDetails);
+            return "redirect:/communityBoard/view/"+communityBoardCommentDTO.getCommunityBoardId();
+        } catch (Exception e) {
+            model.addAttribute("errorCode", "에러0005");
+            model.addAttribute("errorMsg", "해당 댓글이 해당하지 않습니다.");
+            return "error/error";
+        }
     }
 
 }

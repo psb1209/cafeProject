@@ -35,7 +35,7 @@ public class CommunityBoardController {
     public String view(
             @PathVariable("id") int id,
             Model model,
-            @PageableDefault(size=3, sort="id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ){
         try{
             CommunityBoard communityBoard =communityBoardService.getSelectOneById(id);

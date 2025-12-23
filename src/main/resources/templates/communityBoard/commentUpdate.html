@@ -14,7 +14,7 @@
     <!-- 본문 내용 시작 -->
     <h2>댓글 수정</h2>
     <form name="form">
-        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+<!--        <input type="hidden" name="_csrf" th:value="${_csrf.token}">-->
         <input type="hidden" name="id" th:value="${communityBoardComment.id}">
         <input type="hidden" name="communityBoardId"
                th:value="${communityBoardComment.communityBoard.id}">

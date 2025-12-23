@@ -18,7 +18,15 @@ public class CommunityBoardCommentDTO {
 
     private Timestamp createDate;
 
-//    private int memberId;
+    private int memberId;
+
+    private int ref;
+
+    private int step;
+
+    private int level;
+
+    private int communityBoardCommentId;
 
 
     private int communityBoardId;

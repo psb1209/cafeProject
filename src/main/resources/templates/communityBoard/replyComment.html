@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center'">
+
+<body>
+
+<h1 layout:fragment="pageTitle">My Cafe</h1>
+<span layout:fragment="pageSubTitle">first page</span>
+
+<div layout:fragment="content">
+    <!-- 본문 내용 시작 -->
+    <div style="margin-top: 20px;">
+        <form name="commentForm">
+              <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+
+             <input type="hidden"  name="communityBoardCommentId" th:value="${communityBoardCommentId}">
+             <input type="hidden"  name="communityBoardId" th:value="${communityBoardId}">
+
+            <textarea id="reply-content" rows="1" class="form-control" name="content" ></textarea>
+            <button id="btn-save-replay" class="btn btn-secondary" type="button" onclick="commentSave();">코멘트 등록</button>
+        </form>
+        <script>
+            function commentSave(){
+            if(confirm('코멘트 등록할까요?')){
+                document.commentForm.action="/communityBoardComment/replyCreateProc";
+                document.commentForm.method="post";
+                document.commentForm.submit();
+
+                }
+            }
+        </script>
+    </div>
+    <!-- 본문 내용 종료 -->
+</div>
+
+</body>
+</html>
