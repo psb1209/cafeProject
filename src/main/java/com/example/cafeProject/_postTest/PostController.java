@@ -2,7 +2,9 @@ package com.example.cafeProject._postTest;
 
 import com.example.cafeProject._boardTest.BoardDTO;
 import com.example.cafeProject._boardTest.BoardService;
+import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.validation.ValidationGroups;
+import com.example.exception.PermissionDeniedException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,6 +37,7 @@ public class PostController {
 
     private final PostService postService;
     private final BoardService boardService;
+    private final MemberService memberService;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Value("${app.image.upload-dir}")
@@ -86,7 +91,7 @@ public class PostController {
             Model model
     ) {
         PostDTO dto = postService.viewDetailDTO(id);
-        if (code == null || code.isBlank()) return "redirect:/post/view" + id + "?b=" + dto.getBoardCode();
+        if (code == null || code.isBlank()) return "redirect:/post/view/" + id + "?b=" + dto.getBoardCode();
         model.addAttribute("data", dto);
         return "post/view";
     }
@@ -94,6 +99,8 @@ public class PostController {
     @GetMapping("/create")
     public String create(
             @RequestParam(name="b") String code,
+            @ModelAttribute("board") BoardDTO board,
+            Authentication authentication,
             Model model)
     {
         PostDTO dto = postService.newDTO();
@@ -104,11 +111,13 @@ public class PostController {
     @GetMapping("/update/{id}")
     public String update(
             @RequestParam(name="b", required = false) String code,
+            @ModelAttribute("board") BoardDTO board,
             @PathVariable int id,
+            Authentication authentication,
             Model model
     ) {
         PostDTO dto = postService.viewDetailDTO(id);
-        if (code == null || code.isBlank()) return "redirect:/post/view" + id + "?b=" + dto.getBoardCode();
+        if (code == null || code.isBlank()) return "redirect:/post/update/" + id + "?b=" + dto.getBoardCode();
         model.addAttribute("data", dto);
         return "post/update";
     }
@@ -119,9 +128,18 @@ public class PostController {
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) return "post/create";
-        postService.setInsert(dto);
-        String code = boardService.view(dto.getBoardId()).getCode();
-        return "redirect:/post/list?b=" + code;
+        try {
+            postService.setInsert(dto);
+            return "redirect:/post/list?b=" + dto.getBoardCode();
+        } catch (AccessDeniedException | PermissionDeniedException e) {
+            bindingResult.reject("permissionDenied", e.getMessage());
+            return "post/create";
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("invalid", e.getMessage());
+            return "post/create";
+        } catch (Exception e) {
+            return "redirect:/error/runtimeErrorPage";
+        }
     }
 
     @PostMapping("/updateProc")
@@ -130,8 +148,18 @@ public class PostController {
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) return "post/update";
-        postService.setUpdate(dto);
-        return "redirect:/post/view/" + dto.getId() + "?b=" + dto.getBoardCode();
+        try {
+            postService.setUpdate(dto);
+            return "redirect:/post/view/" + dto.getId() + "?b=" + dto.getBoardCode();
+        } catch (AccessDeniedException | PermissionDeniedException e) {
+            bindingResult.reject("permissionDenied", e.getMessage());
+            return "post/update";
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("invalid", e.getMessage());
+            return "post/update";
+        } catch (Exception e) {
+            return "redirect:/error/runtimeErrorPage";
+        }
     }
 
     @ResponseBody

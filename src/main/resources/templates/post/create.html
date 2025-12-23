@@ -20,8 +20,8 @@
         <input type="hidden" name="boardCode" th:value="${board?.code}"/>
         <input type="hidden" name="boardName" th:value="${board?.name}"/>
 
-        <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
-            입력값을 다시 확인해주세요.
+        <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+            <div th:each="e : ${#fields.globalErrors()}" th:text="${e}">에러</div>
         </div>
 
         <!-- 제목 -->
