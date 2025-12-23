@@ -1,6 +1,7 @@
 package com.example.cafeProject.informationBoardComment;
 
 import com.example.cafeProject.informationBoard.InformationBoard;
+import com.example.cafeProject.informationBoard.InformationBoardDTO;
 import com.example.cafeProject.informationBoard.InformationBoardRepository;
 import com.example.cafeProject.member.Grade;
 import com.example.cafeProject.member.Member;
@@ -64,7 +65,7 @@ public class InformationBoardCommentService {
         if (informationBoard.getMember().getPostCount() >= 50 && informationBoard.getMember().getReplyCount() >= 100) {
             informationBoard.getMember().setGrade(Grade.SPECIAL); //최우수회원
 
-        } else if(informationBoard.getMember().getPostCount() >= 20 && informationBoard.getMember().getReplyCount() >= 50) {
+        } else if(informationBoard.getMember().getPostCount() >= 10 && informationBoard.getMember().getReplyCount() >= 15) {
             informationBoard.getMember().setGrade(Grade.BEST); //우수회원
 
         } else if(informationBoard.getMember().getPostCount() >= 3 && informationBoard.getMember().getReplyCount() >= 5) {
@@ -93,12 +94,14 @@ public class InformationBoardCommentService {
             }
         }
         boolean isAuthor = user.getUsername().equals(informationBoardComment.getMember().getUsername());
+
         if(isAuthor||isAdminOrManager) {
             informationBoardCommentRepository.delete(informationBoardComment);
         } else {
             throw new AccessDeniedException("삭제 권한이 없습니다.");
         }
     }
+
 
 
 

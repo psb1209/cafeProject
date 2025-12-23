@@ -64,7 +64,7 @@ public class InformationBoardService {
         if (informationBoard.getMember().getPostCount() >= 50 && informationBoard.getMember().getReplyCount() >= 100) {
             informationBoard.getMember().setGrade(Grade.SPECIAL); //최우수회원
 
-        } else if(informationBoard.getMember().getPostCount() >= 20 && informationBoard.getMember().getReplyCount() >= 50) {
+        } else if(informationBoard.getMember().getPostCount() >= 10 && informationBoard.getMember().getReplyCount() >= 15) {
             informationBoard.getMember().setGrade(Grade.BEST); //우수회원
 
         } else if(informationBoard.getMember().getPostCount() >= 3 && informationBoard.getMember().getReplyCount() >= 5) {

@@ -42,7 +42,8 @@ public class InformationBoardCommentController {
         try {
             informationBoardCommentService.setDelete(informationBoardCommentDTO, user);
             return "redirect:/informationBoard/view/" + informationBoardCommentDTO.getInformationBoardId();
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             model.addAttribute("errCode", "error404");
             model.addAttribute("errMsg", "요청하신 댓글을 찾을 수 없습니다.");
             return "error/error";

@@ -15,6 +15,6 @@ public class InformationBoardCommentDTO {
     private Timestamp createDate;
     private int memberId;
     private int informationBoardId;
-    private int informationBoardCommentId;
+
 
 }
