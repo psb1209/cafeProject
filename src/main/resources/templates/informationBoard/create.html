@@ -13,8 +13,7 @@
     <!-- 본문 내용 시작 -->
     <h2>정보게시판</h2>
 
-    <form name="DirForm" id="DirForm" th:action="@{/InformationBoard/createProc}" th:method="post">
-
+    <form name="DirForm" id="DirForm" th:action="@{/informationBoard/createProc}" th:method="post">
         <!--<input type="hidden" name="_csrf" th:value="${_csrf.token}">-->
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> <!--정상적으로 넘어왔는지 확인-->
 
@@ -31,7 +30,6 @@
         <div style="text-align: right; margin-bottom: 10px;">
         <button type="button" id="btn-save" row="10" class="btn btn-secondary" onclick="save();">등록</button>
         </div>
-
     </form>
 
     <script>

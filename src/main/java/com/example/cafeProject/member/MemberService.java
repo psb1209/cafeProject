@@ -175,6 +175,7 @@ public class MemberService {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .email(dto.getEmail())
                 .role(dto.getRole())
+                .grade(dto.getGrade())
                 .build();
     }
     /**
@@ -211,6 +212,7 @@ public class MemberService {
 
         // role 기본값: USER
         dto.setRole(RoleType.USER);
+        dto.setGrade(Grade.USER);
     }
     private void afterCreate(MemberDTO dto, Member entity) {
         log.info("회원가입 완료: id={}, username={}, role={}",

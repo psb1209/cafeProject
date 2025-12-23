@@ -66,6 +66,12 @@ public class MemberDTO { //일반적인 상황에서 Member 관련 처리를 수
 
     private Timestamp createDate;
 
+    private Grade grade;
+
+    private int postCount;
+
+    private int replyCount;
+
     public void normalize() { // 필드들의 양 옆 공백을 없애는 메서드
         if (username != null) username = username.trim();
         if (password != null) password = password.trim();

@@ -13,6 +13,10 @@
 
     <!--<h2 th:text="${informationBoard.subject}"></h2>-->
 
+    <div th:if="${msg}">
+        <span th:text="${msg}">메시지내용</span>
+    </div>
+
     <div class="mb-3 mt-3">
         <label for="subject">제목:</label>
         <span class="form-control" id="subject" name="subject" th:text="${informationBoard.subject}"></span>
@@ -118,6 +122,7 @@
             <tr>
                 <th width="80%">내용</th>
                 <th width="10%">작성자</th>
+                <th width="10%">회원등급</th>
                 <th width="10%" sec:authorize="isAuthenticated()">삭제</th> <!--로그인한 사용자만 보이도록-->
             </tr>
             </thead>
@@ -128,6 +133,11 @@
                     <span th:text="${informationBoardComment.member.username}"></span>
                     <!--<span> - </span>-->
                 </td>
+                <td th:switch="${informationBoardComment.member.grade.name()}">
+                    <span th:case="'USER'">일반🥉</span>
+                    <span th:case="'REGULAR'">성실🥈</span>
+                    <span th:case="'BEST'">우수🥇</span>
+                    <span th:case="'SPECIAL'">최우수🏆</span></td>
                 <td th:if="${#authentication.name == informationBoardComment.member.username}"> <!--댓글작성자만 삭제가능-->
                     <a href="#" th:onclick="|submitInformationBoardCommentId('${informationBoardComment.id}')|">X</a>
                 </td>
