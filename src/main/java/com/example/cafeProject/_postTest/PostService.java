@@ -11,11 +11,15 @@ import com.example.exception.PermissionDeniedException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import java.util.Arrays;
+import java.sql.Timestamp;
 
 @Service
 public class PostService extends BaseImageService<Post, PostDTO> {
@@ -100,12 +104,33 @@ public class PostService extends BaseImageService<Post, PostDTO> {
         post.setNotice(dto.isNotice());
     }
 
+    @Transactional
+    public void softDelete(PostDTO dto) {
+        Post post = viewDetail(dto.getId());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        RoleType[] roles = memberService.getEffectiveRoles(authentication);
+        if (roles.length == 0) throw new PermissionDeniedException("Banned 사용자입니다.");
+
+        // 권한 검사
+        if (!canEdit(post, authentication, roles)) throw new AccessDeniedException("삭제 권한이 없습니다.");
+
+        // 삭제 체크
+        if (post.isDeleted()) throw new PermissionDeniedException("삭제된 글은 삭제할 수 없습니다.");
+
+        // 삭제 플래그를 true로
+        post.setDeleted(true);
+        post.setDeletedAt(new Timestamp(System.currentTimeMillis()));
+        postRepository.save(post);
+    }
+
     @Override
     protected void beforeInsert(PostDTO dto) {
         dto.setId(null);
         dto.setCreateDate(null);
         dto.setMemberId(null);
         dto.setCnt(0);
+        dto.setDeleted(false);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         RoleType[] roles = memberService.getEffectiveRoles(authentication);
@@ -134,8 +159,16 @@ public class PostService extends BaseImageService<Post, PostDTO> {
         if (!canEdit(entity, authentication, roles)) throw new AccessDeniedException("수정 권한이 없습니다.");
         if (dto.isNotice() != entity.isNotice() && !canSetNotice(entity.getBoard(), authentication, roles)) throw new AccessDeniedException("공지 변경 권한이 없습니다.");
 
+        // 삭제 체크
+        if (entity.isDeleted()) throw new PermissionDeniedException("삭제된 글은 수정할 수 없습니다.");
+
         // 초성 검색을 위한 titleKey 갱신
         dto.setTitleKey(BaseUtility.toChosungKey(dto.getTitle()));
+    }
+
+    @Override
+    protected void beforeDelete(Post entity) {
+        throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "게시판 삭제는 허용되지 않습니다.");
     }
 
     public boolean isManagerOrAbove(RoleType[] effectiveRoles) {
@@ -148,5 +181,14 @@ public class PostService extends BaseImageService<Post, PostDTO> {
     public boolean canEdit(Post post, Authentication authentication, RoleType[] roles) {
         if (isManagerOrAbove(roles)) return true;
         return post.getMember().getUsername().equals(authentication.getName());
+    }
+    public boolean canEdit(int postId, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) return false;
+
+        RoleType[] roles = memberService.getEffectiveRoles(authentication);
+        if (roles == null || roles.length == 0) return false;
+
+        Post post = viewDetail(postId);
+        return canEdit(post, authentication, roles);
     }
 }

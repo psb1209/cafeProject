@@ -1,6 +1,20 @@
 package com.example.base;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.sql.Timestamp;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+
 public class BaseUtility {
+
+    /*
+    * =====================================
+    * ||          한글 정규화 유틸          ||
+    * =====================================
+    */
+
     private static final int BASE = 0xAC00; // 가
     private static final int LAST = 0xD7A3; // 힣
 
@@ -117,5 +131,34 @@ public class BaseUtility {
                 if (!isChosungJamo(c)) return false;
         }
         return true;
+    }
+
+    /*
+     * =====================================
+     * ||          시간 정규화 유틸          ||
+     * =====================================
+     */
+
+    private static final String DEFAULT_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final ZoneId DEFAULT_ZONE = ZoneId.of("Asia/Seoul");
+
+    public static String formatTimestamp(Timestamp ts) {
+        return formatTimestamp(ts, DEFAULT_PATTERN, DEFAULT_ZONE);
+    }
+    public static String formatTimestamp(Timestamp ts, String pattern) {
+        return formatTimestamp(ts, pattern, DEFAULT_ZONE);
+    }
+    public static String formatTimestamp(Timestamp ts, String pattern, ZoneId zoneId) {
+        // null 보정
+        if (ts == null) return "null";
+        String p = (pattern == null || pattern.isBlank()) ? DEFAULT_PATTERN : pattern;
+        ZoneId z = (zoneId == null) ? DEFAULT_ZONE : zoneId;
+
+        // Timestamp -> Instant(절대시간, UTC 기준의 '순간') -> ZonedDateTime(타임존 적용된 달력 시간)
+        // - 같은 순간이라도 타임존에 따라 "표시되는 시각"이 달라짐
+        ZonedDateTime zdt = ts.toInstant().atZone(z);
+
+        // ZonedDateTime을 원하는 패턴(p)으로 문자열 포맷팅해서 반환
+        return zdt.format(DateTimeFormatter.ofPattern(p));
     }
 }
