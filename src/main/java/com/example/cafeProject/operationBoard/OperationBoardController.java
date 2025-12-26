@@ -42,7 +42,7 @@ public class OperationBoardController {
     @GetMapping("/list")
     public String list(
             Model model,
-            @PageableDefault(size=8, sort="id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size=2, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<OperationBoard> operationBoardList = operationBoardService.list(pageable);
         model.addAttribute("operationBoardList", operationBoardList);
@@ -54,7 +54,7 @@ public class OperationBoardController {
     public String view(
             Model model,
             OperationBoardDTO operationBoardDTO,
-            @PageableDefault(size=7, sort="Id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size=7, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         try {
             OperationBoard operationBoard = operationBoardService.getSelectOneById(operationBoardDTO);
