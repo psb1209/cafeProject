@@ -6,7 +6,7 @@
             color: #333;
             margin:0;
             padding:0;
-            background:#f9f9f9;
+            background: linear-gradient(160deg, #eaf4ff, #d6eaff);
         }
 
         /* ===== 페이지 컨테이너: 좌-중-우 ===== */
@@ -23,6 +23,7 @@
 
         /* ===== 좌측 사이드바 ===== */
         .sb-sidenav-menu {
+            border-top: 4px solid #1e6fd9;
             width: 220px;
             background: #fff;
             border-radius: 12px;

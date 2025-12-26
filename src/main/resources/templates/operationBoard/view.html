@@ -1,210 +1,471 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorate="~{_layout/layout}"
+      layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center'">
+
 <body>
+
 <h1 layout:fragment="pageTitle">헬 사 모</h1>
 <span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
+
 <div layout:fragment="content">
-    <!-- 본문 내용 시작 -->
 
-    <!--<h2 th:text="${operationBoard.subject}"></h2>-->
+    <!-- ================= 스타일 ================= -->
+    <style>
+        :root {
+            --blue-main: #1e6fd9;
+            --blue-bg-grad: linear-gradient(90deg, #eaf4ff, #d6eaff);
+            --blue-bg-soft: #f3f8ff;
+            --blue-border: #cfe1ff;
 
-    <div class="mb-3 mt-3">
-        <label for="subject">제목:</label>
-        <span class="form-control" id="subject" name="subject" th:text="${operationBoard.subject}"></span>
-    </div>
+            --text-main: #1f2a44;
+            --text-sub: #6b7a99;
+            --white: #ffffff;
+        }
 
-    <div class="mb-3">
-        <label for="content">내용:</label>
-        <span class="form-control" id="content" name="content" th:utext="${operationBoard.content}"></span>
-    </div>
+        .page-container {
+            display: flex;
+            gap: 24px;
+        }
 
-    <div class="mb-3 mt-3">
-        <label for="cnt">조회수:</label>
-        <span class="form-control" id="cnt" th:text="${operationBoard.cnt}"></span>
-    </div>
+        /* 게시글 카드 */
+        .cafe-article-wrap {
+            flex: 1;
+            background: var(--white);
+            border-top: 4px solid var(--blue-main);
+            border-radius: 10px;
+            padding: 30px;
+            font-size: 14px;
+        }
 
-    <div class="mb-3 mt-3">
-        <label for="createDate">작성일:</label>
-        <span class="form-control" id="createDate" th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></span>
-    </div>
+        .cafe-article-header {
+            border-bottom: 1px solid var(--blue-border);
+            padding-bottom: 16px;
+            margin-bottom: 26px;
+        }
 
-    <a href="/operationBoard/create" class="btn btn-secondary">등록</a>
-    <a href="/operationBoard/list" class="btn btn-secondary">목록</a>
-    <a th:href="@{|/operationBoard/update/${operationBoard.id}|}" class="btn btn-secondary">수정</a>
-    <a th:href="@{|/operationBoard/delete/${operationBoard.id}|}" class="btn btn-secondary">삭제</a>
+        .cafe-article-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
 
-    <form name="commentForm">
+        .cafe-article-meta {
+            font-size: 13px;
+            color: var(--text-sub);
+            display: flex;
+            gap: 14px;
+        }
 
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        .cafe-article-content {
+            padding: 24px 0 40px;
+            font-size: 15px;
+            line-height: 1.8;
+        }
 
-        <input type="hidden" name="operationBoardId" th:value="${operationBoard.id}">
+        /* 게시글 버튼 */
+        .cafe-article-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>댓글 목록</th>
-                </tr>
-            </thead>
-            <!--========================================================================================-->
-            <tbody>
-                <tr align="right">
-                    <td th:if="${operationBoardCommentUpdate == null}">
-                        <textarea id="comment-content" rows="1" class="form-control" name="content"></textarea>
-                        <button type="button" id="btn-save-comment" class="btn btn-secondary"
-                                style="margin-top: 10px" onclick="commentSave();">댓글 등록</button>
-                    </td>
-                    <!--Thymeleaf if문을 사용시 스크립트에서 form의 name, id를 못 찾음-->
-                    <td th:if="${operationBoardCommentUpdate != null}">
-                        <form>
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <input type="hidden" name="operationBoardCommentId" th:value="${operationBoardCommentUpdate.id}">
+        /* 기본 버튼 스타일 */
+        .cafe-action-btn {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--blue-border);
+            font-size: 13px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
 
-                            <textarea rows="1" class="form-control" name="content"
-                                    th:text="${operationBoardCommentUpdate.content}"></textarea>
-                            <!--스크립트 호출할 때 this.form을 넣어 이 폼임을 알림-->
-                            <button type="button" class="btn btn-secondary"
-                                    style="margin-top: 10px" onclick="updateComment(this.form);">댓글 수정</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-            <!--========================================================================================-->
-        </table>
-    </form>
+        /* 버튼별 색상 */
+        .cafe-action-btn.list {
+            background: #f5f5f5;
+            border-color: #ddd;
+            color: #333;
+        }
+        .cafe-action-btn.list:hover {
+            background: #e0e0e0;
+        }
 
-    <div th:if="${!operationBoard.commentList.isEmpty()}">
-        <table class="table">
-            <thead>
-            <tr>
-                <th width="70%">내용</th>
-                <th width="10%">작성자</th>
-                <th width="20%">수정/삭제</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="operationBoardComment : ${commentList}">
-                <td th:text="${operationBoardComment.content}"></td>
-                <td>
-                    <span th:text="${operationBoardComment.member.username}"></span>
-                </td>
-                <td>
-                    <!--========================================================================================-->
-                    <form id="selectOfDeleteOrUpdate">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                        <input type="hidden" name="operationBoardId" th:value="${operationBoard.id}">
-                        <input type="hidden" name="operationBoardCommentId" th:value="${operationBoardComment.id}">
-                        <input type="hidden" name="content" id="commentContentHidden">
-                    </form>
-                    <select id="actionSelect" onchange="selectOption();">
-                        <option value="">선택</option>
-                        <option value="deleteProc">삭제</option>
-                        <option value="updateProc">수정</option>
-                    </select>
-                    <!--========================================================================================-->
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+        .cafe-action-btn.edit {
+            background: #eaf4ff;
+            border-color: #cfe1ff;
+            color: var(--blue-main);
+        }
+        .cafe-action-btn.edit:hover {
+            background: #d6eaff;
+        }
 
-    <div style="margin-top: 20px;" th:if="${!commentList.isEmpty()}">
-        <ul class="pagination">
-            <li class="page-item" th:classappend="${commentList.first} ? 'disabled'">
-                <a class="page-link"
-                   th:href="${commentList.first} ? '#' : @{|?page=${commentList.number-1}|}">
-                    이전
+        .cafe-action-btn.danger {
+            background: #ffeaea;
+            border-color: #f5c2c2;
+            color: #d9534f;
+        }
+        .cafe-action-btn.danger:hover {
+            background: #ffc8c8;
+        }
+
+        /* 댓글 */
+        .cafe-comment-section {
+            border-top: 1px solid var(--blue-border);
+            padding-top: 24px;
+        }
+
+        .cafe-comment-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .cafe-comment-write {
+            border: 1px solid var(--blue-border);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 24px;
+        }
+
+        .cafe-comment-textarea {
+            width: 100%;
+            max-height: 100%;
+            min-height: 56px;
+            padding: 10px 12px;
+            box-sizing: border-box;
+            border: none;
+            resize: none;
+            overflow: hidden;
+            font-size: 14px;
+            line-height: 1.6;
+            outline: none;
+            display: block;
+        }
+
+        .comment-btn-wrap {
+            text-align: right;
+            margin-top: 8px;
+        }
+
+        .cafe-comment-btn {
+            padding: 6px 16px;
+            border-radius: 6px;
+            border: none;
+            background: var(--blue-main);
+            color: var(--white);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .cafe-comment-item {
+            padding: 14px 0;
+            border-bottom: 1px solid #eef2f8;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .comment-writer {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .comment-link-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 12px;
+            color: var(--text-sub);
+            cursor: pointer;
+        }
+        .comment-link-btn:hover {
+            color: var(--blue-main);
+            text-decoration: underline;
+        }
+        .comment-link-btn.danger {
+            color: #d9534f;
+        }
+
+        .comment-content {
+            margin-top: 6px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .comment-meta {
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        /* 댓글 페이징 */
+        .cafe-comment-pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            min-width: 32px;
+            height: 32px;
+            line-height: 32px;
+            padding: 0 10px;
+            border: 1px solid var(--blue-border);
+            border-radius: 6px;
+            background: var(--white);
+            color: var(--text-main);
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .page-btn:hover {
+            background: var(--blue-bg-soft);
+            color: var(--blue-main);
+        }
+
+        .page-btn.active {
+            background: var(--blue-bg-grad);
+            border-color: var(--blue-main);
+            font-weight: 700;
+        }
+
+        .page-btn.disabled {
+            pointer-events: none;
+            color: var(--text-sub);
+            background: #f9fbff;
+        }
+    </style>
+
+    <!-- ================= 본문 ================= -->
+    <div class="page-container">
+
+        <!-- 좌측 사이드바 (기존 그대로) -->
+        <nav class="sb-sidenav-menu">
+            <div class="nav">
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'main'} ? ' active'"
+                   th:href="@{/healthCafe}">
+                    <span class="nav-emoji">🏠</span>카페 홈
                 </a>
-            </li>
 
-            <li class="page-item"
-                th:each="page: ${#numbers.sequence(0, commentList.totalPages-1)}"
-                th:classappend="${page == commentList.number} ? 'active'">
-                <a class="page-link" th:text="${page + 1}" th:href="@{|?page=${page}|}"></a>
-            </li>
-
-            <li class="page-item" th:classappend="${commentList.last} ? 'disabled'">
-                <a class="page-link"
-                   th:href="${commentList.last} ? '#' : @{|?page=${commentList.number+1}|}">
-                    다음
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'noticeBoard'} ? ' active'"
+                   th:href="@{/noticeBoard/list}">
+                    <span class="nav-emoji">📢</span>공지사항
                 </a>
-            </li>
-        </ul>
+
+                <div class="sidenav-section-title">게시판</div>
+
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'communityBoard'} ? ' active'"
+                   th:href="@{/communityBoard/list}">
+                    <span class="nav-emoji">🧩</span>자유게시판
+                </a>
+
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'informationBoard'} ? ' active'"
+                   th:href="@{/informationBoard/list}">
+                    <span class="nav-emoji">🔍</span>정보게시판
+                </a>
+
+                <!-- 운영게시판 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'operationBoard'} ? ' active'"
+                   th:href="@{/informationBoard/list}">
+                    <span class="nav-emoji">📋</span>운영게시판
+                </a>
+            </div>
+        </nav>
+
+        <!-- 게시글 상세 -->
+        <div class="cafe-article-wrap">
+
+            <!-- 제목 -->
+            <div class="cafe-article-header">
+                <h1 class="cafe-article-title"
+                    th:text="${operationBoard.subject}"></h1>
+
+                <div class="cafe-article-meta">
+                    <span th:text="${operationBoard.member.username}"></span>
+                    <span th:text="${#dates.format(operationBoard.createDate,'yyyy.MM.dd')}"></span>
+                    <span>조회 <b th:text="${operationBoard.cnt}"></b></span>
+                </div>
+            </div>
+
+            <!-- 본문 -->
+            <div class="cafe-article-content"
+                 th:utext="${operationBoard.content}"></div>
+
+            <!-- 버튼 -->
+            <div class="cafe-article-actions">
+                <a href="/operationBoard/list" class="cafe-action-btn">목록</a>
+                <a th:href="@{|/operationBoard/update/${operationBoard.id}|}"
+                   class="cafe-action-btn">수정</a>
+                <a th:href="@{|/operationBoard/delete/${operationBoard.id}|}"
+                   class="cafe-action-btn danger">삭제</a>
+            </div>
+
+            <!-- 댓글 -->
+            <div class="cafe-comment-section">
+
+ <!--               <div class="cafe-comment-title">
+                    댓글 <span th:text="${commentList.totalElements}"></span>
+                </div>-->
+
+                <!-- 댓글 작성 -->
+                <form name="commentForm">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" name="operationBoardId"
+                           th:value="${operationBoard.id}"/>
+                    <input type="hidden" name="operationBoardCommentId"
+                           th:if="${operationBoardCommentUpdate != null}"
+                           th:value="${operationBoardCommentUpdate.id}">
+
+                    <div class="cafe-comment-write" th:if="${operationBoardCommentUpdate == null}">
+                        <textarea name="content"
+                                  class="cafe-comment-textarea"
+                                  placeholder="댓글을 남겨보세요"></textarea>
+                        <div class="comment-btn-wrap">
+                            <button type="button"
+                                    class="cafe-comment-btn"
+                                    onclick="commentSave();">등록</button>
+                        </div>
+                    </div>
+                    <div class="cafe-comment-write" th:if="${operationBoardCommentUpdate != null}">
+                        <textarea name="content"
+                                  class="cafe-comment-textarea"
+                                  th:text="${operationBoardCommentUpdate.content}"></textarea>
+                        <div class="comment-btn-wrap">
+                            <button type="button"
+                                    class="cafe-comment-btn"
+                                    onclick="commentUpdate();">수정</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- 댓글 리스트 -->
+                <div class="cafe-comment-list">
+                    <div class="cafe-comment-item"
+                         th:each="comment : ${commentList}">
+                        <div class="comment-header">
+                            <span class="comment-writer"
+                                  th:text="${comment.member.username}"></span>
+
+                            <div class="comment-actions">
+                                <form th:action="@{/operationBoardComment/update}"
+                                      method="post">
+                                    <input type="hidden" name="operationBoardId"
+                                           th:value="${operationBoard.id}"/>
+                                    <input type="hidden" name="operationBoardCommentId"
+                                           th:value="${comment.id}">
+                                    <button class="comment-link-btn">수정</button>
+                                </form>
+
+                                <form th:action="@{/operationBoardComment/deleteProc}"
+                                      method="post"
+                                      onsubmit="return confirm('삭제하시겠습니까?');">
+                                    <input type="hidden" name="operationBoardId"
+                                           th:value="${operationBoard.id}"/>
+                                    <input type="hidden" name="operationBoardCommentId"
+                                           th:value="${comment.id}">
+                                    <button class="comment-link-btn danger">삭제</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="comment-content"
+                             th:text="${comment.content}"></div>
+
+                        <div class="comment-meta"
+                             th:text="${#dates.format(comment.createDate,'MM.dd HH:mm')}"></div>
+                    </div>
+                </div>
+
+                <!-- 댓글 페이징 -->
+                <div class="cafe-comment-pagination"
+                     th:if="${commentList.totalPages > 1}">
+                    <a class="page-btn"
+                       th:classappend="${commentList.first} ? ' disabled'"
+                       th:href="@{|/operationBoard/view/${operationBoard.id}?page=${commentList.number - 1}|}">
+                        이전
+                    </a>
+
+                    <a class="page-btn"
+                       th:each="page : ${#numbers.sequence(0, commentList.totalPages - 1)}"
+                       th:text="${page + 1}"
+                       th:classappend="${page == commentList.number} ? ' active'"
+                       th:href="@{|/operationBoard/view/${operationBoard.id}?page=${page}|}">
+                    </a>
+
+                    <a class="page-btn"
+                       th:classappend="${commentList.last} ? ' disabled'"
+                       th:href="@{|/operationBoard/view/${operationBoard.id}?page=${commentList.number + 1}|}">
+                        다음
+                    </a>
+                </div>
+
+            </div>
+        </div>
     </div>
 
-    <!--댓글 작성-->
+    <!-- JS -->
     <script>
         function commentSave() {
-
-            const commentForm = document.commentForm;
-
-            if (commentForm.content.value.trim() === '') {
-                alert('내용을 입력해주세요');
-                commentForm.content.focus();
-                return;
-            }
-
-            if (confirm('추가하시겠습니까?')) {
-                commentForm.action = "/operationBoardComment/createProc";
-                commentForm.method = "post";
-                commentForm.submit();
-            }
-        }
-    </script>
-
-    <!--========================================================================================-->
-    <!--삭제처리 및 수정 값 불러오기-->
-    <script>
-        function selectOption() {
-
-            const selectOfDeleteOrUpdate = document.getElementById('selectOfDeleteOrUpdate');
-            const actionSelect = document.getElementById('actionSelect');
-
-
-            if (actionSelect.value === 'deleteProc') {
-                if (confirm('삭제하시겠습니까?')) {
-                    selectOfDeleteOrUpdate.action = "/operationBoardComment/deleteProc";
-                    selectOfDeleteOrUpdate.method = "post";
-                    selectOfDeleteOrUpdate.submit();
-                }
-                 actionSelect.value = "";
-            }
-
-             if (actionSelect.value === 'updateProc') {
-                selectOfDeleteOrUpdate.action = "/operationBoardComment/update";
-                selectOfDeleteOrUpdate.method = "post";
-                selectOfDeleteOrUpdate.submit();
-            }
-        }
-    </script>
-
-    <!--수정 처리-->
-    <script>
-        function updateComment(form) {
-
-            // 반복되는 코드 변수에 담기
-            const content = form.content.value.trim();
-
-            if (content === '') {
+            const form = document.commentForm;
+            if (form.content.value.trim() === '') {
                 alert('내용을 입력해주세요');
                 form.content.focus();
                 return;
             }
+            if (confirm('등록하시겠습니까?')) {
+                form.action = '/operationBoardComment/createProc';
+                form.method = 'post';
+                form.submit();
+            }
+        }
 
+        function commentUpdate() {
+            const form = document.commentForm;
+            if (form.content.value.trim() === '') {
+                alert('내용을 입력해주세요');
+                form.content.focus();
+                return;
+            }
             if (confirm('수정하시겠습니까?')) {
-                form.action = "/operationBoardComment/updateProc";
-                form.method = "post";
+                form.action = '/operationBoardComment/updateProc';
+                form.method = 'post';
                 form.submit();
             }
         }
     </script>
-    <!--========================================================================================-->
 
-    <!-- 본문 내용 종료 -->
+    <script>
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        // 모든 댓글 textarea에 적용
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.cafe-comment-textarea').forEach(textarea => {
+                autoResize(textarea);
+                textarea.addEventListener('input', () => autoResize(textarea));
+            });
+        });
+    </script>
+
 </div>
-
 </body>
 </html>

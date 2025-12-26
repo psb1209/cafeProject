@@ -53,11 +53,16 @@
         /* ===== 카드 ===== */
         .subscribe-card {
             background: var(--white);
-            border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 16px;
+            border-radius: 12px;
             border: 1px solid var(--blue-border);
-            box-shadow: 0 6px 18px rgba(30,111,217,0.08);
+            box-shadow: 0 4px 12px rgba(30,111,217,0.05);
+            margin-bottom: 16px;
+            padding: 14px 16px;
+            transition: transform 0.2s;
+        }
+
+        .subscribe-card:hover {
+            transform: translateY(-2px);
         }
 
         /* 카드 헤더 */
