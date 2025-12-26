@@ -1,6 +1,5 @@
 package com.example.cafeProject.member;
 
-import com.example.cafeProject._boardTest.Board;
 import com.example.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

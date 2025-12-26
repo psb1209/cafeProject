@@ -1,21 +1,33 @@
 package com.example.cafeProject.mainCafe;
 
-import com.example.cafeProject.noticeBoard.NoticeBoard;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class MainCafeController {
 
     @GetMapping({"/", ""})
-    public String list(
+    public String mainIndex(
             Model model
     ) {
+        model.addAttribute("activeMenu", "main");
         return "index/mainIndex";
     }
+
+    @GetMapping("/explore_cafes/{code}")
+    public String explore_cafes(
+            @PathVariable("code") String code,
+            Model model
+    ) {
+        if ("subscribe".equals(code)) model.addAttribute("activeMenu", "subscribe");
+        else if ("notice".equals(code)) model.addAttribute("activeMenu", "notice");
+        else if ("cafes_by_location".equals(code)) model.addAttribute("activeMenu", "LOCATION");
+        else if ("featured_cafes".equals(code)) model.addAttribute("activeMenu", "FEATURED");
+        else if ("themed_cafes".equals(code)) model.addAttribute("activeMenu", "THEMED");
+        else if ("top_cafes".equals(code)) model.addAttribute("activeMenu", "TOP");
+        return "explore_cafes/" + code;
+    }
+
 }

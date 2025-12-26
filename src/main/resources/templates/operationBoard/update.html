@@ -1,43 +1,246 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorate="~{_layout/layout}"
+      layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center'">
 <body>
+
 <h1 layout:fragment="pageTitle">헬 사 모</h1>
 <span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
 
 <div layout:fragment="content">
-    <!-- 본문 내용 시작 -->
 
-    <h2>수정</h2>
+    <style>
+        .write-page {
+           display: flex;
+           gap: 24px;
+           background: #f4f8ff;
+           padding: 16px;
+           border-radius: 12px;
+       }
 
-    <form name="DirForm" id="DirForm" th:action="@{/operationBoard/updateProc}" th:method="post">
+       .write-card {
+           flex: 1;
+           background: #fff;
+           border: 1px solid #dbe7ff;
+           border-top: 4px solid #1e6fd9;
+           border-radius: 12px;
+           padding: 28px 32px 32px;
+       }
 
-        <!--<input type="hidden" name="_csrf" th:value="${_csrf.token}">-->
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+       .write-header {
+           font-size: 20px;
+           font-weight: 700;
+           margin-bottom: 24px;
+           color: #1f2a44;
+       }
 
-        <div style="display:none;">
-            <input type="text" name="id" th:value="${operationBoard.id}">
+       .write-group {
+           margin-bottom: 20px;
+       }
+
+       .write-label {
+           display: block;
+           font-size: 14px;
+           font-weight: 600;
+           margin-bottom: 8px;
+           color: #1f2a44;
+       }
+
+       .write-title-input {
+           width: 100%;
+           height: 46px;
+           padding: 0 14px;
+           border-radius: 8px;
+           border: 1px solid #dfe5f1;
+           font-size: 15px;
+       }
+
+       .write-title-input:focus {
+           outline: none;
+           border-color: #1e6fd9;
+           box-shadow: 0 0 0 3px rgba(30,111,217,0.12);
+       }
+
+       .write-editor-wrap {
+           border: 1px solid #dbe7ff;
+           border-radius: 8px;
+           background: #f7faff;
+       }
+
+       .write-action-bar {
+           display: flex;
+           justify-content: flex-end;
+           gap: 10px;
+           margin-top: 24px;
+       }
+
+       .write-btn {
+           min-width: 96px;
+           height: 40px;
+           border-radius: 8px;
+           font-size: 14px;
+           cursor: pointer;
+           border: 1px solid #dfe5f1;
+           background: #fff;
+       }
+
+        .write-btn:hover {
+            background: #f0f0f0; /* 연한 회색 */
+        }
+
+       .write-btn.primary {
+           background: linear-gradient(180deg, #2b7cff, #1e6fd9);
+           border-color: #1e6fd9;
+           color: #fff;
+           font-weight: 600;
+       }
+
+       .write-btn.primary:hover {
+           filter: brightness(0.95);
+       }
+
+    </style>
+
+    <div class="write-page">
+
+        <!-- 좌측 사이드바 -->
+
+        <nav class="sb-sidenav-menu">
+            <div class="nav">
+
+                <!-- 카페 홈 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'main'} ? ' active'"
+                   th:href="@{/healthCafe}">
+                    <span class="nav-emoji">🏠</span>카페 홈
+                </a>
+
+                <!-- 공지 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'noticeBoard'} ? ' active'"
+                   th:href="@{/noticeBoard/list}">
+                    <span class="nav-emoji">📢</span>공지사항
+                </a>
+
+                <div class="sidenav-section-title">게시판</div>
+
+                <!-- 전체글 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'all'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">📄</span>전체글보기
+                </a>
+
+                <!-- 자유게시판 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'communityBoard'} ? ' active'"
+                   th:href="@{/communityBoard/list}">
+                    <span class="nav-emoji">🧩</span>자유게시판
+                </a>
+
+                <!-- 정보게시판 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'informationBoard'} ? ' active'"
+                   th:href="@{/informationBoard/list}">
+                    <span class="nav-emoji">🔍</span>정보게시판
+                </a>
+
+                <!-- 운영게시판 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'operationBoard'} ? ' active'"
+                   th:href="@{/operationBoard/list}">
+                    <span class="nav-emoji">📋</span>운영게시판
+                </a>
+
+                <!-- 사진 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'photo'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">📸</span>사진게시판
+                </a>
+
+                <!-- 질문/정보 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'qna'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">💡</span>질문/정보
+                </a>
+
+                <div class="sidenav-section-title">카페 정보</div>
+
+                <!-- 멤버 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'members'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">👥</span>멤버
+                </a>
+
+                <!-- 소개 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'about'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">ℹ️</span>카페 소개
+                </a>
+
+            </div>
+        </nav>
+
+        <!-- 글쓰기 카드 -->
+        <div class="write-card">
+
+            <div class="write-header">게시글 수정</div>
+
+            <form name="DirForm"
+                  id="DirForm"
+                  th:action="@{/operationBoard/updateProc}"
+                  method="post">
+
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}" />
+
+                <input type="hidden" name="id" th:value="${operationBoard.id}">
+
+                <!-- 제목 -->
+                <div class="write-group">
+                    <label class="write-label">제목</label>
+                    <input type="text"
+                           name="subject"
+                           class="write-title-input"
+                           th:value="${operationBoard.subject}">
+                </div>
+
+                <!-- 내용 -->
+                <div class="write-group">
+                    <label class="write-label">내용</label>
+                    <div class="write-editor-wrap">
+                    <textarea id="content"
+                              name="content" th:utext="${operationBoard.content}"></textarea>
+                    </div>
+                </div>
+
+                <!-- 버튼 -->
+                <div class="write-action-bar">
+                    <button type="button"
+                            class="write-btn"
+                            onclick="history.back();">
+                        취소
+                    </button>
+                    <button type="button"
+                            class="write-btn primary"
+                            onclick="update();">
+                        수정
+                    </button>
+                </div>
+            </form>
+
         </div>
-
-        <div class="mb-3 mt-3">
-            <label for="subject">제목:</label>
-            <input type="text" class="form-control" id="subject" placeholder="Enter subject" name="subject" th:value="${operationBoard.subject}">
-        </div>
-
-        <div class="mb-3">
-            <label for="content">내용:</label>
-            <textarea class="form-control" id="content" placeholder="Enter content" name="content" th:utext="${operationBoard.content}"></textarea>
-        </div>
-
-        <button type="button" id="btn-save" class="btn btn-secondary" onclick="save();">수정</button>
-    </form>
+    </div>
 
     <script>
-        function save() {
-            // 간단한 클라이언트 측 유효성 검사
+        function update() {
             if (document.DirForm.subject.value.trim() === '') {
                 alert('제목을 입력해주세요');
                 document.DirForm.subject.focus();
@@ -48,7 +251,6 @@
                 document.DirForm.content.focus();
                 return;
             }
-
             if (confirm('수정하시겠습니까?')) {
                 document.getElementById('DirForm').submit();
             }
@@ -64,8 +266,6 @@
        });
     </script>
 
-    <!-- 본문 내용 종료 -->
 </div>
-
 </body>
 </html>

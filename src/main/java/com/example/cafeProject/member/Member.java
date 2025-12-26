@@ -1,5 +1,6 @@
 package com.example.cafeProject.member;
 
+import com.example.base.BaseUtility;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -50,8 +51,15 @@ public class Member {
 
     public void increaseReplyCount() { replyCount++; }
 
-
-
-
-
+    @Override
+    public String toString() {
+        return "[Member]: {[id: " + id +
+                "][username: " + username +
+                "][email: " + email +
+                "][role: " + role +
+                "][grade: " + grade +
+                "][createDate: " + BaseUtility.formatTimestamp(createDate, "yyyy-MM-DD") +
+                "][postCnt: " + postCount +
+                "][replyCnt: " + replyCount + "]}";
+    }
 }

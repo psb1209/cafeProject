@@ -1,71 +1,345 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorate="~{_layout/layout}"
-      th:with="headerImage=@{/assets/img/main.jpg},
-               headerPosition='center center'">
+      layout:decorate="~{main_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg}, headerPosition='center center'">
+
 <body>
+
 <h1 layout:fragment="pageTitle">헬 사 모</h1>
 <span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
 
 <div layout:fragment="content">
-    <!-- 본문 내용 시작 -->
 
-    <h2>운영 게시판</h2>
+    <style>
+        :root {
+            --blue-main: #1e6fd9;
+            --blue-bg-grad: linear-gradient(90deg, #eaf4ff, #d6eaff);
+            --blue-bg-soft: #f3f8ff;
+            --blue-border: #cfe1ff;
 
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>순번</th>
-                <th>제목</th>
-                <th>조회수</th>
-                <th>작성자</th>
-                <th>작성일</th>
-            </tr>
-        </thead>
+            --text-main: #1f2a44;
+            --text-sub: #6b7a99;
+            --white: #ffffff;
+        }
 
-        <tbody>
-            <tr th:each="operationBoard, loop : ${operationBoardList}"
-                th:onclick="|location.href='@{|/operationBoard/view/${operationBoard.id}|}'|"
-                style="cursor: pointer;">
-                <td th:text="${loop.index+1}"></td>
-                <td th:text="${operationBoard.subject}"></td>
-                <td th:text="${operationBoard.cnt}"></td>
-                <td th:text="${operationBoard.member.username}"></td>
-                <!--<td> - </td>-->
-                <td th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td> <!--build.gradle 추가-->
-            </tr>
-        </tbody>
-    </table>
+        .cafe-board-wrap {
+            border-top: 4px solid #1e6fd9;
+            background: var(--white);
+            border-radius: 10px;
+            padding: 28px;
+            font-size: 14px;
+            flex: 1;
+            min-width: 0;
+        }
 
-    <div style="margin-top: 20px;" th:if="${!operationBoardList.isEmpty()}">
-        <ul class="pagination">
-            <li class="page-item" th:classappend="${operationBoardList.first} ? 'disabled'">
-                <a class="page-link"
-                   th:href="${operationBoardList.first} ? '#' : @{|?page=${operationBoardList.number-1}|}">
+        /* 게시판 상단 (제목 + 글쓰기 버튼) */
+        .cafe-board-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--blue-main);
+        }
+
+        /* 게시판 제목 */
+        .cafe-board-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        /* 글쓰기 버튼 영역 */
+        .cafe-article-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* 공통 버튼 */
+        .cafe-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--blue-border);
+            background: var(--white);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        /* 글쓰기 버튼 강조 */
+          .cafe-action-btn.write {
+            background: #e6f0ff;
+            border-color: #9fc0f5;
+            color: var(--blue-main);
+        }
+
+        .cafe-action-btn.write:hover {
+            background: #d6e8ff;
+        }
+
+        /* ===============================
+           테이블
+        =============================== */
+        .cafe-board-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cafe-board-table thead th {
+            background: var(--blue-bg-soft);
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 13px;
+            padding: 13px 10px;
+            border-bottom: 1px solid var(--blue-border);
+            text-align: center;
+        }
+
+        .cafe-board-table tbody td {
+            padding: 14px 10px;
+            border-bottom: 1px solid #eef2f8;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        /* 제목 컬럼 */
+        .cafe-board-table .col-subject {
+            text-align: left;
+            padding-left: 20px;
+            font-weight: 500;
+        }
+
+        /* hover */
+        .cafe-board-table tbody tr {
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        .cafe-board-table tbody tr:hover {
+            background: var(--blue-bg-soft);
+        }
+
+        .cafe-board-table tbody tr:hover .col-subject {
+            color: var(--blue-main);
+            text-decoration: underline;
+        }
+
+        /* 보조 컬럼 톤 다운 */
+        .col-cnt,
+        .col-date {
+            color: var(--text-sub);
+            font-size: 13px;
+        }
+
+                .cafe-pagination {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .page-btn {
+            min-width: 34px;
+            height: 34px;
+            line-height: 34px;
+            padding: 0 12px;
+            border: 1px solid var(--blue-border);
+            border-radius: 6px;
+            background: var(--white);
+            color: var(--text-main);
+            font-size: 13px;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .page-btn:hover {
+            background: var(--blue-bg-soft);
+            color: var(--blue-main);
+        }
+
+        .page-btn.active {
+            background: var(--blue-bg-grad);
+            border-color: var(--blue-main);
+            color: var(--blue-main);
+            font-weight: 700;
+        }
+
+        .page-btn.disabled {
+            color: var(--text-sub);
+            background: #f9fbff;
+            pointer-events: none;
+        }
+
+    </style>
+
+    <div class="page-container">
+
+        <!-- 좌측 사이드바 -->
+
+        <nav class="sb-sidenav-menu">
+            <div class="nav">
+
+                <!-- 카페 홈 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'main'} ? ' active'"
+                   th:href="@{/healthCafe}">
+                    <span class="nav-emoji">🏠</span>카페 홈
+                </a>
+
+                <!-- 공지 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'noticeBoard'} ? ' active'"
+                   th:href="@{/noticeBoard/list}">
+                    <span class="nav-emoji">📢</span>공지사항
+                </a>
+
+                <div class="sidenav-section-title">게시판</div>
+
+                <!-- 전체글 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'all'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">📄</span>전체글보기
+                </a>
+
+                <!-- 자유게시판 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'communityBoard'} ? ' active'"
+                   th:href="@{/communityBoard/list}">
+                    <span class="nav-emoji">🧩</span>자유게시판
+                </a>
+
+                <!-- 정보게시판 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'informationBoard'} ? ' active'"
+                   th:href="@{/informationBoard/list}">
+                    <span class="nav-emoji">🔍</span>정보게시판
+                </a>
+
+                <!-- 운영게시판 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'operationBoard'} ? ' active'"
+                   th:href="@{/operationBoard/list}">
+                    <span class="nav-emoji">📋</span>운영게시판
+                </a>
+
+                <!-- 사진 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'photo'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">📸</span>사진게시판
+                </a>
+
+                <!-- 질문/정보 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'qna'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">💡</span>질문/정보
+                </a>
+
+                <div class="sidenav-section-title">카페 정보</div>
+
+                <!-- 멤버 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'members'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">👥</span>멤버
+                </a>
+
+                <!-- 소개 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'about'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">ℹ️</span>카페 소개
+                </a>
+
+            </div>
+        </nav>
+
+        <div class="cafe-board-wrap">
+            <div class="cafe-board-header">
+                <div class="cafe-board-title">운영 게시판</div>
+
+                <div class="cafe-article-actions">
+                    <a th:href="@{/operationBoard/create}"
+                       class="cafe-action-btn write">
+                        ✏️ 게시글 작성
+                    </a>
+                </div>
+            </div>
+
+            <table class="cafe-board-table">
+                <thead>
+                <tr>
+                    <th class="col-no">순번</th>
+                    <th class="col-subject">제목</th>
+                    <th class="col-cnt">조회수</th>
+                    <th class="col-writer">작성자</th>
+                    <th class="col-date">작성일</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="operationBoard, loop : ${operationBoardList}"
+                    th:onclick="|location.href='@{|/operationBoard/view/${operationBoard.id}|}'|">
+
+                    <td th:text="${loop.index + 1}"></td>
+                    <td class="col-subject" th:text="${operationBoard.subject}"></td>
+                    <td th:text="${operationBoard.cnt}"></td>
+                    <td th:text="${operationBoard.member.username}"></td>
+                    <td th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- 페이지네이션 -->
+            <div class="cafe-pagination" th:if="${!operationBoardList.isEmpty()}">
+
+                <span class="page-btn disabled"
+                      th:if="${operationBoardList.first}">이전</span>
+
+                <a class="page-btn"
+                   th:if="${!operationBoardList.first}"
+                   th:href="@{|?page=${operationBoardList.number-1}|}">
                     이전
                 </a>
-            </li>
 
-            <li class="page-item"
-                th:each="page: ${#numbers.sequence(0, operationBoardList.totalPages-1)}"
-                th:classappend="${page == operationBoardList.number} ? 'active'">
-                <a class="page-link" th:text="${page + 1}" th:href="@{|?page=${page}|}"></a>
-            </li>
+                <span th:each="page : ${#numbers.sequence(0, operationBoardList.totalPages-1)}"
+                      th:text="${page + 1}"
+                      class="page-btn"
+                      th:classappend="${page == operationBoardList.number} ? ' active'"
+                      th:if="${page == operationBoardList.number}">
+                </span>
 
-            <li class="page-item" th:classappend="${operationBoardList.last} ? 'disabled'">
-                <a class="page-link"
-                   th:href="${operationBoardList.last} ? '#' : @{|?page=${operationBoardList.number+1}|}">
+                <a th:each="page : ${#numbers.sequence(0, operationBoardList.totalPages-1)}"
+                   th:if="${page != operationBoardList.number}"
+                   th:text="${page + 1}"
+                   class="page-btn"
+                   th:href="@{|?page=${page}|}">
+                </a>
+
+                <span class="page-btn disabled"
+                      th:if="${operationBoardList.last}">다음</span>
+
+                <a class="page-btn"
+                   th:if="${!operationBoardList.last}"
+                   th:href="@{|?page=${operationBoardList.number+1}|}">
                     다음
                 </a>
-            </li>
-        </ul>
+            </div>
+        </div>
     </div>
-    
-    <!-- 본문 내용 종료 -->
 </div>
 
-<script th:if="${operationBoard.isEmpty()}">
+<script th:if="${operationBoardList.isEmpty()}">
     alert([[${errMsg}]]);
 </script>
 

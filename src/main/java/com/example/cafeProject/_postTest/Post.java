@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "posts")
@@ -28,7 +29,14 @@ public class Post extends BaseEntity {
     private Integer cnt;
 
     @Builder.Default
+    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
     private boolean notice = false;
+
+    @Builder.Default
+    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean deleted = false;
+
+    private Timestamp deletedAt;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

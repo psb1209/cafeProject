@@ -19,8 +19,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +73,16 @@ public class PostController {
         return boardService.viewDTOByCode(b);
     }
 
+    /** dto에 값을 담을 때 해당 필드는 무시됨 */
+    protected String[] disallowedFields() {
+        return new String[]{"memberId", "username", "createDate", "deleted", "deletedAt", "titleKey"};
+    }
+
+    @InitBinder("data")
+    public void initBinder(WebDataBinder binder) {
+        binder.setDisallowedFields(disallowedFields());
+    }
+
     @GetMapping("/list")
     public String list(
             @RequestParam(name = "b") String code,
@@ -88,11 +100,13 @@ public class PostController {
     public String view(
             @RequestParam(name="b", required = false) String code,
             @PathVariable int id,
+            Authentication authentication,
             Model model
     ) {
         PostDTO dto = postService.viewDetailDTO(id);
         if (code == null || code.isBlank()) return "redirect:/post/view/" + id + "?b=" + dto.getBoardCode();
         model.addAttribute("data", dto);
+        model.addAttribute("canEdit", postService.canEdit(id, authentication));
         return "post/view";
     }
 
@@ -159,6 +173,24 @@ public class PostController {
             return "post/update";
         } catch (Exception e) {
             return "redirect:/error/runtimeErrorPage";
+        }
+    }
+
+    @PostMapping("/deleteProc/{id}")
+    public String deleteProc(
+            @PathVariable int id,
+            @RequestParam(name="b") String code,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            PostDTO dto = postService.newDTO();
+            dto.setId(id);
+
+            postService.softDelete(dto); // 소프트 삭제로 동작 (@SQLDelete)
+            return "redirect:/post/list?b=" + code;
+        } catch (AccessDeniedException | PermissionDeniedException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/post/view/" + id + "?b=" + code;
         }
     }
 

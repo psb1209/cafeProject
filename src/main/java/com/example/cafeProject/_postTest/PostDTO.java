@@ -3,6 +3,7 @@ package com.example.cafeProject._postTest;
 import com.example.base.BaseDTO;
 import com.example.cafeProject.validation.ValidationGroups;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -35,6 +38,12 @@ public class PostDTO extends BaseDTO {
     private Integer cnt;
 
     private boolean notice;
+
+    @Null
+    private Boolean deleted;
+
+    @Null
+    private Timestamp deletedAt;
 
     private Integer boardId;
 

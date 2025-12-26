@@ -1,5 +1,6 @@
 package com.example.cafeProject.member;
 
+import com.example.base.BaseUtility;
 import jakarta.validation.constraints.*;
 import com.example.cafeProject.validation.ValidationGroups;
 import lombok.*;
@@ -76,5 +77,17 @@ public class MemberDTO { //일반적인 상황에서 Member 관련 처리를 수
         if (username != null) username = username.trim();
         if (password != null) password = password.trim();
         if (email != null) email = email.trim().toLowerCase();
+    }
+
+    @Override
+    public String toString() {
+        return "[MemberDTO]: {[id: " + id +
+                "][username: " + username +
+                "][email: " + email +
+                "][role: " + role +
+                "][grade: " + grade +
+                "][createDate: " + BaseUtility.formatTimestamp(createDate, "yyyy-MM-DD") +
+                "][postCnt: " + postCount +
+                "][replyCnt: " + replyCount + "]}";
     }
 }

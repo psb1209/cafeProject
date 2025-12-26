@@ -37,6 +37,8 @@ public class OperationBoardController {
 
     String dirName = "operationBoard";
 
+
+
     @GetMapping("/list")
     public String list(
             Model model,
@@ -44,6 +46,7 @@ public class OperationBoardController {
     ) {
         Page<OperationBoard> operationBoardList = operationBoardService.list(pageable);
         model.addAttribute("operationBoardList", operationBoardList);
+        model.addAttribute("activeMenu", "operationBoard");
         return dirName + "/list";
     }
 
@@ -59,6 +62,7 @@ public class OperationBoardController {
             Page<OperationBoardComment> commentList = operationBoardCommentService.getCommentListPage(operationBoardDTO.getId(), pageable);
             model.addAttribute("commentList", commentList);
             operationBoardService.cntPlus(operationBoard);
+            model.addAttribute("activeMenu", "operationBoard");
             return dirName + "/view";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1111");
@@ -68,7 +72,10 @@ public class OperationBoardController {
     }
 
     @GetMapping("/create")
-    public String create() {
+    public String create(
+            Model model
+    ) {
+        model.addAttribute("activeMenu", "operationBoard");
         return dirName + "/create";
     }
 
@@ -80,6 +87,7 @@ public class OperationBoardController {
         try {
             OperationBoard operationBoard = operationBoardService.getSelectOneById(operationBoardDTO);
             model.addAttribute("operationBoard", operationBoard);
+            model.addAttribute("activeMenu", "operationBoard");
             return dirName + "/update";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1111");
@@ -96,6 +104,7 @@ public class OperationBoardController {
         try {
             OperationBoard operationBoard = operationBoardService.getSelectOneById(operationBoardDTO);
             model.addAttribute("operationBoard", operationBoard);
+            model.addAttribute("activeMenu", "operationBoard");
             return dirName + "/delete";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1111");
@@ -163,7 +172,7 @@ public class OperationBoardController {
             return "redirect:/" + dirName + "/list";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1111");
-            model.addAttribute("errCode", e.getMessage());
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         } catch (Exception e) {
             model.addAttribute("errCode", "err2422");

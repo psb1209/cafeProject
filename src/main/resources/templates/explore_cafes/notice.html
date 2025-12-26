@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{main_layout/layout}"
+      th:with="headerImage=@{/assets/img/about-bg.jpg},
+               headerPosition='center center'">
+
+<body>
+<div layout:fragment="content">
+
+    <style>
+        :root {
+            --blue-main: #1e6fd9;
+            --blue-bg-grad: linear-gradient(90deg, #eaf4ff, #d6eaff);
+            --blue-bg-soft: #f3f8ff;
+            --blue-border: #cfe1ff;
+
+            --text-main: #1f2a44;
+            --text-sub: #6b7a99;
+            --white: #ffffff;
+        }
+
+        /* ===== 피드 ===== */
+        .subscribe-feed {
+            padding: 16px;
+        }
+
+        /* ===== 카드 ===== */
+        .subscribe-card {
+            background: var(--white);
+            border-radius: 12px;
+            border: 1px solid var(--blue-border);
+            box-shadow: 0 4px 12px rgba(30,111,217,0.05);
+            margin-bottom: 16px;
+            padding: 14px 16px;
+            transition: transform 0.2s;
+        }
+
+        .subscribe-card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* 카드 헤더 */
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .cafe-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #5fa0ff, #1e6fd9);
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .cafe-info {
+            flex: 1;
+        }
+
+        .cafe-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .cafe-meta {
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        /* ===== 게시글 리스트 ===== */
+        .post-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            border-top: 1px solid var(--blue-border);
+        }
+
+        .post-list li {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--blue-border);
+            cursor: pointer;
+        }
+
+        .post-list li:last-child {
+            border-bottom: none;
+        }
+
+        .post-title {
+            flex: 1;
+            color: var(--text-main);
+        }
+
+        .post-time {
+            color: var(--text-sub);
+            font-size: 12px;
+            white-space: nowrap;
+            margin-left: 8px;
+        }
+
+        /* ===== 카드 푸터 ===== */
+        .card-footer {
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--blue-main);
+            font-weight: 600;
+            cursor: pointer;
+            text-align: right;
+        }
+
+        /* ===== 오른쪽 사이드 ===== */
+        .cafe-side {
+            position: sticky;
+            top: 16px;
+        }
+
+        .side-card {
+            background: var(--white);
+            border: 1px solid var(--blue-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(30,111,217,0.05);
+        }
+
+        /* ===== 버튼 ===== */
+        .login-btn, .create-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .login-btn {
+            background: var(--blue-main);
+            color: #fff;
+        }
+
+        .create-btn {
+            background: var(--blue-bg-soft);
+            color: var(--blue-main);
+        }
+    </style>
+
+
+
+    <div class="page-container">
+
+        <!-- 좌측 사이드바 -->
+
+        <nav class="sb-sidenav-menu">
+            <div class="nav">
+
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'main'} ? ' active'"
+                   href="/">
+                    <span class="nav-emoji">🏠</span>카페 홈
+                </a>
+
+                <a class="nav-link" href="/explore_cafes/neighbor">
+                    <span class="nav-emoji">👥</span>이웃
+                </a>
+
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'subscribe'} ? ' active'"
+                   href="/explore_cafes/subscribe">
+                    <span class="nav-emoji">⭐</span>구독
+                </a>
+
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'notice'} ? ' active'"
+                   href="/explore_cafes/notice">
+                    <span class="nav-emoji">🔔</span>내 소식
+                </a>
+
+                <div class="sidenav-section-title">카페 탐색</div>
+
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'THEMED'} ? ' active'"
+                   href="/explore_cafes/themed_cafes">
+                    <span class="nav-emoji">📂</span>주제별 카페
+                </a>
+
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'LOCATION'} ? ' active'"
+                   href="/explore_cafes/cafes_by_location">
+                    <span class="nav-emoji">📍</span>지역별 카페
+                </a>
+
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'TOP'} ? ' active'"
+                   href="/explore_cafes/top_cafes">
+                    <span class="nav-emoji">👑</span>대표 카페
+                </a>
+
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'FEATURED'} ? ' active'"
+                   href="/explore_cafes/featured_cafes">
+                    <span class="nav-emoji">📈</span>카페 랭킹
+                </a>
+
+            </div>
+        </nav>
+
+        <!-- 중앙 콘텐츠 + 오른쪽 카드 -->
+        <div class="cafe-layout">
+
+            <div class="cafe-list-wrap">
+                <h4>내 소식</h4>
+
+                <!-- 상단 탭 -->
+                <div class="cafe-topbar">
+                    <div class="cafe-tabs">
+                        <button class="tab active">전체</button>
+                        <button class="tab">카페별</button>
+                        <button class="tab">댓글/좋아요</button>
+                    </div>
+                </div>
+
+                <!-- 내 소식 피드 -->
+                <div class="subscribe-feed">
+
+                    <!-- 소식 카드 -->
+                    <section class="subscribe-card">
+                        <div class="card-header">
+                            <div class="cafe-icon"></div>
+                            <div class="cafe-info">
+                                <div class="cafe-name">여행을 사랑하는 사람들</div>
+                                <div class="cafe-meta">댓글 알림 · 2시간 전</div>
+                            </div>
+                        </div>
+
+                        <ul class="post-list">
+                            <li>
+                                <span class="post-title">“강릉 바다 여행기” 글에 새로운 댓글이 달렸습니다</span>
+                                <span class="post-time">· 2시간 전</span>
+                            </li>
+                            <li>
+                                <span class="post-title">“서울 근교 당일치기 여행” 글에 좋아요를 받았습니다</span>
+                                <span class="post-time">· 3시간 전</span>
+                            </li>
+                            <li>
+                                <span class="post-title">“겨울 제주도 여행 추천” 글에 답글이 달렸습니다</span>
+                                <span class="post-time">· 어제</span>
+                            </li>
+                        </ul>
+
+                        <div class="card-footer">카페 바로가기 ></div>
+                    </section>
+
+                    <section class="subscribe-card">
+                        <div class="card-header">
+                            <div class="cafe-icon dev"></div>
+                            <div class="cafe-info">
+                                <div class="cafe-name">개발자 카페</div>
+                                <div class="cafe-meta">좋아요 알림 · 1시간 전</div>
+                            </div>
+                        </div>
+
+                        <ul class="post-list">
+                            <li>
+                                <span class="post-title">“React 18 새로운 기능” 글에 좋아요가 달렸습니다</span>
+                                <span class="post-time">· 1시간 전</span>
+                            </li>
+                            <li>
+                                <span class="post-title">“Spring Boot 프로젝트 구조” 글에 댓글이 달렸습니다</span>
+                                <span class="post-time">· 오늘</span>
+                            </li>
+                            <li>
+                                <span class="post-title">“프론트엔드 로드맵” 글에 답글이 달렸습니다</span>
+                                <span class="post-time">· 3일 전</span>
+                            </li>
+                        </ul>
+
+                        <div class="card-footer">카페 바로가기 ></div>
+                    </section>
+
+                    <section class="subscribe-card">
+                        <div class="card-header">
+                            <div class="cafe-icon"></div>
+                            <div class="cafe-info">
+                                <div class="cafe-name">N플리마켓</div>
+                                <div class="cafe-meta">거래 알림 · 30분 전</div>
+                            </div>
+                        </div>
+
+                        <ul class="post-list">
+                            <li>
+                                <span class="post-title">구매하신 “겨울 여행 가이드북” 상품이 배송 준비 중입니다</span>
+                                <span class="post-time">· 30분 전</span>
+                            </li>
+                            <li>
+                                <span class="post-title">판매하신 “프로그래밍 책 세트” 상품에 새로운 문의가 도착했습니다</span>
+                                <span class="post-time">· 오늘</span>
+                            </li>
+                            <li>
+                                <span class="post-title">판매하신 “웹 개발 입문서” 상품이 구매 완료되었습니다</span>
+                                <span class="post-time">· 어제</span>
+                            </li>
+                        </ul>
+
+                        <div class="card-footer">마켓 바로가기 ></div>
+                    </section>
+
+
+                </div>
+            </div>
+
+
+            <!-- 오른쪽 로그인/카페 만들기 -->
+            <aside class="cafe-side">
+                <!-- 로그인 카드 -->
+                <div class="side-card">
+                    <!--                    <div class="side-title">로그인</div>
+                                        <input class="side-input" placeholder="아이디">
+                                        <input class="side-input" type="password" placeholder="비밀번호">-->
+                    <button class="login-btn" th:onclick="|location.href='@{/member/login}'|">로그인</button>
+
+                    <!-- ===== 로그인 하단 링크 ===== -->
+                    <div class="login-footer">
+                        <span>|</span>
+                        <a href="/signup">회원가입</a>
+                        <span>|</span>
+                        <!--                        <a href="/find-id">아이디 찾기</a>
+                                                <span>|</span>
+                                                <a href="/find-password">비밀번호 찾기</a>-->
+                    </div>
+                </div>
+                <div class="side-card">
+                    <button class="create-btn">말고 다른거</button>
+                </div>
+            </aside>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleSide() {
+            document.querySelector('.page-container')
+                .classList.toggle('folded');
+        }
+    </script>
+
+</div>
+
+</body>
+</html>
