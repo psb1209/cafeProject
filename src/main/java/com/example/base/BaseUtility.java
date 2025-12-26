@@ -320,6 +320,7 @@ public class BaseUtility {
 
         @Override
         public String toString() {
+            if (this.n == 0L) return "0";
             return (this.d == 1L) ? Long.toString(this.n) : (this.n + "/" + this.d);
         }
     }
