@@ -139,7 +139,7 @@
             font-size: 13px;
         }
 
-                .cafe-pagination {
+        .cafe-pagination {
             margin-top: 30px;
             display: flex;
             justify-content: center;
@@ -300,41 +300,33 @@
                 </tbody>
             </table>
 
-            <!-- 페이지네이션 -->
-            <div class="cafe-pagination" th:if="${!operationBoardList.isEmpty()}">
+                <!-- 댓글 페이징 -->
+                <div class="cafe-pagination" th:if="${!operationBoardList.isEmpty()}">
 
-                <span class="page-btn disabled"
-                      th:if="${operationBoardList.first}">이전</span>
+                    <!-- 이전 버튼 -->
+                    <a class="page-btn"
+                       th:classappend="${operationBoardList.first} ? ' disabled'"
+                       th:href="@{|/operationBoard/list?page=${operationBoardList.number - 1}|}">이전</a>
 
-                <a class="page-btn"
-                   th:if="${!operationBoardList.first}"
-                   th:href="@{|?page=${operationBoardList.number-1}|}">
-                    이전
-                </a>
+                    <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
+                    <th:block th:with="
+                            startPage=${operationBoardList.number - 2 > 0 ? operationBoardList.number - 2 : 0},
+                            endPage=${operationBoardList.number + 2 < operationBoardList.totalPages - 1 ? operationBoardList.number + 2 : operationBoardList.totalPages - 1}">
 
-                <span th:each="page : ${#numbers.sequence(0, operationBoardList.totalPages-1)}"
-                      th:text="${page + 1}"
-                      class="page-btn"
-                      th:classappend="${page == operationBoardList.number} ? ' active'"
-                      th:if="${page == operationBoardList.number}">
-                </span>
+                        <a class="page-btn"
+                           th:each="page : ${#numbers.sequence(startPage, endPage)}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == operationBoardList.number} ? ' active'"
+                           th:href="@{|/operationBoard/list?page=${page}|}"></a>
+                    </th:block>
 
-                <a th:each="page : ${#numbers.sequence(0, operationBoardList.totalPages-1)}"
-                   th:if="${page != operationBoardList.number}"
-                   th:text="${page + 1}"
-                   class="page-btn"
-                   th:href="@{|?page=${page}|}">
-                </a>
-
-                <span class="page-btn disabled"
-                      th:if="${operationBoardList.last}">다음</span>
-
-                <a class="page-btn"
-                   th:if="${!operationBoardList.last}"
-                   th:href="@{|?page=${operationBoardList.number+1}|}">
-                    다음
-                </a>
+                    <!-- 다음 버튼 -->
+                    <a class="page-btn"
+                       th:classappend="${operationBoardList.last} ? ' disabled'"
+                       th:href="@{|/operationBoard/list?page=${operationBoardList.number + 1}|}">다음</a>
+                </div>
             </div>
+
         </div>
     </div>
 </div>
