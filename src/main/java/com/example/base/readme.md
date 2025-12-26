@@ -202,6 +202,41 @@
     BaseImageController에서 기본적으로 제공하는 이미지 업로드 url은 다음과 같습니다.
     POST /example/uploadImage    : 이미지 업로드 (/example 기준)
 
+## BaseUtility
+    문자열/시간/수학(분수) 관련 공용 유틸을 모아 둔 클래스입니다.
+
+### 1) 한글 정규화(검색용 Key 생성)
+    게시글/게시판 제목처럼 "한글 + 공백 + 영문/숫자"가 섞인 문자열을 검색 친화적인 Key로 바꿔줍니다.
+
+    - toKey(s) : 한글 음절을 초/중/종성으로 분해해 이어붙임
+        예) "사과" → "ㅅㅏㄱㅘ", "삭제" → "ㅅㅏㄱㅈㅔ"
+    - toChosungKey(s) : 한글 음절에서 초성만 추출
+        예) "사과" → "ㅅㄱ", "삭제" → "ㅅㅈ"
+    - jaeumCutter(ch) : 겹자음(ㄳ, ㄵ …)을 분해
+    - jaeumBreaker(s) : 문자열의 겹자음을 전부 분해한 뒤 초성 19개만 남김
+    - isChosungQuery(s) : 사용자가 "ㅅㄱ"처럼 초성만 입력했는지 판별
+
+    사용 예시:
+    - DB에 titleKey = toKey(title), titleChosungKey = toChosungKey(title) 형태로 저장해두고,
+      사용자가 입력한 keyword에 대해 isChosungQuery(keyword)면 초성 컬럼으로, 아니면 일반 컬럼으로 검색 분기할 때 사용합니다.
+
+### 2) 시간 포맷 유틸(Timestamp → String)
+    Timestamp를 지정한 타임존/패턴으로 문자열로 바꿉니다.
+    - 기본 패턴: "yyyy-MM-dd HH:mm:ss"
+    - 기본 타임존: Asia/Seoul
+
+    오버로드:
+    - formatTimestamp(ts)
+    - formatTimestamp(ts, pattern)
+    - formatTimestamp(ts, pattern, zoneId)
+
+### 3) 분수(유리수) 계산 유틸: BaseUtility.Rational
+    주사위/확률 계산처럼 “0.5 처리” 같은 연산을 정확한 분수 형태로 다루고 싶을 때 쓰는 간단한 유틸 클래스입니다.
+    - 생성 시 약분(gcd) 및 분모 부호 정규화
+    - add / subtract / multiply / divide 지원
+    - toDouble(), compareTo(), toString() 제공
+    - 주의: long 기반기 때문에 큰 값/연속 연산에는 적합하지 않습니다.
+
 ## HTML에서 데이터 불러올 때 참고사항
     BaseCrudController를 상속받을 경우 개별 데이터는 "data",
     목록 데이터는 "list"라는 이름으로 Model에 담겨 전달됩니다.
