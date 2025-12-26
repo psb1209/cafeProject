@@ -15,6 +15,6 @@ public interface OperationBoardCommentRepository extends JpaRepository<Operation
 
     List<OperationBoardComment> findByOperationBoardId(int operationBoardId);
 
-/*    @Query("select count(:operationBoardId) from operationBoardComment")
+/*    @Query("select count(:operationBoardId) from OperationBoardComment")
     public void countComment(int operationBoardId);*/
 }
