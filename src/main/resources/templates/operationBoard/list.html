@@ -204,11 +204,11 @@
                 <div class="sidenav-section-title">게시판</div>
 
                 <!-- 전체글 -->
-<!--                <a class="nav-link"
+                <a class="nav-link"
                    th:classappend="${activeMenu == 'all'} ? ' active'"
-                   th:href="@{/noticeBoard/list}">
+                   href="#">
                     <span class="nav-emoji">📄</span>전체글보기
-                </a>-->
+                </a>
 
                 <!-- 자유게시판 -->
                 <a class="nav-link"
@@ -227,39 +227,39 @@
                 <!-- 운영게시판 -->
                 <a class="nav-link"
                    th:classappend="${activeMenu == 'operationBoard'} ? ' active'"
-                   th:href="@{/informationBoard/list}">
-                    <span class="nav-emoji">🔍</span>운영게시판
+                   th:href="@{/operationBoard/list}">
+                    <span class="nav-emoji">📋</span>운영게시판
                 </a>
 
-<!--                &lt;!&ndash; 사진 &ndash;&gt;
+                <!-- 사진 -->
                 <a class="nav-link"
                    th:classappend="${activeMenu == 'photo'} ? ' active'"
-                   th:href="@{|/cafe/${cafe.id}/board/photo|}">
+                   href="#">
                     <span class="nav-emoji">📸</span>사진게시판
                 </a>
 
-                &lt;!&ndash; 질문/정보 &ndash;&gt;
+                <!-- 질문/정보 -->
                 <a class="nav-link"
                    th:classappend="${activeMenu == 'qna'} ? ' active'"
-                   th:href="@{|/cafe/${cafe.id}/board/qna|}">
-                    <span class="nav-emoji">❓</span>질문/정보
+                   href="#">
+                    <span class="nav-emoji">💡</span>질문/정보
                 </a>
 
                 <div class="sidenav-section-title">카페 정보</div>
 
-                &lt;!&ndash; 멤버 &ndash;&gt;
+                <!-- 멤버 -->
                 <a class="nav-link"
                    th:classappend="${activeMenu == 'members'} ? ' active'"
-                   th:href="@{|/cafe/${cafe.id}/members|}">
+                   href="#">
                     <span class="nav-emoji">👥</span>멤버
-                </a>-->
+                </a>
 
                 <!-- 소개 -->
-  <!--              <a class="nav-link"
+                <a class="nav-link"
                    th:classappend="${activeMenu == 'about'} ? ' active'"
-                   th:href="@{|/cafe/${cafe.id}/about|}">
+                   href="#">
                     <span class="nav-emoji">ℹ️</span>카페 소개
-                </a>-->
+                </a>
 
             </div>
         </nav>

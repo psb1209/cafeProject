@@ -105,27 +105,85 @@
 
     <div class="write-page">
 
-        <!-- 좌측 사이드바 (기존 그대로) -->
+        <!-- 좌측 사이드바 -->
+
         <nav class="sb-sidenav-menu">
             <div class="nav">
-                <a class="nav-link" th:href="@{/healthCafe}">
+
+                <!-- 카페 홈 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'main'} ? ' active'"
+                   th:href="@{/healthCafe}">
                     <span class="nav-emoji">🏠</span>카페 홈
                 </a>
-                <a class="nav-link" th:href="@{/noticeBoard/list}">
+
+                <!-- 공지 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'noticeBoard'} ? ' active'"
+                   th:href="@{/noticeBoard/list}">
                     <span class="nav-emoji">📢</span>공지사항
                 </a>
 
                 <div class="sidenav-section-title">게시판</div>
 
-                <a class="nav-link" th:href="@{/communityBoard/list}">
+                <!-- 전체글 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'all'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">📄</span>전체글보기
+                </a>
+
+                <!-- 자유게시판 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'communityBoard'} ? ' active'"
+                   th:href="@{/communityBoard/list}">
                     <span class="nav-emoji">🧩</span>자유게시판
                 </a>
-                <a class="nav-link" th:href="@{/informationBoard/list}">
+
+                <!-- 정보게시판 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'informationBoard'} ? ' active'"
+                   th:href="@{/informationBoard/list}">
                     <span class="nav-emoji">🔍</span>정보게시판
                 </a>
-                <a class="nav-link active">
+
+                <!-- 운영게시판 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'operationBoard'} ? ' active'"
+                   th:href="@{/operationBoard/list}">
                     <span class="nav-emoji">📋</span>운영게시판
                 </a>
+
+                <!-- 사진 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'photo'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">📸</span>사진게시판
+                </a>
+
+                <!-- 질문/정보 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'qna'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">💡</span>질문/정보
+                </a>
+
+                <div class="sidenav-section-title">카페 정보</div>
+
+                <!-- 멤버 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'members'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">👥</span>멤버
+                </a>
+
+                <!-- 소개 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'about'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">ℹ️</span>카페 소개
+                </a>
+
             </div>
         </nav>
 
