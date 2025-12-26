@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -32,6 +34,7 @@ public class InformationBoard {
     @CreationTimestamp
     private Timestamp createDate;
 
+    @OnDelete(action = OnDeleteAction.CASCADE) //회원삭제하면 관련 게시글 모두 삭제되도록
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberId")
     private Member member;

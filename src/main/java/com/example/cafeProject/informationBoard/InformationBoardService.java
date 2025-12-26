@@ -61,10 +61,10 @@ public class InformationBoardService {
        InformationBoard informationBoard = InformationBoard.dtoToEntity(informationBoardDTO, member);
        member.increasePostCount(); //게시글 작성 +1
        informationBoardRepository.save(informationBoard);
-        if (informationBoard.getMember().getPostCount() >= 50 && informationBoard.getMember().getReplyCount() >= 100) {
+        if (informationBoard.getMember().getPostCount() >= 7 && informationBoard.getMember().getReplyCount() >= 12) {
             informationBoard.getMember().setGrade(Grade.SPECIAL); //최우수회원
 
-        } else if(informationBoard.getMember().getPostCount() >= 10 && informationBoard.getMember().getReplyCount() >= 15) {
+        } else if(informationBoard.getMember().getPostCount() >= 5 && informationBoard.getMember().getReplyCount() >= 10) {
             informationBoard.getMember().setGrade(Grade.BEST); //우수회원
 
         } else if(informationBoard.getMember().getPostCount() >= 3 && informationBoard.getMember().getReplyCount() >= 5) {

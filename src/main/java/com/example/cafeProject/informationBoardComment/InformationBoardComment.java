@@ -31,7 +31,7 @@ public class InformationBoardComment {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE) // 해당 게시글 삭제시 댓글 모두 삭제(DB에서 직접 삭제) + 테이블 drop하고 재시작해야함
+    @OnDelete(action = OnDeleteAction.CASCADE) // 해당 게시글 삭제시 댓글 모두 삭제(DB에서 직접 삭제) + 테이블 drop하고 재시작
     private InformationBoard informationBoard;
 
 

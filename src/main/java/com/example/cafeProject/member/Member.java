@@ -48,9 +48,7 @@ public class Member {
         postCount++;
     }
 
-    public void increaseReplyCount() {
-        replyCount++;
-    }
+    public void increaseReplyCount() { replyCount++; }
 
 
 

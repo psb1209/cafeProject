@@ -56,26 +56,36 @@ public class InformationBoardCommentService {
     @Transactional
     public boolean setInsert(InformationBoardCommentDTO informationBoardCommentDTO, User user) {
         InformationBoard informationBoard = getSelectOneById_informationBoard(informationBoardCommentDTO.getInformationBoardId());
-        Member member = getSelectOneById_member(user.getUsername());
-        RoleType oldRole = member.getRole(); //예전 등급
+        Member member = getSelectOneById_member(user.getUsername()); //로그인한 사용자의 정보
 
-        InformationBoardComment informationBoardComment = InformationBoardComment.dtoToEntity(informationBoardCommentDTO, member, informationBoard);
-        member.increaseReplyCount(); //댓글작성 +1
-        informationBoardCommentRepository.save(informationBoardComment);
-        if (informationBoard.getMember().getPostCount() >= 50 && informationBoard.getMember().getReplyCount() >= 100) {
-            informationBoard.getMember().setGrade(Grade.SPECIAL); //최우수회원
-
-        } else if(informationBoard.getMember().getPostCount() >= 10 && informationBoard.getMember().getReplyCount() >= 15) {
-            informationBoard.getMember().setGrade(Grade.BEST); //우수회원
-
-        } else if(informationBoard.getMember().getPostCount() >= 3 && informationBoard.getMember().getReplyCount() >= 5) {
-            informationBoard.getMember().setGrade(Grade.REGULAR); //성실회원
-
-        }  else {
-            informationBoard.getMember().setGrade(Grade.USER); //일반회원
+        if(member.getUsername().equals(informationBoard.getMember().getUsername())) {
+            // if문 어디에 박냐!!!
         }
-        RoleType newRole = informationBoard.getMember().getRole(); //새로운 등급
-        return oldRole != newRole; //등급이 바뀌었으면 true 반환
+
+            RoleType oldRole = member.getRole(); //로그인한 사용자의 예전 등급
+
+            InformationBoardComment informationBoardComment = InformationBoardComment.dtoToEntity(informationBoardCommentDTO, member, informationBoard);
+            member.increaseReplyCount(); //댓글작성 +1
+
+
+            if (informationBoard.getMember().getPostCount() >= 7 && informationBoard.getMember().getReplyCount() >= 12) {
+                informationBoard.getMember().setGrade(Grade.SPECIAL); //최우수회원
+
+            } else if (informationBoard.getMember().getPostCount() >= 5 && informationBoard.getMember().getReplyCount() >= 10) {
+                informationBoard.getMember().setGrade(Grade.BEST); //우수회원
+
+            } else if (informationBoard.getMember().getPostCount() >= 3 && informationBoard.getMember().getReplyCount() >= 5) {
+                informationBoard.getMember().setGrade(Grade.REGULAR); //성실회원
+
+            } else {
+                informationBoard.getMember().setGrade(Grade.USER); //일반회원
+            }
+
+            informationBoardCommentRepository.save(informationBoardComment);
+            RoleType newRole = informationBoard.getMember().getRole(); //새로운 등급
+
+            return oldRole != newRole; //등급이 바뀌었으면 true 반환
+
     }
 
 
