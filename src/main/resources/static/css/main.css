@@ -1,281 +1,468 @@
-        /* ===== 전체 페이지 ===== */
-        body {
-            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', Arial, sans-serif;
-            line-height: 1.6;
-            font-size: 15px;
-            color: #333;
-            margin:0;
-            padding:0;
-            background: linear-gradient(160deg, #eaf4ff, #d6eaff);
-        }
+/*=======================================================*/
+/*======================= 변수 선언 ====================*/
+/*=======================================================*/
+:root {
+  /* 기본 색상 */
+  --blue-main: #1e6fd9;
+  --blue-main-dark: #155fc0;
+  --blue-bg-grad: linear-gradient(90deg, #eaf4ff, #d6eaff);
+  --blue-bg-soft: #f3f8ff;
+  --blue-bg-light: #eaf4ff;
+  --blue-border: #cfe1ff;
+  --white: #ffffff;
+  --text-main: #1f2a44;
+  --text-sub: #6b7a99;
 
-        /* ===== 페이지 컨테이너: 좌-중-우 ===== */
-        .page-container {
-            display:flex;
-            gap:20px;
-            max-width:1600px;
-            width: 100%;
-            margin:20px auto;
-            padding:0 20px;
-            overflow-x: hidden; /* 아래 스크롤 제거 */
-            min-width: 0;
-        }
+  /* 추가 변수 */
+  --text-dark: #333;
+  --text-sub-light: #aaa;
+  --border-light: #dcdcdc;
+  --shadow-light: rgba(0,0,0,0.05);
+  --shadow-hover: rgba(0,0,0,0.08);
+  --shadow-focus: rgba(30,111,217,0.3);
+  --blue-icon-grad: linear-gradient(135deg, #5fa0ff, var(--blue-main));
+  --blue-hover-bg: #f2f8ff;
+  --blue-active-border: #4aa8ff;
+  --text-section-title: #888;
+  --text-cafe-title: #1a1a1a;
+  --text-cafe-desc: #555;
+}
 
-        /* ===== 좌측 사이드바 ===== */
-        .sb-sidenav-menu {
-            border-top: 4px solid #1e6fd9;
-            width: 220px;
-            background: #fff;
-            border-radius: 12px;
-            padding: 12px 0;
-            position: relative; /* 버튼 기준점 */
-        }
-        .sb-sidenav-menu .nav {
-            display:flex;
-            flex-direction:column;
-        }
-        .sb-sidenav-menu .nav-link {
-            display:flex;
-            align-items:center;
-            gap:10px;
-            padding:10px 18px;
-            margin:2px 8px;
-            color:#333;
-            border-radius:6px;
-            text-decoration:none;
-            transition:0.15s;
-        }
-        .sb-sidenav-menu .nav-link:hover {
-            background:#f2f8ff;
-            color:#1e6fd9;
-        }
-        .sb-sidenav-menu .nav-link.active {
-            background:linear-gradient(90deg,#eaf4ff,#d6eaff);
-            color:#1e6fd9;
-            font-weight:600;
-            position:relative;
-        }
-        .sb-sidenav-menu .nav-link.active::before {
-            content:"";
-            position:absolute;
-            left:0;
-            top:20%;
-            width:3px;
-            height:60%;
-            background:#4aa8ff;
-            border-radius:2px;
-        }
-        .sidenav-section-title {
-            font-size:12px;
-            color:#888;
-            padding:8px 18px;
-            font-weight:600;
-        }
-        .sb-sidenav-menu .nav-emoji {
-            width:18px;
-            text-align:center;
-            font-size:16px;
-        }
+/*=======================================================*/
+/*======================= 전체 페이지 ==================*/
+/*=======================================================*/
+body {
+  font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', Arial, sans-serif;
+  line-height: 1.6;
+  font-size: 15px;
+  color: var(--text-dark);
+  margin: 0;
+  padding: 0;
+  background: var(--blue-bg-grad);
+}
 
-        /* ===== 중앙 콘텐츠 ===== */
-        .cafe-layout {
-            display:flex;
-            gap:20px;
-            flex:1;
-            min-width: 0;
-        }
-        .cafe-list-wrap {
-           flex: 1 1 0;  /* 1 1 auto → shrink 허용 */
-           min-width: 500px; /* 너무 작아지면 안 읽히니까 최소폭 500px 정도 */
-        }
+.page-container {
+  display: flex;
+  gap: 20px;
+  max-width: 1600px;
+  width: 100%;
+  margin: 20px auto;
+  padding: 0 20px;
+  overflow-x: hidden;
+  min-width: 0;
+}
 
-        .cafe-topbar {
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:20px;
-        }
-        .cafe-tabs {
-            display:flex;
-            gap:8px;
-        }
-        .tab {
-            padding:6px 14px;
-            border-radius:18px;
-            border:1px solid #dcdcdc;
-            background:#fff;
-            font-size:14px;
-            cursor:pointer;
-            transition:0.15s;
-            color:#333;
-        }
-        .tab.active {
-            background:linear-gradient(90deg,#eaf4ff,#d6eaff);
-            color:#1e6fd9;
-            border-color:#cfe5ff;
-            font-weight:600;
-        }
-        .tab:hover:not(.active) {
-            background:#f2f8ff;
-            color:#1e6fd9;
-        }
+/*=======================================================*/
+/*======================= 사이드바 ======================*/
+/*=======================================================*/
+.sb-sidenav-menu {
+  border-top: 4px solid var(--blue-main);
+  width: 220px;
+  background: var(--white);
+  border-radius: 12px;
+  padding: 12px 0;
+  position: relative;
+}
 
-        .cafe-list {
-            display:flex;
-            flex-direction:column;
-            gap:12px;
-        }
-        .cafe-item {
-            display:flex;
-            gap:14px;
-            padding:20px;
-            background:#fff;
-            border-radius:16px;
-            border:1px solid #e5e5e5;
-            cursor:pointer;
-            transition:0.15s;
-        }
-        .cafe-item:hover {
-            background:#f6faff;
-        }
-        .cafe-thumb {
-            width:80px;
-            height:80px;
-            flex-shrink:0;
-        }
-        .cafe-thumb img {
-            width:100%;
-            height:100%;
-            object-fit:cover;
-            border-radius:12px;
-            border:1px solid #e5e5e5;
-        }
-        .cafe-content {
-            flex:1;
-        }
-        .cafe-title {
-            font-size: 17px;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom:6px;
-        }
-        .cafe-item:hover .cafe-title {
-            color:#1e6fd9;
-            text-decoration:underline;
-        }
-        .cafe-desc {
-            color: #555;
-            font-size: 14px;
-            line-height:1.4;
-            margin-bottom:6px;
-        }
-        .cafe-meta {
-            font-size:13px;
-            color:#888;
-            display:flex;
-            gap:12px;
-        }
+.sb-sidenav-menu .nav {
+  display: flex;
+  flex-direction: column;
+}
 
-        /* ===== 오른쪽 카드 ===== */
-        .cafe-side {
-            width:260px;
-            flex-shrink: 0; /* 카드 폭은 고정 */
-            position:sticky;
-            top:20px;
-        }
-        .side-card {
-            background:#fff;
-            border-radius:12px;
-            padding:20px;
-            margin-bottom:16px;
-            box-shadow:0 4px 8px rgba(0,0,0,0.05);
-            transition:0.15s;
-        }
-        .side-card:hover {
-            transform:translateY(-2px);
-            box-shadow:0 6px 12px rgba(0,0,0,0.08);
-        }
-        .side-title {
-            font-size:15px;
-            font-weight:600;
-            margin-bottom:12px;
-            color:#333;
-        }
-        .side-input {
-            width:100%;
-            padding:10px 12px;
-            margin-bottom:12px;
-            border:1px solid #dcdcdc;
-            border-radius:8px;
-            font-size:14px;
-        }
-        .side-input:focus {
-            border-color:#1e6fd9;
-            outline:none;
-            box-shadow:0 0 4px rgba(30,111,217,0.3);
-        }
-        .login-btn {
-            width:100%;
-            padding:10px;
-            background:#1e6fd9;
-            color:#fff;
-            border:none;
-            border-radius:8px;
-            font-weight:600;
-            cursor:pointer;
-        }
-        .login-btn:hover {
-            background:#155fc0;
-        }
-        .create-btn {
-            width:100%;
-            padding:10px;
-            background:#fff;
-            border:1px solid #1e6fd9;
-            color:#1e6fd9;
-            font-weight:600;
-            border-radius:8px;
-            cursor:pointer;
-        }
-        .create-btn:hover {
-            background:#eaf4ff;
-            border-color:#1c6cd9;
-        }
+.sb-sidenav-menu .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  margin: 2px 8px;
+  color: var(--text-dark);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: 0.15s;
+}
 
-        /* ===== 로그인 카드 하단 작은 링크 ===== */
-        .login-footer {
-            margin-top: 8px;        /* 위 여백 조금 줄임 */
-            font-size: 10px;         /* 글자 작게 */
-            color: #888;
-            display: flex;
-            gap: 6px;
-            justify-content: center; /* 중앙 정렬 */
-        }
+.sb-sidenav-menu .nav-link:hover {
+  background: var(--blue-hover-bg);
+  color: var(--blue-main);
+}
 
-        .login-footer a {
-            color: #aaa;
-            text-decoration: none;
-            transition: color 0.15s ease;
-        }
+.sb-sidenav-menu .nav-link.active {
+  background: var(--blue-hover-bg);
+  color: var(--blue-main);
+  font-weight: 600;
+  position: relative;
+}
 
-        .login-footer a:hover {
-            text-decoration: underline;
-            color: #155fc0;
-        }
+.sb-sidenav-menu .nav-link.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  width: 3px;
+  height: 60%;
+  background: var(--blue-active-border);
+  border-radius: 2px;
+}
 
-        .login-footer span {
-            color: #888;
-        }
+.sidenav-section-title {
+  font-size: 12px;
+  color: var(--text-section-title);
+  padding: 8px 18px;
+  font-weight: 600;
+}
 
-       @media (max-width: 1200px) {
-            .sb-sidenav-menu {
-                display: none; /* 좌측 사이드바 숨김 */
-            }
-            .cafe-side {
-                display: none; /* 오른쪽 카드 숨김 */
-            }
-            .cafe-list-wrap {
-                min-width: 0;   /* ⭐ 이게 핵심 */
-                width: 100%;
-            }
-       }
+.sb-sidenav-menu .nav-emoji {
+  width: 18px;
+  text-align: center;
+  font-size: 16px;
+}
+
+/*=======================================================*/
+/*===================== 중앙 콘텐츠 ====================*/
+/*=======================================================*/
+.cafe-layout {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cafe-list-wrap {
+  flex: 1 1 0;
+  min-width: 500px;
+}
+
+.cafe-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cafe-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab {
+  padding: 6px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--border-light);
+  background: var(--white);
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.15s;
+  color: var(--text-dark);
+}
+
+.tab.active {
+  background: var(--blue-bg-grad);
+  color: var(--blue-main);
+  border-color: var(--blue-border);
+  font-weight: 600;
+}
+
+.tab:hover:not(.active) {
+  background: var(--blue-hover-bg);
+  color: var(--blue-main);
+}
+
+.cafe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cafe-item {
+  display: flex;
+  gap: 14px;
+  padding: 20px;
+  background: var(--white);
+  border-radius: 16px;
+  border: 1px solid var(--blue-border);
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.cafe-item:hover {
+  background: var(--blue-bg-light);
+}
+
+.cafe-thumb {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+}
+
+.cafe-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--blue-border);
+}
+
+.cafe-content {
+  flex: 1;
+}
+
+.cafe-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-cafe-title);
+  margin-bottom: 6px;
+}
+
+.cafe-item:hover .cafe-title {
+  color: var(--blue-main);
+  text-decoration: underline;
+}
+
+.cafe-desc {
+  color: var(--text-cafe-desc);
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.cafe-meta {
+  font-size: 13px;
+  color: var(--text-sub);
+  display: flex;
+  gap: 12px;
+}
+
+/*=======================================================*/
+/*===================== 오른쪽 카드 ====================*/
+/*=======================================================*/
+.cafe-side {
+  width: 260px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 20px;
+}
+
+.side-card {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 8px var(--shadow-light);
+  transition: 0.15s;
+}
+
+.side-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px var(--shadow-hover);
+}
+
+.side-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-dark);
+}
+
+.side-input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.side-input:focus {
+  border-color: var(--blue-main);
+  outline: none;
+  box-shadow: 0 0 4px var(--shadow-focus);
+}
+
+.login-btn, .create-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: 0.15s;
+}
+
+.login-btn {
+  background: var(--blue-main);
+  color: var(--white);
+}
+
+.login-btn:hover {
+  background: var(--blue-main-dark);
+}
+
+.create-btn {
+  background: var(--white);
+  border: 1px solid var(--blue-main);
+  color: var(--blue-main);
+}
+
+.create-btn:hover {
+  background: var(--blue-bg-light);
+  border-color: var(--blue-main-dark);
+}
+
+.login-footer {
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--text-sub-light);
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.login-footer a {
+  color: var(--text-sub-light);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+  color: var(--blue-main-dark);
+}
+
+.login-footer span {
+  color: var(--text-sub-light);
+}
+
+/*=======================================================*/
+/*===================== 반응형 =========================*/
+/*=======================================================*/
+@media (max-width: 1200px) {
+  .sb-sidenav-menu, .cafe-side {
+    display: none;
+  }
+  .cafe-list-wrap {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/*=======================================================*/
+/*================ 구독 카드 전용 스타일 ================*/
+/*=======================================================*/
+.subscribe-header {
+  display: flex;
+  gap: 20px;
+  padding: 14px 16px;
+  background: var(--blue-bg-grad);
+  border-bottom: 1px solid var(--blue-border);
+}
+
+.subscribe-header .tab {
+  background: none;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--blue-main-dark);
+  padding-bottom: 6px;
+  cursor: pointer;
+}
+
+.subscribe-header .active {
+  color: var(--blue-main);
+  border-bottom: 2px solid var(--blue-main);
+}
+
+.subscribe-feed {
+  padding: 14px;
+}
+
+.subscribe-card {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+  border: 1px solid var(--blue-border);
+  box-shadow: 0 6px 18px var(--shadow-focus);
+  transition: 0.15s;
+}
+
+.subscribe-card:hover {
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cafe-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--blue-icon-grad);
+  margin-right: 12px;
+}
+
+.cafe-info {
+  flex: 1;
+}
+
+.cafe-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.cafe-meta {
+  font-size: 12px;
+  color: var(--text-sub);
+  margin-top: 2px;
+}
+
+.subscribe-btn {
+  background: var(--blue-bg-grad);
+  color: var(--blue-main);
+  border: 1px solid var(--blue-main);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.subscribe-btn.on {
+  background: var(--blue-icon-grad);
+  color: var(--white);
+  border: none;
+}
+
+.post-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.post-list li {
+  display: flex;
+  font-size: 14px;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.post-title {
+  flex: 1;
+  color: var(--text-main);
+}
+
+.post-time {
+  color: var(--text-sub);
+  font-size: 12px;
+}
+
+.card-footer {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--blue-main);
+  font-weight: 600;
+  cursor: pointer;
+}

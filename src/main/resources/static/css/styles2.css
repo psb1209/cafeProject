@@ -625,6 +625,14 @@ progress {
   color: #6c757d;
 }
 
+.hoverEffect {
+    transition: transform 0.2s;
+}
+
+.hoverEffect:hover {
+    transform: translateY(-2px);
+}
+
 .container,
 .container-fluid,
 .container-xxl,

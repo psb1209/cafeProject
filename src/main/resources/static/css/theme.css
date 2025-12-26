@@ -1,0 +1,39 @@
+
+:root {
+  /* 기존 색상 → 노란 계열 */
+  --blue-main: #f7d36b;                /* 강조색 - 버튼, 탭, nav active */
+  --blue-main-dark: #f5c243;           /* hover, tab 색상 등 */
+  --blue-bg-grad: linear-gradient(90deg, #fffdf0, #fff6c1); /* 부드러운 크림+노랑 그라데이션 */
+  --blue-bg-soft: #fffce6;             /* 전체 배경 연한 크림색 */
+  --blue-border: #fbe8a6;              /* 카드/박스 테두리 연한 노랑 */
+  --white: #ffffff;
+  --text-main: #5a4328;                /* 주 텍스트 - 따뜻한 갈색 */
+  --text-sub: #8b6f4a;                 /* 보조 텍스트 */
+
+  /* 추가 변수 */
+  --text-dark: #c99918;                /* side-title, nav-link 기본 */
+  --text-sub-light: #f5c243;           /* footer 링크 */
+  --border-light: #fbe8a6;             /* input 테두리 */
+  --shadow-light: rgba(247,211,107,0.1);
+  --shadow-hover: rgba(247,211,107,0.15);
+  --shadow-focus: rgba(247,211,107,0.3);
+  --blue-bg-light: #fffdea;            /* create-btn hover bg */
+  --blue-icon-grad: linear-gradient(135deg, #f7d36b, #f5c243); /* cafe 아이콘, 구독 버튼 그라데이션 */
+
+  /* 새로 추가된 변수 (직접 입력된 색상 대체용) */
+  --blue-hover-bg: #fffdea;            /* nav-link hover background */
+  --blue-active-border: #f5c243;       /* nav-link active left border */
+  --text-section-title: #e6b83b;       /* sidenav-section-title color */
+  --text-cafe-title: #f5c243;          /* cafe-title 기본 */
+  --text-cafe-desc: #8b6f4a;           /* cafe-desc 기본 */
+}
+
+body {
+  font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', Arial, sans-serif;
+  line-height: 1.6;
+  font-size: 15px;
+  color: #333;
+  margin: 0;
+  padding: 0;
+background: linear-gradient(90deg, #fff2e6, #ffe8d9);
+}

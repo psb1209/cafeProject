@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<aside class="cafe-side" th:fragment="main_aside">
+    <!-- 로그인 카드 -->
+    <div class="side-card">
+        <!--                    <div class="side-title">로그인</div>
+                            <input class="side-input" placeholder="아이디">
+                            <input class="side-input" type="password" placeholder="비밀번호">-->
+        <button class="login-btn" th:onclick="|location.href='@{/member/login}'|">로그인</button>
+
+        <!-- ===== 로그인 하단 링크 ===== -->
+        <div class="login-footer">
+            <span>|</span>
+            <a href="/member/create">회원가입</a>
+            <span>|</span>
+            <!--                        <a href="/find-id">아이디 찾기</a>
+                                    <span>|</span>
+                                    <a href="/find-password">비밀번호 찾기</a>-->
+        </div>
+    </div>
+    <div class="side-card">
+        <button class="create-btn">카페 만들기</button>
+    </div>
+</aside>
+
+</body>
+</html>
