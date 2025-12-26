@@ -88,7 +88,9 @@ public class CommunityBoardCommentController {
         communityBoardCommentService.setUpdate(communityBoardCommentDTO);
         return "redirect:/communityBoard/view/"+communityBoardId;
     }
-
+    
+    
+    //대댓글 추가
     @GetMapping("/replyComment/{communityBoardCommentId}")
     public String replyComment(
             @PathVariable("communityBoardCommentId") int communityBoardCommentId,
@@ -105,7 +107,8 @@ public class CommunityBoardCommentController {
         return "communityBoard/replyComment";
     }
 
-
+    
+    //대댓글 추가처리
     @PostMapping("/replyCreateProc")
     public String replyCreateProc(
             CommunityBoardCommentDTO communityBoardCommentDTO,

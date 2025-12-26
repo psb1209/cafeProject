@@ -39,6 +39,15 @@
 
     </form>
 
+    <form name= "likeForm" action="/like/createProc" method="post">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+        <input type="hidden" name="communityBoardNumber"
+               th:value="${communityBoard.id}">
+        <button type="submit"  id="likeButton" th:classappend="${isLike} ? ' liked' : ''">❤️ Like</button>
+    </form>
+
+    <br>
+    <br>
 
 
     <a href="/communityBoard/list" class="btn btn-secondary">목록</a>

@@ -11,6 +11,12 @@
 <span layout:fragment="pageSubTitle">first page</span>
 
 <div layout:fragment="content">
+<!--    <select onchange="location.href='?page=0&sort=' + this.value">-->
+<!--        <option value="cnt,desc" th:selected="${param.sort != null and param.sort[0] == 'cnt,desc'}">조회수 높은 순</option>-->
+<!--        <option value="cnt,asc" th:selected="${param.sort != null and param.sort[0] == 'cnt,asc'}">조회수 낮은 순</option>-->
+<!--        <option value="createDate,desc" th:selected="${param.sort != null and param.sort[0] == 'createDate,desc'}">최근 등록일 순</option>-->
+<!--        <option value="createDate,asc" th:selected="${param.sort != null and param.sort[0] == 'createDate,asc'}">오래된 순</option>-->
+<!--    </select>-->
     <!-- 본문 내용 시작 -->
     <h2>자유게시판 목록</h2>
     <table class="table table-hover">

@@ -2,11 +2,15 @@ package com.example.cafeProject.communityBoard;
 
 import com.example.cafeProject.communityBoardComment.CommunityBoardComment;
 import com.example.cafeProject.communityBoardComment.CommunityBoardCommentService;
+import com.example.cafeProject.communityBoardLike.LikeService;
+import com.example.cafeProject.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class CommunityBoardController {
     private final CommunityBoardService communityBoardService;
     private final CommunityBoardCommentService communityBoardCommentService;
+    private final LikeService likeService;
 
     @GetMapping("/list")
     public String list(
@@ -35,6 +40,7 @@ public class CommunityBoardController {
     public String view(
             @PathVariable("id") int id,
             Model model,
+            Authentication authentication,
             @PageableDefault(size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ){
         try{
@@ -45,6 +51,21 @@ public class CommunityBoardController {
 
             Page<CommunityBoardComment> communityBoardCommentPage=communityBoardCommentService.communityBoardCommentPage(id,pageable);
             model.addAttribute("communityBoardCommentPage",communityBoardCommentPage);
+
+            boolean isLike=false;
+
+            if(authentication != null) {
+                UserDetails userDetails =
+                        (UserDetails) authentication.getPrincipal();
+                String username = userDetails.getUsername();
+
+                Member member = likeService.selectByUsername(username);
+
+                isLike = likeService.isLike(id, member.getId());
+            }
+
+            model.addAttribute("isLike",isLike);
+
             return "communityBoard/view";
 
         } catch (Exception e) {

@@ -33,7 +33,7 @@ public class CommunityBoardCommentService {
             CommunityBoardCommentDTO communityBoardCommentDTO,
             UserDetails userDetails
     ){
-
+        
         CommunityBoard communityBoard=null;
         Optional<CommunityBoard> communityBoardOptional=communityBoardRepository.findById(communityBoardCommentDTO.getCommunityBoardId());
         if(communityBoardOptional.isPresent()){
@@ -49,9 +49,9 @@ public class CommunityBoardCommentService {
         int ref = communityBoardCommentRepository.getMaxRef()+1;
         communityBoardComment.setContent(communityBoardCommentDTO.getContent());
         communityBoardComment.setCommunityBoard(communityBoard);
-        communityBoardComment.setRef(ref);
-        communityBoardComment.setStep(0);
-        communityBoardComment.setLevel(0);
+        communityBoardComment.setRef(ref); //새댓글 +1
+        communityBoardComment.setStep(0);   //새댓글 기본값 0
+        communityBoardComment.setLevel(0);  //새댓글 기본값 0
         communityBoardComment.setMember(member);
         communityBoardCommentRepository.save(communityBoardComment);
 
@@ -87,6 +87,7 @@ public class CommunityBoardCommentService {
 
     }
 
+    //대댓글 추가
     @Transactional
     public void replysetInsert(
             CommunityBoardCommentDTO communityBoardCommentDTO,
