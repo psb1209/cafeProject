@@ -1,6 +1,7 @@
 package com.example.cafeProject.noticeBoard;
 
 import com.example.cafeProject.member.Member;
+import com.example.cafeProject.noticeBoardComment.NoticeBoardComment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -37,4 +39,13 @@ public class NoticeBoard {
     @JoinColumn(name = "userid")
     private Member member;
 
+    //게시글 제목 옆에 댓글 수 표시
+    @OneToMany(mappedBy = "noticeBoard", cascade = CascadeType.REMOVE)
+    private List<NoticeBoardComment> noticeBoardCommentList;
+
+    @Transient //db에 데이터를 저장할 목적이 아니라 화면에 숫자 띄우는 용도로 사용함
+    private int likeCnt;
+
+    @Transient
+    private int commentCnt;
 }

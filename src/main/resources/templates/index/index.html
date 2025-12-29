@@ -16,14 +16,20 @@
             <th>작성자</th>
             <th>작성일</th>
             <th>조회수</th>
+            <th>좋아요</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="noticeBoard, loop : ${noticeBoardList}">
-            <td th:text="${loop.index+1}" style="font-size: 15px;"></td>
+            <td th:text="${loop.index+1}"></td>
             <td>
                 <a th:href="@{|/noticeBoard/view/${noticeBoard.id}|}" th:text="${noticeBoard.subject}"
-                   style="font-size: 15px;"></a>
+                   ></a>
+
+                <span class="text-danger small ms-2"
+                      th:if="${#lists.size(noticeBoard.noticeBoardCommentList) > 0}"
+                      th:text="|[${#lists.size(noticeBoard.noticeBoardCommentList)}]|">
+                    </span>
             </td>
             <td>
                 <!--                <a th:href="@{|/member/view/${member.id}|}" th:text="${member.username}"></a>-->
@@ -33,8 +39,9 @@
                 <span th:unless="${noticeBoard.member != null and noticeBoard.member.username != null}"
                       th:text="'-'"></span>
             </td>
-            <td th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd')}" style="font-size: 15px;"></td>
-            <td th:text="${noticeBoard.cnt}" style="font-size: 15px;"></td>
+            <td th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd')}"></td>
+            <td th:text="${noticeBoard.cnt}"></td>
+            <td th:text="${noticeBoard.likeCnt}">0</td>
         </tr>
         </tbody>
     </table>

@@ -1,21 +1,20 @@
 package com.example.cafeProject.noticeBoard;
 
+import com.example.cafeProject.boardLike.BoardLikeRepository;
+import com.example.cafeProject.boardLike.BoardLikeService;
+import com.example.cafeProject.boardLike.BoardType;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentRepository;
-import com.example.cafeProject.operationBoard.OperationBoard;
-import com.example.cafeProject.operationBoard.OperationBoardDTO;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,14 +32,26 @@ public class NoticeBoardService {
     private final NoticeBoardCommentRepository noticeBoardCommentRepository;
     private final MemberService memberService;
     protected final Logger log = LoggerFactory.getLogger(getClass());
-
+    private final BoardLikeService boardLikeService;
+    private final BoardLikeRepository boardLikeRepository;
 
 
     public Page<NoticeBoard> list(Pageable pageable) {
+        Page<NoticeBoard> noticeBoardPage = noticeBoardRepository.findAll(pageable);
 
-        return noticeBoardRepository.findAll(pageable);
+        for (NoticeBoard noticeBoard : noticeBoardPage.getContent()) {
+
+            int likeCnt =
+                    boardLikeService.getLikeCount(
+                            BoardType.NOTICE,
+                            noticeBoard.getId()
+                    );
+
+            noticeBoard.setLikeCnt(likeCnt);
+        }
+
+        return noticeBoardPage;
     }
-
 
     public NoticeBoard view(NoticeBoardDTO noticeBoardDTO) {
         Optional<NoticeBoard> optionalNoticeBoard = noticeBoardRepository.findById(noticeBoardDTO.getId());
@@ -48,6 +59,10 @@ public class NoticeBoardService {
         if (optionalNoticeBoard.isPresent()) {
             noticeBoard = optionalNoticeBoard.get();
         }
+        //댓글 수 표시
+        int commentCnt = noticeBoardCommentRepository.countCommentsByNoticeBoardId(noticeBoard.getId());
+        noticeBoard.setCommentCnt(commentCnt);
+
         return noticeBoard;
     }
 
@@ -97,6 +112,23 @@ public class NoticeBoardService {
 //        return result;
 //    }
 
+    //게시글 삭제 전용 메소드
+    @Transactional
+    public void deleteNoticeBoard(int noticeBoardId) {
+
+        // 1. 댓글 삭제
+        noticeBoardCommentRepository.deleteByNoticeBoardId(noticeBoardId);
+
+        // 2. 좋아요 삭제 (공용 구조)
+        boardLikeService.deleteByBoard(
+                BoardType.NOTICE,
+                noticeBoardId
+        );
+
+        // 3. 게시글 삭제
+        noticeBoardRepository.deleteById(noticeBoardId);
+    }
+
 
     public void setDelete(NoticeBoardDTO paramDTO) {
         NoticeBoard noticeBoard = getSelectOneById(paramDTO);
@@ -120,7 +152,6 @@ public class NoticeBoardService {
         noticeBoard.setCnt(noticeBoard.getCnt() + 1);
         noticeBoardRepository.save(noticeBoard);
     }
-
 
     @Value("${app.image.upload-dir}")
     protected String imgPath;

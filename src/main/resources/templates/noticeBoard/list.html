@@ -21,6 +21,7 @@
             <th>작성자</th>
             <th>작성일</th>
             <th>조회수</th>
+            <th>좋아요</th>
         </tr>
         </thead>
         <tbody>
@@ -28,9 +29,15 @@
             <td th:text="${loop.index+1}"></td>
             <td>
                 <a th:href="@{|/noticeBoard/view/${noticeBoard.id}|}" th:text="${noticeBoard.subject}"></a>
+
+                <!--게시글 제목 옆 댓글수 표시-->
+                <span class="text-danger small ms-2"
+                      th:if="${#lists.size(noticeBoard.noticeBoardCommentList) > 0}"
+                      th:text="|[${#lists.size(noticeBoard.noticeBoardCommentList)}]|">
+                    </span>
             </td>
             <td>
-<!--                <a th:href="@{|/member/view/${member.id}|}" th:text="${member.username}"></a>-->
+                <!--                <a th:href="@{|/member/view/${member.id}|}" th:text="${member.username}"></a>-->
                 <span th:if="${noticeBoard.member != null and noticeBoard.member.username != null}"
                       th:text="${noticeBoard.member.username}"></span>
 
@@ -39,27 +46,28 @@
             </td>
             <td th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd')}"></td>
             <td th:text="${noticeBoard.cnt}"></td>
+            <td th:text="${noticeBoard.likeCnt}">0</td>
         </tr>
         </tbody>
     </table>
 
-        <a href="/noticeBoard/create" class="btn btn-secondary">글쓰기</a>
+    <a href="/noticeBoard/create" class="btn btn-secondary">글쓰기</a>
 
-        <div style="margin-top: 20px;" th:if="${!noticeBoardList.isEmpty()}">
-            <ul class="pagination">
-                <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${memberList.number-1}|}">Prev</a></li>-->
-                <li class="page-item" th:classappend="${noticeBoardList.first} ? 'disabled'">
-                    <a class="page-link"
-                       th:href="${noticeBoardList.first} ? '#' : @{|?page=${noticeBoardList.number-1}|}">
-                        이전
-                    </a>
-                </li>
+    <div style="margin-top: 20px;" th:if="${!noticeBoardList.isEmpty()}">
+        <ul class="pagination">
+            <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${memberList.number-1}|}">Prev</a></li>-->
+            <li class="page-item" th:classappend="${noticeBoardList.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="${noticeBoardList.first} ? '#' : @{|?page=${noticeBoardList.number-1}|}">
+                    이전
+                </a>
+            </li>
 
-                <li class="page-item"
-                    th:each="page: ${#numbers.sequence(0, noticeBoardList.totalPages-1)}"
-                    th:classappend="${page == noticeBoardList.number} ? 'active'">
-                    <a class="page-link" th:text="${page}" th:href="@{|?page=${page}|}"></a>
-                </li>
+            <li class="page-item"
+                th:each="page: ${#numbers.sequence(0, noticeBoardList.totalPages-1)}"
+                th:classappend="${page == noticeBoardList.number} ? 'active'">
+                <a class="page-link" th:text="${page}" th:href="@{|?page=${page}|}"></a>
+            </li>
 
             <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${memberList.number+1}|}">Next</a></li>-->
             <li class="page-item" th:classappend="${noticeBoardList.last} ? 'disabled'">
@@ -69,7 +77,7 @@
                 </a>
             </li>
         </ul>
-    <!-- 본문 내용 종료 -->
-</div>
+        <!-- 본문 내용 종료 -->
+    </div>
 </div>
 </html>

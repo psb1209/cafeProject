@@ -1,10 +1,10 @@
 package com.example.cafeProject.noticeBoard;
 
-import com.example.base.BaseImageService;
+import com.example.cafeProject.boardLike.BoardLikeService;
+import com.example.cafeProject.boardLike.BoardType;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardComment;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentService;
-import com.example.cafeProject.operationBoard.OperationBoardDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -20,10 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @RequestMapping("/noticeBoard")
 @RequiredArgsConstructor
@@ -33,6 +30,7 @@ public class NoticeBoardController {
     private final NoticeBoardService noticeBoardService;
     private final NoticeBoardCommentService noticeBoardCommentService;
     private final MemberService memberService;
+    private final BoardLikeService boardLikeService;
 
     @GetMapping("/list")
     public String list(
@@ -48,7 +46,8 @@ public class NoticeBoardController {
     public String view(
             Model model,
             @PathVariable("id") int id,
-            @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            Authentication authentication
     ) {
         NoticeBoardDTO noticeBoardDTO = new NoticeBoardDTO();
             noticeBoardDTO.setId(id);
@@ -60,7 +59,23 @@ public class NoticeBoardController {
         Page<NoticeBoardComment> noticeBoardCommentList = noticeBoardCommentService.listByNoticeBoard(id, pageable);
         model.addAttribute("noticeBoardCommentList", noticeBoardCommentList);
 
+
+        int likeCount =
+                boardLikeService.getLikeCount(BoardType.NOTICE, id);
+        model.addAttribute("likeCount", likeCount);
+
+        if (authentication != null) {
+            int memberId =
+                    memberService.viewCurrentMember(authentication).getId();
+
+            boolean liked =
+                    boardLikeService.isLiked(BoardType.NOTICE, id, memberId);
+
+            model.addAttribute("liked", liked);
+        }
+
         noticeBoardService.cntUpdateProc(noticeBoard);
+
         model.addAttribute("noticeBoard", noticeBoard);
         return "noticeBoard/view";
     }
@@ -145,37 +160,16 @@ public class NoticeBoardController {
         return "redirect:/noticeBoard/view/" + noticeBoardDTO.getId();
     }
 
-//    @PostMapping("/deleteProc")
-//    public String deleteProc(
-//            Model model,
-//            NoticeBoardDTO noticeBoardDTO
-//    ) {
-//        int errorCounter = 0;
-//        NoticeBoard noticeBoard = noticeBoardService.view(noticeBoardDTO);
-//        if (noticeBoard == null) {
-//            errorCounter++;
-//        }
-//
-//        int result = noticeBoardService.deleteProc(noticeBoardDTO);
-//        if (result > 0) { //실패
-//            errorCounter++;
-//        }
-//        if (errorCounter > 0) {
-//            model.addAttribute("errCode", "err0004");
-//            model.addAttribute("errMsg", "게시글 삭제중 예외가 발생했습니다.");
-//            return "error/error";
-//        }
-//        return "redirect:/noticeBoard/list";
-//    }
-
     @PostMapping("/deleteProc")
     public String deleteProc(
             Model model,
             NoticeBoardDTO noticeBoardDTO
     ) {
         try {
-            noticeBoardCommentService.setDeleteAll(noticeBoardDTO);
-            noticeBoardService.setDelete(noticeBoardDTO);
+//            noticeBoardCommentService.setDeleteAll(noticeBoardDTO);
+//            boardLikeService.deleteByNoticeBoardId();
+//            noticeBoardService.setDelete(noticeBoardDTO);
+            noticeBoardService.deleteNoticeBoard(noticeBoardDTO.getId());
             return "redirect:/noticeBoard/list";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1111");

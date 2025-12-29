@@ -36,7 +36,7 @@ public class NoticeBoardCommentController {
         }
     }
 
-    @PostMapping("/deleteProc/{noticeBoardCommentId}")
+    @GetMapping("/deleteProc/{noticeBoardCommentId}")
     public String deleteProc(Model model,
                             @PathVariable("noticeBoardCommentId") int noticeBoardCommentId
 

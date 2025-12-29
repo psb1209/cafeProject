@@ -36,9 +36,6 @@ public class NoticeBoardComment {
     @JoinColumn(name = "noticeBoardid")
     private NoticeBoard noticeBoard;
 
-    private int ref;
-    private int step;
-    private int level;
 
 
 }

@@ -5,8 +5,6 @@ import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoard.NoticeBoard;
 import com.example.cafeProject.noticeBoard.NoticeBoardDTO;
 import com.example.cafeProject.noticeBoard.NoticeBoardRepository;
-import com.example.cafeProject.operationBoard.OperationBoardDTO;
-import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +40,7 @@ public class NoticeBoardCommentService {
         Optional<NoticeBoard> optionalNoticeBoard = noticeBoardRepository.findById(noticeBoardCommentDTO.getNoticeBoardId());
         if (optionalNoticeBoard.isPresent()) {
             noticeBoard = optionalNoticeBoard.get();
+
             NoticeBoardComment noticeBoardComment = new NoticeBoardComment();
             noticeBoardComment.setContent(noticeBoardCommentDTO.getContent());
             noticeBoardComment.setNoticeBoard(noticeBoard);
@@ -67,8 +66,4 @@ public class NoticeBoardCommentService {
         noticeBoardCommentRepository.deleteAll(noticeBoardComment);
     }
 
-//    public void replyProc() {
-//        int ref = noticeBoardCommentRepository.getMaxRef() + 1;
-//        noticeBoardCommentRepository.updateRelevel(3, 5);
-//    }
 }

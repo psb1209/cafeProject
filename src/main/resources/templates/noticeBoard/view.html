@@ -35,6 +35,40 @@
                   th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd')}"></span><br>
             <!--        <span class="form-control" id="createDate" th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd HH:mm:ss')}"></span>-->
         </div>
+        <div class="mb-3">
+            <label for="cnt">댓글수:</label>
+            <span class="form-control" id="commentCnt" th:text="${noticeBoard.commentCnt}"></span>
+        </div>
+
+        <!-- 좋아요 -->
+        <div class="like-wrapper">
+
+            <form th:if="${#authentication.principal != 'anonymousUser'}"
+                  th:action="@{/boardLike/toggle}"
+                  method="post">
+
+                <input type="hidden" name="boardType" value="NOTICE"/>
+                <input type="hidden" name="boardId" th:value="${noticeBoard.id}"/>
+
+                <button type="submit"
+                        class="like-btn"
+                        th:classappend="${liked} ? ' liked' : ''">
+
+                    <span class="heart">♥</span>
+                    <span class="count" th:text="${likeCount}">0</span>
+
+                </button>
+            </form>
+
+            <!-- 비로그인 -->
+            <div th:if="${#authentication.principal == 'anonymousUser'}"
+                 class="like-btn disabled">
+                <span class="heart">♥</span>
+                <span class="count" th:text="${likeCount}">0</span>
+            </div>
+
+        </div>
+        <!-- 좋아요 -->
 
         <div class="text-end">
             <a href="/noticeBoard/create" class="btn btn-secondary">등록</a>
@@ -62,7 +96,7 @@
                         return;
                     }
 
-                    if (confirm('추가하시겠습니까?')) {
+                    if (confirm('등록 하시겠습니까?')) {
                         document.noticeBoardCommentForm.action = "/noticeBoardComment/createProc";
                         document.noticeBoardCommentForm.method = "post";
                         document.noticeBoardCommentForm.submit();
@@ -77,12 +111,7 @@
                 <tr>
                     <th width="50%">댓글</th>
                     <th width="10%">작성자</th>
-                    <th width="10%">ref</th>
-                    <th width="10%">step</th>
-                    <th width="10%">level</th>
                     <th width="10%">삭제</th>
-
-
                 </tr>
                 </thead>
                 <tbody>
@@ -98,9 +127,6 @@
                         <span th:unless="${noticeBoardComment.member != null and noticeBoardComment.member.username != null}"
                               th:text="'-'"></span>
                     </td>
-                    <td th:text="${noticeBoardComment.ref}" style="font-size: 15px;"></td>
-                    <td th:text="${noticeBoardComment.step}" style="font-size: 15px;"></td>
-                    <td th:text="${noticeBoardComment.level}" style="font-size: 15px;"></td>
                     <td>
                         <a th:href="@{|/noticeBoardComment/deleteProc/${noticeBoardComment.id}|}"
                            style="font-size: 15px;">X</a>
@@ -138,6 +164,5 @@
     </div>
     <!-- 본문 내용 종료 -->
 </div>
-
 
 </html>
