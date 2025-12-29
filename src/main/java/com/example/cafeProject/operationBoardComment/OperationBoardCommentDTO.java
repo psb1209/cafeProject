@@ -21,4 +21,8 @@ public class OperationBoardCommentDTO {
 
     private int operationBoardCommentId;
 
+    private int ref;
+    private int step;
+    private int level;
+
 }

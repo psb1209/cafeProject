@@ -1,10 +1,11 @@
 package com.example.cafeProject.operationBoard;
 
+import com.example.cafeProject.like.LikeDTO;
+import com.example.cafeProject.like.LikeService;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardCommentService;
-import jdk.dynalink.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,7 @@ public class OperationBoardController {
     private final OperationBoardService operationBoardService;
     private final OperationBoardCommentService operationBoardCommentService;
     private final MemberService memberService;
+    private final LikeService likeService;
 
     String dirName = "operationBoard";
 
@@ -42,11 +44,13 @@ public class OperationBoardController {
     @GetMapping("/list")
     public String list(
             Model model,
+            @RequestParam(required = false) String keyword,
             @PageableDefault(size=2, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<OperationBoard> operationBoardList = operationBoardService.list(pageable);
+        Page<OperationBoard> operationBoardList = operationBoardService.list(pageable, keyword);
         model.addAttribute("operationBoardList", operationBoardList);
         model.addAttribute("activeMenu", "operationBoard");
+        model.addAttribute("keyword", keyword);
         return dirName + "/list";
     }
 
@@ -54,7 +58,8 @@ public class OperationBoardController {
     public String view(
             Model model,
             OperationBoardDTO operationBoardDTO,
-            @PageableDefault(size=7, sort="id", direction = Sort.Direction.DESC) Pageable pageable
+            Authentication authentication,
+            @PageableDefault(size=3, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         try {
             OperationBoard operationBoard = operationBoardService.getSelectOneById(operationBoardDTO);
@@ -62,7 +67,21 @@ public class OperationBoardController {
             Page<OperationBoardComment> commentList = operationBoardCommentService.getCommentListPage(operationBoardDTO.getId(), pageable);
             model.addAttribute("commentList", commentList);
             operationBoardService.cntPlus(operationBoard);
-            model.addAttribute("activeMenu", "operationBoard");
+
+            boolean isLike=false;
+
+            if(authentication != null) {
+                UserDetails userDetails =
+                        (UserDetails) authentication.getPrincipal();
+                String username = userDetails.getUsername();
+
+                Member member = likeService.selectByUsername(username);
+
+                isLike = likeService.isLike(operationBoardDTO.getMemberId(), member.getId());
+            }
+
+            model.addAttribute("isLike",isLike);
+
             return dirName + "/view";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1111");

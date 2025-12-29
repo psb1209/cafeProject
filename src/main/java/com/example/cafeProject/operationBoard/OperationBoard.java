@@ -1,6 +1,7 @@
 package com.example.cafeProject.operationBoard;
 
 import com.example.cafeProject.member.Member;
+import com.example.cafeProject.noticeBoardComment.NoticeBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 
 import java.sql.Timestamp;
@@ -37,11 +40,13 @@ public class OperationBoard {
     @CreationTimestamp
     private Timestamp createDate;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private Member member;
 
-    @OneToMany(mappedBy = "operationBoard", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "operationBoard", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @OrderBy("id desc")
     private List<OperationBoardComment> commentList;
+
 }

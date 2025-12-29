@@ -24,7 +24,7 @@
         }
 
         .cafe-board-wrap {
-            border-top: 4px solid #1e6fd9;
+            border-top: 4px solid var(--blue-main);
             background: var(--white);
             border-radius: 10px;
             padding: 28px;
@@ -33,7 +33,9 @@
             min-width: 0;
         }
 
-        /* 게시판 상단 (제목 + 글쓰기 버튼) */
+        /* ===============================
+           게시판 헤더
+           =============================== */
         .cafe-board-header {
             display: flex;
             justify-content: space-between;
@@ -43,7 +45,6 @@
             border-bottom: 2px solid var(--blue-main);
         }
 
-        /* 게시판 제목 */
         .cafe-board-title {
             font-size: 18px;
             font-weight: 700;
@@ -51,13 +52,12 @@
             margin: 0;
         }
 
-        /* 글쓰기 버튼 영역 */
+        /* 버튼 영역 */
         .cafe-article-actions {
             display: flex;
             gap: 8px;
         }
 
-        /* 공통 버튼 */
         .cafe-action-btn {
             display: inline-flex;
             align-items: center;
@@ -74,8 +74,7 @@
             transition: all 0.15s ease;
         }
 
-        /* 글쓰기 버튼 강조 */
-          .cafe-action-btn.write {
+        .cafe-action-btn.write {
             background: #e6f0ff;
             border-color: #9fc0f5;
             color: var(--blue-main);
@@ -86,9 +85,55 @@
         }
 
         /* ===============================
+           리스트 상단 검색 영역
+           =============================== */
+        .cafe-board-search {
+            display: flex;
+            justify-content: flex-end;
+            margin: 6px 0 10px;
+        }
+
+        .cafe-search-form {
+            display: flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 18px;
+            border: 1px solid var(--blue-border);
+            background: var(--white);
+        }
+
+        .cafe-search-form input {
+            width: 160px;
+            border: none;
+            outline: none;
+            font-size: 13px;
+            color: var(--text-main);
+            background: transparent;
+        }
+
+        .cafe-search-form input::placeholder {
+            color: var(--text-sub);
+        }
+
+        .cafe-search-form button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--blue-main);
+            padding-left: 4px;
+        }
+
+        .cafe-search-form:focus-within {
+            border-color: var(--blue-main);
+            box-shadow: 0 0 0 2px rgba(30, 111, 217, 0.15);
+        }
+
+        /* ===============================
            테이블
-        =============================== */
+           =============================== */
         .cafe-board-table {
+            margin-top: 6px;
             width: 100%;
             border-collapse: collapse;
         }
@@ -110,14 +155,12 @@
             text-align: center;
         }
 
-        /* 제목 컬럼 */
         .cafe-board-table .col-subject {
             text-align: left;
             padding-left: 20px;
             font-weight: 500;
         }
 
-        /* hover */
         .cafe-board-table tbody tr {
             cursor: pointer;
             transition: background-color 0.15s ease;
@@ -132,13 +175,15 @@
             text-decoration: underline;
         }
 
-        /* 보조 컬럼 톤 다운 */
         .col-cnt,
         .col-date {
             color: var(--text-sub);
             font-size: 13px;
         }
 
+        /* ===============================
+           페이징
+           =============================== */
         .cafe-pagination {
             margin-top: 30px;
             display: flex;
@@ -268,7 +313,27 @@
             <div class="cafe-board-header">
                 <div class="cafe-board-title">운영 게시판</div>
 
+                <div th:if="${msg}">
+                    <span th:text="${msg}">메시지내용</span>
+                </div>
+
+                <!--사용자가 게시글의 정렬조건 선택-->
                 <div class="cafe-article-actions">
+                    <select onchange="location.href='?page=0&sort=' + this.value" class="cafe-action-btn write">
+                        <option value="createDate,desc" th:selected="${param.sort != null and param.sort[0] == 'createDate,desc'}" class="cafe-action-btn write">최근 등록일 순</option>
+                        <option value="createDate,asc" th:selected="${param.sort != null and param.sort[0] == 'createDate,asc'}" class="cafe-action-btn write">오래된 순</option>
+                        <option value="cnt,desc" th:selected="${param.sort != null and param.sort[0] == 'cnt,desc'}" class="cafe-action-btn write">조회수 높은 순</option>
+                        <option value="cnt,asc" th:selected="${param.sort != null and param.sort[0] == 'cnt,asc'}" class="cafe-action-btn write">조회수 낮은 순</option>
+                    </select>
+
+                    <!--사용자에게 목록에 보여질 갯수 선택-->
+                    <select onchange="location.href='?page=0&size=' + this.value" class="cafe-action-btn write">
+                        <option value="5" th:selected="${operationBoardList.size == 5}" class="cafe-action-btn write">5개씩 보기</option>
+                        <option value="10" th:selected="${operationBoardList.size == 10}" class="cafe-action-btn write">10개씩 보기</option>
+                        <option value="15" th:selected="${operationBoardList.size == 15}" class="cafe-action-btn write">15개씩 보기</option>
+                        <option value="20" th:selected="${operationBoardList.size == 20}" class="cafe-action-btn write">20개씩 보기</option>
+                    </select>
+
                     <a th:href="@{/operationBoard/create}"
                        class="cafe-action-btn write">
                         ✏️ 게시글 작성
@@ -276,11 +341,24 @@
                 </div>
             </div>
 
+            <div class="cafe-board-search">
+                <form method="get"
+                      th:action="@{/operationBoard/list}"
+                      class="cafe-search-form">
+                    <input type="search"
+                           name="keyword"
+                           placeholder="게시판 검색"
+                           th:value="${keyword}">
+                    <button type="submit">🔍</button>
+                </form>
+            </div>
+
             <table class="cafe-board-table">
                 <thead>
                 <tr>
                     <th class="col-no">순번</th>
                     <th class="col-subject">제목</th>
+                    <th></th>
                     <th class="col-cnt">조회수</th>
                     <th class="col-writer">작성자</th>
                     <th class="col-date">작성일</th>
@@ -293,6 +371,13 @@
 
                     <td th:text="${loop.index + 1}"></td>
                     <td class="col-subject" th:text="${operationBoard.subject}"></td>
+                    <td>
+                        <!--게시글 제목 옆 댓글수 표시-->
+                        <span class="text-danger small ms-2"
+                              th:if="${#lists.size(operationBoard.commentList) > 0}"
+                              th:text="|[${#lists.size(operationBoard.commentList)}]|">
+                        </span>
+                    </td>
                     <td th:text="${operationBoard.cnt}"></td>
                     <td th:text="${operationBoard.member.username}"></td>
                     <td th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>

@@ -1,4 +1,4 @@
-package com.example.cafeProject.communityBoardLike;
+package com.example.cafeProject.like;
 
 
 import jakarta.persistence.*;
@@ -21,8 +21,16 @@ public class Like {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-
     private int userId;
 
-    private int communityBoardNumber;
+    @Transient
+    private int likeCnt;
+
+    private Integer communityBoardNumber;
+
+    private Integer operationBoardNumber;
+
+    private Integer noticeBoardNumber;
+
+    private Integer informationBoardNumber;
 }

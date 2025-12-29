@@ -33,8 +33,11 @@ public class OperationBoardService {
 
     private final MemberService memberService;
 
-    public Page<OperationBoard> list(Pageable pageable) {
-        return operationBoardRepository.findAll(pageable);
+    public Page<OperationBoard> list(Pageable pageable, String keyword) {
+        if (keyword == null || keyword.isBlank()) // 검색을 안 했을 경우
+            return operationBoardRepository.findAll(pageable);
+
+        return operationBoardRepository.searchBySubject(keyword.trim(), pageable);
     }
 
     @Transactional(readOnly = true)

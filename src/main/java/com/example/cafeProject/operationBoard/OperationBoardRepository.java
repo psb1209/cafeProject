@@ -1,10 +1,18 @@
 package com.example.cafeProject.operationBoard;
 
-import com.example.cafeProject.member.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface OperationBoardRepository extends JpaRepository<OperationBoard, Integer> {
-
+    /** 게시글 검색 */
+    @Query("""
+            select b
+            from OperationBoard b
+            where lower(b.subject) like lower(concat('%', :keyword, '%'))
+    """)
+    Page<OperationBoard> searchBySubject(@Param("keyword") String keyword, Pageable pageable);
 }

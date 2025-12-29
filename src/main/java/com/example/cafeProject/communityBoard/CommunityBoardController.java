@@ -2,7 +2,7 @@ package com.example.cafeProject.communityBoard;
 
 import com.example.cafeProject.communityBoardComment.CommunityBoardComment;
 import com.example.cafeProject.communityBoardComment.CommunityBoardCommentService;
-import com.example.cafeProject.communityBoardLike.LikeService;
+import com.example.cafeProject.like.LikeService;
 import com.example.cafeProject.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

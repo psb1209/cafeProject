@@ -16,19 +16,24 @@
     <style>
         :root {
             --blue-main: #1e6fd9;
+            --blue-main-dark: #155fc0;
+
             --blue-bg-grad: linear-gradient(90deg, #eaf4ff, #d6eaff);
             --blue-bg-soft: #f3f8ff;
+            --blue-bg-light: #eaf4ff;
+            --blue-hover-bg: #f2f8ff;
+
             --blue-border: #cfe1ff;
+            --blue-icon-grad: linear-gradient(135deg, #5fa0ff, #1e6fd9);
 
             --text-main: #1f2a44;
             --text-sub: #6b7a99;
             --white: #ffffff;
+
+            --shadow-light: rgba(0,0,0,0.05);
+            --shadow-hover: rgba(0,0,0,0.08);
         }
 
-        .page-container {
-            display: flex;
-            gap: 24px;
-        }
 
         /* 게시글 카드 */
         .cafe-article-wrap {
@@ -258,6 +263,80 @@
             justify-content: center;
             gap: 6px;
         }
+
+        /*=======================================================*/
+        /*======================= 좋아요 버튼 ===================*/
+        /*=======================================================*/
+
+        .like-form {
+          display: flex;
+          justify-content: center;
+          margin: 30px 0 10px;
+        }
+
+        .like-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          padding: 10px 18px;
+          border-radius: 30px;
+
+          background: var(--white);
+          border: 1px solid var(--blue-border);
+
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--text-main);
+
+          cursor: pointer;
+          transition: all 0.18s ease;
+          box-shadow: 0 4px 10px var(--shadow-light);
+        }
+
+        .like-btn:hover {
+          background: var(--blue-hover-bg);
+          border-color: var(--blue-main);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 14px var(--shadow-hover);
+        }
+
+        /* 하트 아이콘 */
+        .like-icon {
+            font-size: 18px;
+            line-height: 1;
+            transition: transform 0.15s ease;
+        }
+
+        .like-btn:hover .like-icon {
+          transform: scale(1.15);
+        }
+
+        .like-btn.active .like-icon {
+          filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+        }
+
+        /* 텍스트 */
+        .like-text {
+          font-size: 14px;
+        }
+
+        /* ================== 눌렀을 때 ================== */
+        .like-btn.active {
+          background: var(--blue-icon-grad);
+          color: var(--white);
+          border: none;
+        }
+
+        .like-btn.active .like-count {
+          background: rgba(255,255,255,0.2);
+          color: var(--white);
+        }
+
+        .like-btn.active:hover {
+          background: linear-gradient(135deg, #4a90ff, var(--blue-main-dark));
+        }
+
     </style>
 
     <!-- ================= 본문 ================= -->
@@ -292,8 +371,8 @@
 
                 <!-- 자유게시판 -->
                 <a class="nav-link"
-                   th:classappend="${activeMenu == 'communityBoard'} ? ' active'"
-                   th:href="@{/communityBoard/list}">
+                   th:classappend="${activeMenu == 'operationBoard'} ? ' active'"
+                   th:href="@{/operationBoard/list}">
                     <span class="nav-emoji">🧩</span>자유게시판
                 </a>
 
@@ -356,6 +435,8 @@
                     <span th:text="${operationBoard.member.username}"></span>
                     <span th:text="${#dates.format(operationBoard.createDate,'yyyy.MM.dd')}"></span>
                     <span>조회 <b th:text="${operationBoard.cnt}"></b></span>
+                    <!--<span>좋아요 <b th:text="${operationBoard.likeCount}">0</b></span>-->
+                    <span>좋아요 <b>0</b></span>
                 </div>
             </div>
 
@@ -372,12 +453,35 @@
                    class="cafe-action-btn danger">삭제</a>
             </div>
 
+            <!--========================= 좋아요 ============================-->
+            <form class="like-form" action="/like/createProc" method="post">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+                <input type="hidden" name="operationBoardNumber"
+                       th:value="${operationBoard.id}">
+
+                <button type="submit"
+                        class="like-btn"
+                        th:classappend="${isLike} ? ' active' : ''">
+                    <!-- 좋아요 안 한 상태 -->
+                    <span class="like-icon"
+                          th:if="${!isLike}">🤍</span>
+
+                    <!-- 좋아요 한 상태 -->
+                    <span class="like-icon"
+                          th:if="${isLike}">❤️</span>
+
+                    <span class="like-text">좋아요</span>
+
+                </button>
+            </form>
+
+
             <!-- 댓글 -->
             <div class="cafe-comment-section">
 
- <!--               <div class="cafe-comment-title">
+                <div class="cafe-comment-title">
                     댓글 <span th:text="${commentList.totalElements}"></span>
-                </div>-->
+                </div>
 
                 <!-- 댓글 작성 -->
                 <form name="commentForm">
@@ -413,12 +517,21 @@
                 <!-- 댓글 리스트 -->
                 <div class="cafe-comment-list">
                     <div class="cafe-comment-item"
-                         th:each="comment : ${commentList}">
+                         th:each="comment : ${commentList.content}"
+                         th:style="'padding-left:' + (${comment.step} * 30) + 'px'">
                         <div class="comment-header">
                             <span class="comment-writer"
                                   th:text="${comment.member.username}"></span>
 
                             <div class="comment-actions">
+                                <form th:action="@{|/operationBoardComment/replyComment/${comment.id}|}"
+                                      method="get">
+                                    <input type="hidden" name="operationBoardId"
+                                           th:value="${operationBoard.id}"/>
+                                    <input type="hidden" name="operationBoardCommentId"
+                                           th:value="${comment.id}">
+                                    <button class="comment-link-btn">답글</button>
+                                </form>
                                 <form th:action="@{/operationBoardComment/update}"
                                       method="post">
                                     <input type="hidden" name="operationBoardId"

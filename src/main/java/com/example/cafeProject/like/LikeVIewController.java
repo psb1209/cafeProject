@@ -1,4 +1,4 @@
-package com.example.cafeProject.communityBoardLike;
+package com.example.cafeProject.like;
 
 import com.example.cafeProject.communityBoard.CommunityBoardService;
 import com.example.cafeProject.member.Member;
@@ -36,13 +36,16 @@ public class LikeVIewController {
 
             likeDTO.setUserId(member.getId());
             likeService.createProc(likeDTO);
-            return "redirect:/communityBoard/view/"+likeDTO.getCommunityBoardNumber();
+
+            if (likeDTO.getCommunityBoardNumber() != null) return "redirect:/communityBoard/view/" + likeDTO.getCommunityBoardNumber();
+            if (likeDTO.getNoticeBoardNumber() != null) return "redirect:/noticeBoard/view/" + likeDTO.getNoticeBoardNumber();
+            if (likeDTO.getInformationBoardNumber() != null) return "redirect:/informationBoard/view/" + likeDTO.getInformationBoardNumber();
+            if (likeDTO.getOperationBoardNumber() != null) return "redirect:/operationBoard/view/" + likeDTO.getOperationBoardNumber();
+            return "redirect:/";
         } catch (Exception e) {
-            model.addAttribute("errorCode", "err0001");
-            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("errCode", "err0001");
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
-
-
     }
 }
