@@ -17,21 +17,22 @@ public class LikeService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void createProc(LikeDTO likeDTO){
-
-        //부모글있는지 판단후 있으면 좋아요 저장로직
+    public void createProc(LikeDTO likeDTO) {
         Optional<Like> optionalLike = Optional.empty();
 
-        if (likeDTO.getCommunityBoardNumber() != null) optionalLike = likeRepository.findByCommunityBoardNumberAndUserId(likeDTO.getCommunityBoardNumber(), likeDTO.getUserId());
-        if (likeDTO.getNoticeBoardNumber() != null) optionalLike = likeRepository.findByNoticeBoardNumberAndUserId(likeDTO.getNoticeBoardNumber(), likeDTO.getUserId());
-        if (likeDTO.getInformationBoardNumber() != null) optionalLike = likeRepository.findByInformationBoardNumberAndUserId(likeDTO.getInformationBoardNumber(), likeDTO.getUserId());
-        if (likeDTO.getOperationBoardNumber() != null) optionalLike = likeRepository.findByOperationBoardNumberAndUserId(likeDTO.getOperationBoardNumber(), likeDTO.getUserId());
+        if (likeDTO.getCommunityBoardNumber() != null)
+            optionalLike = likeRepository.findByCommunityBoardNumberAndUserId(likeDTO.getCommunityBoardNumber(), likeDTO.getUserId());
+        if (likeDTO.getNoticeBoardNumber() != null)
+            optionalLike = likeRepository.findByNoticeBoardNumberAndUserId(likeDTO.getNoticeBoardNumber(), likeDTO.getUserId());
+        if (likeDTO.getInformationBoardNumber() != null)
+            optionalLike = likeRepository.findByInformationBoardNumberAndUserId(likeDTO.getInformationBoardNumber(), likeDTO.getUserId());
+        if (likeDTO.getOperationBoardNumber() != null)
+            optionalLike = likeRepository.findByOperationBoardNumberAndUserId(likeDTO.getOperationBoardNumber(), likeDTO.getUserId());
 
-        if(optionalLike.isPresent()){
-            Like like=optionalLike.get();
-            likeRepository.delete(like);
+        if (optionalLike.isPresent()) {
+            likeRepository.delete(optionalLike.get());
         } else {
-            Like like=new Like();
+            Like like = new Like();
             like.setCommunityBoardNumber(likeDTO.getCommunityBoardNumber());
             like.setNoticeBoardNumber(likeDTO.getNoticeBoardNumber());
             like.setInformationBoardNumber(likeDTO.getInformationBoardNumber());
@@ -39,7 +40,6 @@ public class LikeService {
             like.setUserId(likeDTO.getUserId());
             likeRepository.save(like);
         }
-
     }
 
     public Like selectOneById(int id){
@@ -50,8 +50,27 @@ public class LikeService {
         return memberRepository.findByUsername(username).orElseThrow();
     }
 
-    public boolean isLike(int communityBoardNumber, int userId){
-        return likeRepository.findByCommunityBoardNumberAndUserId(communityBoardNumber,userId).isPresent();
+    public boolean isLike(Integer boardNumber, int userId) {
+        if (boardNumber == null) return false;
+        return likeRepository.findByCommunityBoardNumberAndUserId(boardNumber, userId).isPresent()
+                || likeRepository.findByNoticeBoardNumberAndUserId(boardNumber, userId).isPresent()
+                || likeRepository.findByInformationBoardNumberAndUserId(boardNumber, userId).isPresent()
+                || likeRepository.findByOperationBoardNumberAndUserId(boardNumber, userId).isPresent();
+    }
+
+    public int likeCnt(String boardCode, int postId) {
+        if (boardCode == null || boardCode.isBlank()) return 0;
+
+        if (boardCode.toLowerCase().contains("community"))
+            return likeRepository.countLikeWithCommunityBoardNumber(postId);
+        if (boardCode.toLowerCase().contains("notice"))
+            return likeRepository.countLikeWithNoticeBoardNumber(postId);
+        if (boardCode.toLowerCase().contains("information"))
+            return likeRepository.countLikeWithInformationBoardNumber(postId);
+        if (boardCode.toLowerCase().contains("operation"))
+            return likeRepository.countLikeWithOperationBoardNumber(postId);
+
+        return 0;
     }
 
 }

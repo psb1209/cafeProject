@@ -1,6 +1,5 @@
 package com.example.cafeProject.like;
 
-import com.example.cafeProject.communityBoard.CommunityBoardService;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/like")
 @RequiredArgsConstructor
 @Controller
-public class LikeVIewController {
+public class LikeViewController {
+
     private final LikeService likeService;
-    private final CommunityBoardService communityBoardService;
     private final MemberService memberService;
 
     @PostMapping("/createProc")
@@ -25,22 +24,21 @@ public class LikeVIewController {
             Model model,
             Authentication authentication
     ) {
-
         try {
-            //like메소드에서 보드아이디 검색 후 likeRepository에 저장까지!
-
-            UserDetails userDetails=(UserDetails) authentication.getPrincipal();
-            String username= userDetails.getUsername();
-
-            Member member=likeService.selectByUsername(username);
-
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Member member = likeService.selectByUsername(userDetails.getUsername());
             likeDTO.setUserId(member.getId());
             likeService.createProc(likeDTO);
 
-            if (likeDTO.getCommunityBoardNumber() != null) return "redirect:/communityBoard/view/" + likeDTO.getCommunityBoardNumber();
-            if (likeDTO.getNoticeBoardNumber() != null) return "redirect:/noticeBoard/view/" + likeDTO.getNoticeBoardNumber();
-            if (likeDTO.getInformationBoardNumber() != null) return "redirect:/informationBoard/view/" + likeDTO.getInformationBoardNumber();
-            if (likeDTO.getOperationBoardNumber() != null) return "redirect:/operationBoard/view/" + likeDTO.getOperationBoardNumber();
+            if (likeDTO.getCommunityBoardNumber() != null)
+                return "redirect:/communityBoard/view/" + likeDTO.getCommunityBoardNumber();
+            if (likeDTO.getNoticeBoardNumber() != null)
+                return "redirect:/noticeBoard/view/" + likeDTO.getNoticeBoardNumber();
+            if (likeDTO.getInformationBoardNumber() != null)
+                return "redirect:/informationBoard/view/" + likeDTO.getInformationBoardNumber();
+            if (likeDTO.getOperationBoardNumber() != null)
+                return "redirect:/operationBoard/view/" + likeDTO.getOperationBoardNumber();
+
             return "redirect:/";
         } catch (Exception e) {
             model.addAttribute("errCode", "err0001");

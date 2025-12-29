@@ -40,7 +40,6 @@ public class OperationBoardController {
     String dirName = "operationBoard";
 
 
-
     @GetMapping("/list")
     public String list(
             Model model,
@@ -68,19 +67,15 @@ public class OperationBoardController {
             model.addAttribute("commentList", commentList);
             operationBoardService.cntPlus(operationBoard);
 
-            boolean isLike=false;
+            boolean isLike = false;
 
-            if(authentication != null) {
-                UserDetails userDetails =
-                        (UserDetails) authentication.getPrincipal();
-                String username = userDetails.getUsername();
-
-                Member member = likeService.selectByUsername(username);
-
-                isLike = likeService.isLike(operationBoardDTO.getMemberId(), member.getId());
+            if(!memberService.isNotLogin(authentication)) {
+                Member member = memberService.viewCurrentMember(authentication);
+                isLike = likeService.isLike(operationBoard.getId(), member.getId());
             }
 
-            model.addAttribute("isLike",isLike);
+            model.addAttribute("isLike", isLike);
+            model.addAttribute("likeCnt", likeService.likeCnt(dirName, operationBoard.getId()));
 
             return dirName + "/view";
         } catch (IllegalArgumentException e) {

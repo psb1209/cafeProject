@@ -148,7 +148,7 @@
             text-align: center;
         }
 
-        .cafe-board-table tbody td {
+        .cafe-board-table tbody .td_underline {
             padding: 14px 10px;
             border-bottom: 1px solid #eef2f8;
             color: var(--text-main);
@@ -358,7 +358,6 @@
                 <tr>
                     <th class="col-no">순번</th>
                     <th class="col-subject">제목</th>
-                    <th></th>
                     <th class="col-cnt">조회수</th>
                     <th class="col-writer">작성자</th>
                     <th class="col-date">작성일</th>
@@ -369,18 +368,18 @@
                 <tr th:each="operationBoard, loop : ${operationBoardList}"
                     th:onclick="|location.href='@{|/operationBoard/view/${operationBoard.id}|}'|">
 
-                    <td th:text="${loop.index + 1}"></td>
-                    <td class="col-subject" th:text="${operationBoard.subject}"></td>
+                    <td class="td_underline" th:text="${loop.index + 1}"></td>
                     <td>
-                        <!--게시글 제목 옆 댓글수 표시-->
-                        <span class="text-danger small ms-2"
-                              th:if="${#lists.size(operationBoard.commentList) > 0}"
-                              th:text="|[${#lists.size(operationBoard.commentList)}]|">
-                        </span>
+                        <span th:text="${operationBoard.subject}" class="col-subject" style="text-align: left;"></span>
+                            <!--게시글 제목 옆 댓글수 표시-->
+                            <span class="text-danger small ms-2"
+                                  th:if="${#lists.size(operationBoard.commentList) > 0}"
+                                  th:text="|[${#lists.size(operationBoard.commentList)}]|">
+                            </span>
                     </td>
-                    <td th:text="${operationBoard.cnt}"></td>
-                    <td th:text="${operationBoard.member.username}"></td>
-                    <td th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>
+                    <td class="td_underline" th:text="${operationBoard.cnt}"></td>
+                    <td class="td_underline" th:text="${operationBoard.member.username}"></td>
+                    <td class="td_underline" th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>
                 </tr>
                 </tbody>
             </table>
