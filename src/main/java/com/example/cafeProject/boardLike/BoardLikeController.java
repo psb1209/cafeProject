@@ -18,16 +18,22 @@ public class BoardLikeController {
 
     @PostMapping("/toggle")
     public String toggle(
-            @RequestParam BoardType boardType,
+            @RequestParam String boardType,
             @RequestParam int boardId,
             Authentication authentication
     ) {
+        BoardType bt = null;
+        if (boardType.toUpperCase().contains("NOTICE".toUpperCase())) {
+            bt = BoardType.NOTICE;
+        } else if (boardType.toUpperCase().contains("COMMUNITY".toUpperCase())) {
+            bt = BoardType.COMMUNITY;
+        }
 
-        boardLikeService.toggle(boardType, boardId, authentication);
+        boardLikeService.toggle(bt, boardId, authentication);
 
         //return "redirect:/noticeBoard/view/" + noticeBoardId;
         // redirect는 각 게시판 규칙에 맞게 처리
-        return "redirect:/" + boardType.name().toLowerCase() + "/view/" + boardId;
+        return "redirect:/" + boardType.toLowerCase() + "view/" + boardId;
     }
 }
 
