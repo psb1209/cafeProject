@@ -7,6 +7,8 @@ import com.example.cafeProject.member.Grade;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberRepository;
 import com.example.cafeProject.member.RoleType;
+import com.example.cafeProject.operationBoardComment.OperationBoardComment;
+import com.example.cafeProject.operationBoardComment.OperationBoardCommentDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,18 +57,14 @@ public class InformationBoardCommentService {
     //카페회원만 댓글 입력
     @Transactional
     public boolean setInsert(InformationBoardCommentDTO informationBoardCommentDTO, User user) {
-        InformationBoard informationBoard = getSelectOneById_informationBoard(informationBoardCommentDTO.getInformationBoardId());
-        Member member = getSelectOneById_member(user.getUsername()); //로그인한 사용자의 정보
-
-        if(member.getUsername().equals(informationBoard.getMember().getUsername())) {
-            // if문 어디에 박냐!!!
-        }
-
-            RoleType oldRole = member.getRole(); //로그인한 사용자의 예전 등급
+        InformationBoard informationBoard = getSelectOneById_informationBoard(informationBoardCommentDTO.getInformationBoardId()); //카페 게시글 정보 확인
+        Member member = getSelectOneById_member(user.getUsername()); //로그인한 사용자가 카페회원이 맞는지 (인증:아이디,비번확인 + 인가:권한확인)
+       
+        RoleType oldRole = member.getRole(); //로그인한 사용자의 예전 등급
+        if (member.getUsername().equals(informationBoard.getMember().getUsername())) {
 
             InformationBoardComment informationBoardComment = InformationBoardComment.dtoToEntity(informationBoardCommentDTO, member, informationBoard);
             member.increaseReplyCount(); //댓글작성 +1
-
 
             if (informationBoard.getMember().getPostCount() >= 7 && informationBoard.getMember().getReplyCount() >= 12) {
                 informationBoard.getMember().setGrade(Grade.SPECIAL); //최우수회원
@@ -82,10 +80,20 @@ public class InformationBoardCommentService {
             }
 
             informationBoardCommentRepository.save(informationBoardComment);
+        }
             RoleType newRole = informationBoard.getMember().getRole(); //새로운 등급
-
             return oldRole != newRole; //등급이 바뀌었으면 true 반환
 
+    }
+
+    //작성자만 댓글 수정
+    @Transactional
+    public InformationBoardComment setUpdate(InformationBoardCommentDTO informationBoardCommentDTO, User user) {
+        InformationBoardComment informationBoardComment = informationBoardCommentRepository.findById(informationBoardCommentDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 답변을 찾을 수 없습니다."));
+
+        informationBoardComment.setContent(informationBoardCommentDTO.getContent());
+        return informationBoardComment;
     }
 
 

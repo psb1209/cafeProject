@@ -38,12 +38,12 @@ public class MainCafeController {
         return "explore_cafes/" + code;
     }
 
-    @GetMapping("/aaa")
-    public String aaa(
+    @GetMapping("/test2")
+    public String test2(
             Model model
     ) {
         model.addAttribute("activeMenu", "main");
-        return "index/aaa";
+        return "index/test2";
     }
 
 }

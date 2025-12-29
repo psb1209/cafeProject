@@ -33,7 +33,7 @@ public class InformationBoardController {
 
 
     @GetMapping("/list")
-    public String list(Model model, @PageableDefault(size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public String list(Model model, @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         try {
             Page<InformationBoard> informationBoardList = informationBoardService.getSelectAllPage(pageable);
             model.addAttribute("informationBoardList", informationBoardList);
@@ -48,7 +48,7 @@ public class InformationBoardController {
     }
 
     @GetMapping("/view/{id}")
-    public String view(Model model, InformationBoardDTO informationBoardDTO, @PageableDefault(size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public String view(Model model, InformationBoardDTO informationBoardDTO, @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         try {
             InformationBoard informationBoard = informationBoardService.getSelectOneById(informationBoardDTO.getId());
             model.addAttribute("informationBoard", informationBoard);

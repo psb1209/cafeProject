@@ -275,10 +275,10 @@
                 <!--사용자가 게시글의 정렬조건 선택-->
                 <div class="cafe-article-actions">
                     <select onchange="location.href='?page=0&sort=' + this.value" class="cafe-action-btn write">
-                        <option value="cnt,desc" th:selected="${param.sort != null and param.sort[0] == 'cnt,desc'}" class="cafe-action-btn write">조회수 높은 순</option>
-                        <option value="cnt,asc" th:selected="${param.sort != null and param.sort[0] == 'cnt,asc'}" class="cafe-action-btn write">조회수 낮은 순</option>
                         <option value="createDate,desc" th:selected="${param.sort != null and param.sort[0] == 'createDate,desc'}" class="cafe-action-btn write">최근 등록일 순</option>
                         <option value="createDate,asc" th:selected="${param.sort != null and param.sort[0] == 'createDate,asc'}" class="cafe-action-btn write">오래된 순</option>
+                        <option value="cnt,desc" th:selected="${param.sort != null and param.sort[0] == 'cnt,desc'}" class="cafe-action-btn write">조회수 높은 순</option>
+                        <option value="cnt,asc" th:selected="${param.sort != null and param.sort[0] == 'cnt,asc'}" class="cafe-action-btn write">조회수 낮은 순</option>
                     </select>
 
                     <!--사용자에게 목록에 보여질 갯수 선택-->
