@@ -420,7 +420,7 @@
                     댓글 <span th:text="${commentList.totalElements}"></span>
                 </div>-->
 
-                <!-- 댓글 작성 -->
+                <!--댓글작성 & 댓글수정-->
                 <form name="commentForm">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <input type="hidden" name="informationBoardId"

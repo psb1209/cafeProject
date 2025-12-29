@@ -1,5 +1,8 @@
 package com.example.cafeProject.informationBoardComment;
 
+import com.example.cafeProject.operationBoard.OperationBoardDTO;
+import com.example.cafeProject.operationBoardComment.OperationBoardComment;
+import com.example.cafeProject.operationBoardComment.OperationBoardCommentDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
