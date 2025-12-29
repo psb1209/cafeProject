@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+
+<head th:replace="~{test_layout/inc_head :: inc_head}"></head>
+
+<body th:classappend="${showHeader} == false ? ' no-header'">
+
+<div th:replace="~{test_layout/inc_navbar :: inc_navbar}"></div>
+
+<div th:if="${showHeader} != false">
+    <div th:replace="~{test_layout/inc_header :: inc_header}"></div>
+</div>
+
+<div class="page-container">
+
+    <div th:replace="~{test_layout/inc_sidebar :: inc_sidebar}"></div>
+
+    <div class="cafe-layout">
+
+        <!-- 🔥 페이지들이 채울 영역 -->
+        <section layout:fragment="cafeContent"></section>
+
+        <div th:replace="~{test_layout/inc_aside :: inc_aside}"></div>
+
+    </div>
+</div>
+
+<div th:replace="~{test_layout/inc_footer :: inc_footer}"></div>
+
+<form id="logoutForm"
+      th:action="@{/logout}"
+      method="post"
+      style="display:none;">
+</form>
+
+<script th:src="@{/js/logout.js}"></script>
+<script th:src="@{/js/scripts.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
