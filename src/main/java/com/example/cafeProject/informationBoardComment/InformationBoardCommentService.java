@@ -58,9 +58,8 @@ public class InformationBoardCommentService {
     @Transactional
     public boolean setInsert(InformationBoardCommentDTO informationBoardCommentDTO, User user) {
         InformationBoard informationBoard = getSelectOneById_informationBoard(informationBoardCommentDTO.getInformationBoardId()); //카페 게시글 정보 확인
-        Member member = getSelectOneById_member(user.getUsername()); //로그인한 사용자의 정보 (인증:아이디,비번확인)
-        //(인가:권한확인 - 로그인한 사용자가 카페회원이 맞는가?)
-
+        Member member = getSelectOneById_member(user.getUsername()); //로그인한 사용자가 카페회원이 맞는지 (인증:아이디,비번확인 + 인가:권한확인)
+       
         RoleType oldRole = member.getRole(); //로그인한 사용자의 예전 등급
         if (member.getUsername().equals(informationBoard.getMember().getUsername())) {
 
