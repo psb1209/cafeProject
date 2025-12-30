@@ -13,7 +13,8 @@ public class MainCafeController {
     public String mainIndex(
             Model model
     ) {
-        model.addAttribute("activeMenu", "main");
+        model.addAttribute("activeMenu", "main");       // 네비(사이드바/상단메뉴)용
+        model.addAttribute("activeTab", "my");      // 카페탭 기본 선택
         return "index/mainIndex";
     }
 
@@ -51,18 +52,18 @@ public class MainCafeController {
     public String myCafe(
             Model model
     ) {
-        model.addAttribute("activeMenu", "my");
-        return "explore_cafes/my";
+        model.addAttribute("activeMenu", "main");
+        model.addAttribute("activeTab", "my");
+        return "index/mainIndex :: cafeList"; // index/mainIndex의 cafeList 조각만 로딩
     }
 
     @GetMapping("/explore_cafes/favorite")
     public String favoriteCafe(
             Model model
     ) {
-        model.addAttribute("activeMenu", "favorite");
-        return "explore_cafes/favorite";
+        model.addAttribute("activeMenu", "main");
+        model.addAttribute("activeTab", "favorite");
+        return "index/mainIndex :: cafeList"; // index/mainIndex의 cafeList 조각만 로딩
     }
-
-
 
 }

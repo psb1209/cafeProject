@@ -41,7 +41,11 @@ body {
   background: var(--blue-bg-grad);
 }
 
-.page-container {
+/* box-sizing 통일 (레이아웃 삐걱임 예방) */
+*, *::before, *::after { box-sizing: border-box; }
+
+.page-container,
+.layout-main {
   display: flex;
   gap: 20px;
   max-width: 1600px;
@@ -163,6 +167,35 @@ body {
 }
 
 .tab:hover:not(.active) {
+  background: var(--blue-hover-bg);
+  color: var(--blue-main);
+}
+
+/*-------------------------------------------------------*/
+/* 카페 홈 탭(.cafe-tabs)은 다른 CSS(theme.css 등)에서 */
+/* .tab 스타일이 덮여도 '활성 탭 배경색'이 유지되도록 스코프 강화 */
+/*-------------------------------------------------------*/
+.cafe-tabs .tab {
+  padding: 6px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--border-light);
+  background: var(--white);
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.15s;
+  color: var(--text-dark);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.cafe-tabs .tab.active {
+  background: var(--blue-bg-grad) !important;
+  color: var(--blue-main) !important;
+  border-color: var(--blue-border) !important;
+  font-weight: 600;
+}
+
+.cafe-tabs .tab:hover:not(.active) {
   background: var(--blue-hover-bg);
   color: var(--blue-main);
 }
@@ -332,17 +365,50 @@ body {
   color: var(--text-sub-light);
 }
 
+/* 왼쪽 사이드바 + 본문을 한 줄로 */
+/* .layout-main은 .page-container와 동일한 레이아웃 규칙을 공유 */
+
+.layout-sidebar{
+  flex: 0 0 220px;   /* 사이드바 고정 폭 */
+  min-width: 220px;
+}
+
+.layout-content{
+  flex: 1 1 auto;    /* 본문은 나머지 */
+  min-width: 0;
+}
+
+/* 사이드바 없는 페이지에서 본문을 가운데로 */
+.layout-main.no-sidebar {
+  justify-content: center;   /* flex 기준 */
+}
+
+.layout-main.no-sidebar .layout-content {
+  width: 100%;
+  max-width: 1140px;         /* 원하는 폭 */
+  margin: 0 auto;
+  min-width: 0;
+}
+
 /*=======================================================*/
 /*===================== 반응형 =========================*/
 /*=======================================================*/
 @media (max-width: 1200px) {
-  .sb-sidenav-menu, .cafe-side {
+  .sb-sidenav-menu, .cafe-side, .layout-sidebar {
     display: none;
   }
   .cafe-list-wrap {
     min-width: 0;
     width: 100%;
   }
+}
+
+.cafe-list-wrap {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
 }
 
 /*=======================================================*/
@@ -412,8 +478,7 @@ body {
   font-weight: 700;
   color: var(--text-main);
 }
-
-.cafe-meta {
+.subscribe-card .cafe-meta {
   font-size: 12px;
   color: var(--text-sub);
   margin-top: 2px;
@@ -560,5 +625,3 @@ body {
     padding: 0;
     height: 12px;
 }
-
-
