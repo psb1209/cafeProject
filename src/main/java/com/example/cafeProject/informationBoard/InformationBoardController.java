@@ -4,6 +4,7 @@ import com.example.cafeProject.informationBoardComment.InformationBoardComment;
 import com.example.cafeProject.informationBoardComment.InformationBoardCommentService;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.RoleType;
+import com.example.cafeProject.operationBoard.OperationBoard;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping("/informationBoard")
@@ -34,10 +32,14 @@ public class InformationBoardController {
 
 
     @GetMapping("/list")
-    public String list(Model model, @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public String list(Model model,
+                       @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                       @RequestParam(required = false) String keyword) {
         try {
-            Page<InformationBoard> informationBoardList = informationBoardService.getSelectAllPage(pageable);
+            Page<InformationBoard> informationBoardList = informationBoardService.getSelectAllPage(pageable, keyword);
             model.addAttribute("informationBoardList", informationBoardList);
+            model.addAttribute("activeMenu", "informationBorad");
+            model.addAttribute("keyword", keyword);
             return "informationBoard/list";
         } catch (DataAccessException e) {
             model.addAttribute("errMsg", "접근 중 오류가 발생했습니다. 관리자에게 문의해주세요.");

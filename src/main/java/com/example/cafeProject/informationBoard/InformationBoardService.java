@@ -4,6 +4,7 @@ import com.example.cafeProject.member.Grade;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberRepository;
 import com.example.cafeProject.member.RoleType;
+import com.example.cafeProject.operationBoard.OperationBoard;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +47,15 @@ public class InformationBoardService {
                 .orElseThrow(()-> new IllegalArgumentException("해당 맴버 없음"));
     }
 
-    //목록 페이징 기능
+    //목록 페이징 기능 + 키워드 검색 기능
     @Transactional(readOnly = true)
-    public Page<InformationBoard> getSelectAllPage(Pageable pageable) {
-        return informationBoardRepository.findAll(pageable);
+    public Page<InformationBoard> getSelectAllPage(Pageable pageable, String keyword) {
+        if (keyword == null || keyword.isBlank()) // 검색을 안 했을 경우
+            return informationBoardRepository.findAll(pageable);
+
+        return informationBoardRepository.searchBySubject(keyword.trim(), pageable);
     }
+
 
     //회원등업
     @Transactional
