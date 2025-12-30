@@ -296,8 +296,8 @@ public class BaseUtility {
             return (double) this.n / (double) this.d;
         }
 
-        public Long getNumerator() { return this.n; }
-        public Long getDenominator() { return this.d; }
+        public long getNumerator() { return this.n; }
+        public long getDenominator() { return this.d; }
 
         @Override
         public int compareTo(Rational rational) {
