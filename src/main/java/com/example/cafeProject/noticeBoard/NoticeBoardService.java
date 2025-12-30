@@ -1,5 +1,8 @@
 package com.example.cafeProject.noticeBoard;
 
+import com.example.cafeProject.boardLike.BoardLikeRepository;
+import com.example.cafeProject.boardLike.BoardLikeService;
+import com.example.cafeProject.boardLike.BoardType;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +32,25 @@ public class NoticeBoardService {
     private final NoticeBoardCommentRepository noticeBoardCommentRepository;
     private final MemberService memberService;
     protected final Logger log = LoggerFactory.getLogger(getClass());
+    private final BoardLikeService boardLikeService;
+    private final BoardLikeRepository boardLikeRepository;
 
 
     public Page<NoticeBoard> list(Pageable pageable) {
-        return noticeBoardRepository.findAll(pageable);
+        Page<NoticeBoard> noticeBoardPage = noticeBoardRepository.findAll(pageable);
+
+        for (NoticeBoard noticeBoard : noticeBoardPage.getContent()) {
+
+            int likeCnt =
+                    boardLikeService.getLikeCount(
+                            BoardType.NOTICE,
+                            noticeBoard.getId()
+                    );
+
+            noticeBoard.setLikeCnt(likeCnt);
+        }
+
+        return noticeBoardPage;
     }
 
     public NoticeBoard view(NoticeBoardDTO noticeBoardDTO) {
@@ -101,6 +119,11 @@ public class NoticeBoardService {
         // 1. 댓글 삭제
         noticeBoardCommentRepository.deleteByNoticeBoardId(noticeBoardId);
 
+        // 2. 좋아요 삭제 (공용 구조)
+        boardLikeService.deleteByBoard(
+                BoardType.NOTICE,
+                noticeBoardId
+        );
 
         // 3. 게시글 삭제
         noticeBoardRepository.deleteById(noticeBoardId);

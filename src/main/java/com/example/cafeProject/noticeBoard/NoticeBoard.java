@@ -43,8 +43,8 @@ public class NoticeBoard {
     @OneToMany(mappedBy = "noticeBoard", cascade = CascadeType.REMOVE)
     private List<NoticeBoardComment> noticeBoardCommentList;
 
-    @Transient //db에 데이터를 저장할 목적이 아니라 화면에 숫자 띄우는 용도로 사용함
-    private int likeCnt;
+//    @Transient //db에 데이터를 저장할 목적이 아니라 화면에 숫자 띄우는 용도로 사용함
+//    private int likeCnt;
 
     @Transient
     private int commentCnt;

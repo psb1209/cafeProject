@@ -56,6 +56,7 @@ public class NoticeBoardController {
         Page<NoticeBoardComment> noticeBoardCommentList = noticeBoardCommentService.listByNoticeBoard(id, pageable);
         model.addAttribute("noticeBoardCommentList", noticeBoardCommentList);
 
+
         noticeBoardService.cntUpdateProc(noticeBoard);
 
         model.addAttribute("noticeBoard", noticeBoard);

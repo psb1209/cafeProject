@@ -15,7 +15,7 @@ public class NoticeBoardDTO {
     private Timestamp createDate;
     private int memberId;
 
-    private int likeCnt;
+//    private int likeCnt;
     private int commentCnt;
 
 }
