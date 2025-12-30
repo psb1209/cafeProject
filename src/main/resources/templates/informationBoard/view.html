@@ -353,10 +353,6 @@
                 <h1 class="cafe-article-title"
                     th:text="${informationBoard.subject}"></h1>
 
-                <div th:if="${msg}">
-                    <span th:text="${msg}">메시지내용</span>
-                </div>
-
                 <div class="cafe-article-meta">
                     <span th:text="${informationBoard.member.username}"></span>
                     <span th:switch="${informationBoard.member.grade.name()}">
@@ -366,6 +362,10 @@
                         <span th:case="'SPECIAL'">최우수🏆</span></span>
                     <span th:text="${#dates.format(informationBoard.createDate,'yyyy.MM.dd')}"></span>
                     <span>조회 <b th:text="${informationBoard.cnt}"></b></span>
+
+                    <span th:if="${msg}">
+                    <span th:text="${msg}">메시지내용</span>
+                </span>
                 </div>
             </div>
 
