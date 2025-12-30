@@ -1,49 +1,52 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorate="~{test_layout/layout2}">
-
+      layout:decorate="~{test_layout/layout2}"
+      th:with="headerImage=@{/assets/img/about-bg.jpg},
+               headerPosition='center center'">
 <body>
 
-<div layout:fragment="content">
+<div layout:fragment="cafeContent">
 
     <!-- 본문 내용 시작 -->
-    <h2>카페 홈 콘텐츠</h2>
-    <div class="cafe-topbar">
-        <div class="cafe-tabs">
-            <button class="tab active">내 카페</button>
-            <button class="tab">즐겨찾는 게시판</button>
-        </div>
-        <div class="cafe-manage">
-            <a href="#">⚙ 내 카페 관리</a>
-        </div>
-    </div>
-
-    <div class="cafe-list">
-        <div class="cafe-item">
-            <div class="cafe-thumb">
-                <img src="/assets/img/main.jpg" alt="헬사모">
+    <div class="cafe-list-wrap">
+        <h2>카페 홈 콘텐츠</h2>
+        <div class="cafe-topbar">
+            <div class="cafe-tabs">
+                <button class="tab active">내 카페</button>
+                <button class="tab">즐겨찾는 게시판</button>
             </div>
-            <div class="cafe-content" th:onclick="|location.href='@{/healthCafe}'|">
-                <div class="cafe-title">헬사모</div>
-                <div class="cafe-desc">헬스를 사랑하는 사람들의 모임</div>
-                <div class="cafe-meta">
-                    <span>주제 | 건강/다이어트</span>
-                    <span>👤 5,325</span>
+            <div class="cafe-manage">
+                <a href="#">⚙ 내 카페 관리</a>
+            </div>
+        </div>
+
+        <div class="cafe-list">
+            <div class="cafe-item">
+                <div class="cafe-thumb">
+                    <img src="/assets/img/main.jpg" alt="헬사모">
+                </div>
+                <div class="cafe-content" th:onclick="|location.href='@{/healthCafe}'|">
+                    <div class="cafe-title">헬사모</div>
+                    <div class="cafe-desc">헬스를 사랑하는 사람들의 모임</div>
+                    <div class="cafe-meta">
+                        <span>주제 | 건강/다이어트</span>
+                        <span>👤 5,325</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="cafe-item">
-            <div class="cafe-thumb">
-                <img src="/assets/img/home-bg.jpg" alt="스터디 카페">
-            </div>
-            <div class="cafe-content" th:onclick="|location.href='@{/studyCafe}'|">
-                <div class="cafe-title">스터디 카페</div>
-                <div class="cafe-desc">문제풀이 및 공부 팁을 공유해요</div>
-                <div class="cafe-meta">
-                    <span>주제 | 공부/자습</span>
-                    <span>👤 743</span>
+            <div class="cafe-item">
+                <div class="cafe-thumb">
+                    <img src="/assets/img/home-bg.jpg" alt="스터디 카페">
+                </div>
+                <div class="cafe-content" th:onclick="|location.href='@{/studyCafe}'|">
+                    <div class="cafe-title">스터디 카페</div>
+                    <div class="cafe-desc">문제풀이 및 공부 팁을 공유해요</div>
+                    <div class="cafe-meta">
+                        <span>주제 | 공부/자습</span>
+                        <span>👤 743</span>
+                    </div>
                 </div>
             </div>
         </div>

@@ -156,7 +156,7 @@ body {
 }
 
 .tab.active {
-  background: var(--blue-bg-grad);
+  background: var(--blue-bg-grad) !important;
   color: var(--blue-main);
   border-color: var(--blue-border);
   font-weight: 600;
@@ -466,3 +466,99 @@ body {
   font-weight: 600;
   cursor: pointer;
 }
+
+/*=======================================================*/
+/*==================== 댓글 답글 입력 ===================*/
+/*=======================================================*/
+
+.comment-reply-box {
+  margin-top: 12px;
+  padding: 14px 16px;
+}
+
+.comment-reply-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.comment-reply-input {
+  flex: 1;
+  height: 38px;
+  padding: 0 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: var(--white);
+  transition: 0.15s;
+}
+
+.comment-reply-input::placeholder {
+  color: var(--text-sub-light);
+}
+
+.comment-reply-input:focus {
+  outline: none;
+  border-color: var(--blue-main);
+  box-shadow: 0 0 0 2px var(--shadow-focus);
+}
+
+.comment-reply-btn {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  background: var(--blue-bg-grad);
+  color: var(--blue-main);
+  transition: 0.15s;
+}
+
+.comment-reply-btn:hover {
+  background: var(--blue-main);
+  color: var(--white);
+}
+
+
+/* 댓글 하단 영역 */
+.comment-footer {
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    margin-top: 6px;
+}
+
+.comment-content {
+    margin-bottom: 30px;
+}
+
+.comment-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/* 날짜 */
+.comment-date {
+    display: inline-flex;     /* 🔥 기준 통일 */
+    align-items: center;
+    font-size: 12px;
+    line-height: 12px;        /* 🔥 px로 고정 */
+    margin-top: 1px;          /* 🔥 미세 보정 (핵심) */
+    color: var(--text-sub);
+}
+
+/* 답글보기 버튼 */
+.reply-toggle-btn {
+    display: inline-flex;     /* 🔥 기준 통일 */
+    align-items: center;
+    font-size: 12px;
+    line-height: 12px;        /* 🔥 날짜와 동일 */
+    padding: 0;
+    height: 12px;
+}
+
+

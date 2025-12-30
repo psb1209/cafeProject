@@ -40,6 +40,7 @@ public class InformationBoardController {
             model.addAttribute("informationBoardList", informationBoardList);
             model.addAttribute("activeMenu", "informationBorad");
             model.addAttribute("keyword", keyword);
+
             return "informationBoard/list";
         } catch (DataAccessException e) {
             model.addAttribute("errMsg", "접근 중 오류가 발생했습니다. 관리자에게 문의해주세요.");

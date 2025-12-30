@@ -1,168 +1,508 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorate="~{_layout/layout}"
+      layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center'">
 
-<h1 layout:fragment="pageTitle">헬 사 모</h1>
+<body>
+
+<h1 layout:fragment="pageTitle"
+    onclick="location.href='/healthCafe'"
+    style="cursor:pointer;">헬 사 모</h1>
 <span layout:fragment="pageSubTitle">헬스를 사랑하는 사람들의 모임</span>
 
 <div layout:fragment="content">
-    <div class="container">
-        <!-- 본문 내용 시작 -->
+
+    <!-- ================= 스타일 ================= -->
+    <style>
+        :root {
+            --blue-main: #1e6fd9;
+            --blue-main-dark: #155fc0;
+
+            --blue-bg-grad: linear-gradient(90deg, #eaf4ff, #d6eaff);
+            --blue-bg-soft: #f3f8ff;
+            --blue-bg-light: #eaf4ff;
+            --blue-hover-bg: #f2f8ff;
+
+            --blue-border: #cfe1ff;
+            --blue-icon-grad: linear-gradient(135deg, #5fa0ff, #1e6fd9);
+
+            --text-main: #1f2a44;
+            --text-sub: #6b7a99;
+            --white: #ffffff;
+
+            --shadow-light: rgba(0,0,0,0.05);
+            --shadow-hover: rgba(0,0,0,0.08);
+        }
 
 
-        <div>
-            <a href="/noticeBoard/list" class="btn btn-secondary">공지사항</a>
-        </div>
-        <div class="mb-3">
-            <label for="subject"></label>
-            <span class="form-control" id="subject" th:text="${noticeBoard.subject}" style="font-size: 40px;"></span>
-        </div>
-        <div class="mb-3">
-            <label for="content"></label>
-            <span class="form-control" id="content" th:utext="${noticeBoard.content}"></span>
-        </div>
-        <div class="mb-3">
-            <label for="cnt">조회수:</label>
-            <span class="form-control" id="cnt" th:text="${noticeBoard.cnt}"></span>
-        </div>
-        <div class="mb-3">
-            <label for="createDate2">작성일:</label>
-            <!--        <span class="form-control" id="createDate1" th:text="${board.createDate}"></span><br>-->
-            <span class="form-control" id="createDate2"
-                  th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd')}"></span><br>
-            <!--        <span class="form-control" id="createDate" th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd HH:mm:ss')}"></span>-->
-        </div>
-        <div class="mb-3">
-            <label for="cnt">댓글수:</label>
-            <span class="form-control" id="commentCnt" th:text="${noticeBoard.commentCnt}"></span>
-        </div>
+        /* 게시글 카드 */
+        .cafe-article-wrap {
+            flex: 1;
+            background: var(--white);
+            border-top: 4px solid var(--blue-main);
+            border-radius: 10px;
+            padding: 30px;
+            font-size: 14px;
+        }
 
-        <!-- 좋아요 -->
-        <div class="like-wrapper">
+        .cafe-article-header {
+            border-bottom: 1px solid var(--blue-border);
+            padding-bottom: 16px;
+            margin-bottom: 26px;
+        }
 
-            <form th:if="${#authentication.principal != 'anonymousUser'}"
-                  th:action="@{/boardLike/toggle}"
-                  method="post">
+        .cafe-article-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
 
-                <input type="hidden" name="boardType" value="NOTICE"/>
-                <input type="hidden" name="boardId" th:value="${noticeBoard.id}"/>
+        .cafe-article-meta {
+            font-size: 13px;
+            color: var(--text-sub);
+            display: flex;
+            gap: 14px;
+        }
 
-                <button type="submit"
-                        class="like-btn"
-                        th:classappend="${liked} ? ' liked' : ''">
+        .cafe-article-content {
+            padding: 24px 0 40px;
+            font-size: 15px;
+            line-height: 1.8;
+        }
 
-                    <span class="heart">♥</span>
-                    <span class="count" th:text="${likeCount}">0</span>
+        /* 게시글 버튼 */
+        .cafe-article-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
 
-                </button>
-            </form>
+        /* 기본 버튼 스타일 */
+        .cafe-action-btn {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--blue-border);
+            font-size: 13px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
 
-            <!-- 비로그인 -->
-            <div th:if="${#authentication.principal == 'anonymousUser'}"
-                 class="like-btn disabled">
-                <span class="heart">♥</span>
-                <span class="count" th:text="${likeCount}">0</span>
+        /* 버튼별 색상 */
+        .cafe-action-btn.list {
+            background: #f5f5f5;
+            border-color: #ddd;
+            color: #333;
+        }
+        .cafe-action-btn.list:hover {
+            background: #e0e0e0;
+        }
+
+        .cafe-action-btn.edit {
+            background: #eaf4ff;
+            border-color: #cfe1ff;
+            color: var(--blue-main);
+        }
+        .cafe-action-btn.edit:hover {
+            background: #d6eaff;
+        }
+
+        .cafe-action-btn.danger {
+            background: #ffeaea;
+            border-color: #f5c2c2;
+            color: #d9534f;
+        }
+        .cafe-action-btn.danger:hover {
+            background: #ffc8c8;
+        }
+
+        /* 댓글 */
+        .cafe-comment-section {
+            border-top: 1px solid var(--blue-border);
+            padding-top: 24px;
+        }
+
+        .cafe-comment-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .cafe-comment-write {
+            border: 1px solid var(--blue-border);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 24px;
+        }
+
+        .cafe-comment-textarea {
+            width: 100%;
+            max-height: 100%;
+            min-height: 56px;
+            padding: 10px 12px;
+            box-sizing: border-box;
+            border: none;
+            resize: none;
+            overflow: hidden;
+            font-size: 14px;
+            line-height: 1.6;
+            outline: none;
+            display: block;
+        }
+
+        .comment-btn-wrap {
+            text-align: right;
+            margin-top: 8px;
+        }
+
+       .comment-btn-wrap:hover {
+           filter: brightness(0.95);
+       }
+
+
+        .cafe-comment-btn {
+            padding: 6px 16px;
+            border-radius: 6px;
+            border: none;
+            background: var(--blue-main);
+            color: var(--white);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .cafe-comment-item {
+            padding: 14px 0;
+            border-bottom: 1px solid #eef2f8;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .comment-writer {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .comment-link-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 12px;
+            color: var(--text-sub);
+            cursor: pointer;
+        }
+        .comment-link-btn:hover {
+            color: var(--blue-main);
+            text-decoration: underline;
+        }
+        .comment-link-btn.danger {
+            color: #d9534f;
+        }
+
+        .comment-content {
+            margin-top: 6px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .comment-meta {
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        /* 댓글 페이징 */
+        .cafe-comment-pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            min-width: 32px;
+            height: 32px;
+            line-height: 32px;
+            padding: 0 10px;
+            border: 1px solid var(--blue-border);
+            border-radius: 6px;
+            background: var(--white);
+            color: var(--text-main);
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .page-btn:hover {
+            background: var(--blue-bg-soft);
+            color: var(--blue-main);
+        }
+
+        .page-btn.active {
+            background: var(--blue-bg-grad);
+            border-color: var(--blue-main);
+            font-weight: 700;
+        }
+
+        .page-btn.disabled {
+            pointer-events: none;
+            color: var(--text-sub);
+            background: #f9fbff;
+        }
+
+        .cafe-pagination {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        /*=======================================================*/
+        /*======================= 좋아요 버튼 ===================*/
+        /*=======================================================*/
+
+        .like-form {
+          display: flex;
+          justify-content: center;
+          margin: 30px 0 10px;
+        }
+
+        .like-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          padding: 10px 18px;
+          border-radius: 30px;
+
+          background: var(--white);
+          border: 1px solid var(--blue-border);
+
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--text-main);
+
+          cursor: pointer;
+          transition: all 0.18s ease;
+          box-shadow: 0 4px 10px var(--shadow-light);
+        }
+
+        .like-btn:hover {
+          background: var(--blue-hover-bg);
+          border-color: var(--blue-main);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 14px var(--shadow-hover);
+        }
+
+        /* 하트 아이콘 */
+        .like-icon {
+            font-size: 18px;
+            line-height: 1;
+            transition: transform 0.15s ease;
+        }
+
+        .like-btn:hover .like-icon {
+          transform: scale(1.15);
+        }
+
+        .like-btn.active .like-icon {
+          filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+        }
+
+        /* 텍스트 */
+        .like-text {
+          font-size: 14px;
+        }
+
+        /* ================== 눌렀을 때 ================== */
+
+        .like-btn.active .like-count {
+          background: rgba(255,255,255,0.2);
+          color: var(--white);
+        }
+
+        .like-btn.active:hover {
+          background: linear-gradient(135deg, #4a90ff, var(--blue-main-dark));
+        }
+
+    </style>
+
+    <!-- ================= 본문 ================= -->
+    <div class="page-container">
+
+        <!-- 좌측 사이드바 -->
+        <nav class="sb-sidenav-menu">
+            <div class="nav">
+
+                <!-- 카페 홈 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'main'} ? ' active'"
+                   th:href="@{/healthCafe}">
+                    <span class="nav-emoji">🏠</span>카페 홈
+                </a>
+
+                <!-- 공지 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'noticeBoard'} ? ' active'"
+                   th:href="@{/noticeBoard/list}">
+                    <span class="nav-emoji">📢</span>공지사항
+                </a>
+
+                <div class="sidenav-section-title">게시판</div>
+
+                <!-- 전체글 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'all'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">📄</span>전체글보기
+                </a>
+
+                <!-- 자유게시판 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'operationBoard'} ? ' active'"
+                   th:href="@{/operationBoard/list}">
+                    <span class="nav-emoji">🧩</span>자유게시판
+                </a>
+
+                <!-- 정보게시판 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'informationBoard'} ? ' active'"
+                   th:href="@{/informationBoard/list}">
+                    <span class="nav-emoji">🔍</span>정보게시판
+                </a>
+
+                <!-- 운영게시판 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'operationBoard'} ? ' active'"
+                   th:href="@{/operationBoard/list}">
+                    <span class="nav-emoji">📋</span>운영게시판
+                </a>
+
+                <!-- 사진 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'photo'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">📸</span>사진게시판
+                </a>
+
+                <!-- 질문/정보 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'qna'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">💡</span>질문/정보
+                </a>
+
+                <div class="sidenav-section-title">카페 정보</div>
+
+                <!-- 멤버 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'members'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">👥</span>멤버
+                </a>
+
+                <!-- 소개 -->
+                <a class="nav-link"
+                   th:classappend="${activeMenu == 'about'} ? ' active'"
+                   href="#">
+                    <span class="nav-emoji">ℹ️</span>카페 소개
+                </a>
+
+            </div>
+        </nav>
+
+        <!-- ================= 공지 상세 ================= -->
+        <div class="cafe-article-wrap">
+
+            <div class="cafe-article-header">
+                <h1 class="cafe-article-title"
+                    th:text="${noticeBoard.subject}"></h1>
+
+                <div class="cafe-article-meta">
+                    <span th:text="${#dates.format(noticeBoard.createDate,'yyyy.MM.dd')}"></span>
+                    <span>조회 <b th:text="${noticeBoard.cnt}"></b></span>
+                    <span>댓글 <b th:text="${noticeBoard.commentCnt}"></b></span>
+                </div>
+            </div>
+
+            <div class="cafe-article-content"
+                 th:utext="${noticeBoard.content}"></div>
+
+            <div class="cafe-article-actions">
+                <a th:href="@{/noticeBoard/list}" class="cafe-action-btn">목록</a>
+                <a th:href="@{|/noticeBoard/update/${noticeBoard.id}|}" class="cafe-action-btn">수정</a>
+                <a th:href="@{|/noticeBoard/delete/${noticeBoard.id}|}"
+                   class="cafe-action-btn danger">삭제</a>
+            </div>
+
+            <!-- ================= 댓글 ================= -->
+            <div class="cafe-comment-section">
+
+                <div class="cafe-comment-title">
+                    댓글 <span th:text="${noticeBoardCommentList.totalElements}"></span>
+                </div>
+
+                <form name="noticeBoardCommentForm">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <input type="hidden" name="noticeBoardId" th:value="${noticeBoard.id}">
+
+                    <div class="cafe-comment-write">
+                    <textarea class="cafe-comment-textarea"
+                              name="content"
+                              placeholder="댓글을 남겨보세요"></textarea>
+                        <div class="comment-btn-wrap">
+                            <button type="button"
+                                    class="cafe-comment-btn"
+                                    onclick="noticeBoardCommentSave();">등록</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="cafe-comment-list">
+                    <div class="cafe-comment-item"
+                         th:each="comment : ${noticeBoardCommentList.content}">
+                        <div class="comment-header">
+                        <span class="comment-writer"
+                              th:text="${comment.member != null ? comment.member.username : '-'}"></span>
+
+                            <button class="comment-link-btn danger">삭제</button>
+                        </div>
+
+                        <div class="comment-content"
+                             th:text="${comment.content}"></div>
+
+                        <div class="comment-meta"
+                             th:text="${#dates.format(comment.createDate,'MM.dd HH:mm')}"></div>
+                    </div>
+                </div>
+
             </div>
 
         </div>
-        <!-- 좋아요 -->
-
-        <div class="text-end">
-            <a href="/noticeBoard/create" class="btn btn-secondary">등록</a>
-            <a th:href="@{|/noticeBoard/update/${noticeBoard.id}|}" class="btn btn-secondary">수정</a>
-            <a th:href="@{|/noticeBoard/delete/${noticeBoard.id}|}" class="btn btn-secondary">삭제</a>
-        </div>
-
-        <div style="margin-top: 20px;">
-            <form name="noticeBoardCommentForm">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <input type="hidden" id="noticeBoardId" name="noticeBoardId" th:value="${noticeBoard.id}">
-                <textarea id="reply-content" rows="1" class="form-control border-primary bg-light" name="content"
-                          placeholder="댓글을 입력하세요..."></textarea><br>
-                <button id="btn-save-reply" class="btn btn-secondary" type="button" onclick="noticeBoardCommentSave();">
-                    댓글 등록
-                </button>
-            </form>
-            <script>
-                function noticeBoardCommentSave() {
-                    // 간단한 클라이언트 측 유효성 검사
-
-                    if (document.noticeBoardCommentForm.content.value.trim() === '') {
-                        alert('댓글을 입력해주세요.');
-                        document.noticeBoardCommentForm.content.focus();
-                        return;
-                    }
-
-                    if (confirm('등록 하시겠습니까?')) {
-                        document.noticeBoardCommentForm.action = "/noticeBoardComment/createProc";
-                        document.noticeBoardCommentForm.method = "post";
-                        document.noticeBoardCommentForm.submit();
-                    }
-                }
-            </script>
-        </div>
-
-        <div style="margin-top: 20px;" id="noticeBoardCommentList">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th width="50%">댓글</th>
-                    <th width="10%">작성자</th>
-                    <th width="10%">삭제</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="noticeBoardComment : ${noticeBoardCommentList}">
-                    <td th:text="${noticeBoardComment.content}" style="font-size: 15px;"><a th:href="#"
-                                                                                            style="font-size: 15px;">답글쓰기</a>
-                    </td>
-
-                    <td>
-                    <span th:if="${noticeBoardComment.member != null and noticeBoardComment.member.username != null}"
-                          th:text="${noticeBoardComment.member.username}"></span>
-
-                        <span th:unless="${noticeBoardComment.member != null and noticeBoardComment.member.username != null}"
-                              th:text="'-'"></span>
-                    </td>
-                    <td>
-                        <a th:href="@{|/noticeBoardComment/deleteProc/${noticeBoardComment.id}|}"
-                           style="font-size: 15px;">X</a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div style="margin-top: 20px;" th:if="${!noticeBoardCommentList.isEmpty()}">
-            <ul class="pagination">
-                <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${commentList.number-1}|}">Prev</a></li>-->
-                <li class="page-item" th:classappend="${noticeBoardCommentList.first} ? 'disabled'">
-                    <a class="page-link"
-                       th:href="${noticeBoardCommentList.first} ? '#' : @{|?page=${noticeBoardCommentList.number-1}|}">
-                        이전
-                    </a>
-                </li>
-
-                <li class="page-item"
-                    th:each="page: ${#numbers.sequence(0, noticeBoardCommentList.totalPages-1)}"
-                    th:classappend="${page == noticeBoardCommentList.number} ? 'active'">
-                    <a class="page-link" th:text="${page +1}" th:href="@{|?page=${page}|}"></a>
-                </li>
-
-                <!--        <li class="page-item"><a class="page-link" th:href="@{|?page=${commentList.number+1}|}">Next</a></li>-->
-                <li class="page-item" th:classappend="${noticeBoardCommentList.last} ? 'disabled'">
-                    <a class="page-link"
-                       th:href="${noticeBoardCommentList.last} ? '#' : @{|?page=${noticeBoardCommentList.number+1}|}">
-                        다음
-                    </a>
-                </li>
-            </ul>
-        </div>
     </div>
-    <!-- 본문 내용 종료 -->
-</div>
 
+    <script>
+        function noticeBoardCommentSave() {
+            const form = document.noticeBoardCommentForm;
+            if (form.content.value.trim() === '') {
+                alert('댓글을 입력해주세요.');
+                return;
+            }
+            form.action = '/noticeBoardComment/createProc';
+            form.method = 'post';
+            form.submit();
+        }
+    </script>
+
+</div>
+</body>
 </html>

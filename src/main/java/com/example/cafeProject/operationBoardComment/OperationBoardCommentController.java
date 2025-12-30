@@ -8,6 +8,8 @@ import com.example.cafeProject.operationBoard.OperationBoardDTO;
 import com.example.cafeProject.operationBoard.OperationBoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +34,9 @@ public class OperationBoardCommentController {
     public String createProc(
             Model model,
             OperationBoardCommentDTO operationBoardCommentDTO,
-            Authentication authentication
+            Authentication authentication,
+            RedirectAttributes redirectAttributes,
+            @AuthenticationPrincipal User user
     ) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
@@ -57,11 +61,16 @@ public class OperationBoardCommentController {
         }
 
         try {
-            operationBoardCommentService.setInsert(operationBoardCommentDTO, userDetails);
-            return "redirect:/" + dirName + "/view/" + operationBoardCommentDTO.getOperationBoardId();
-        } catch (Exception e) {
-            model.addAttribute("errCode", "err2232");
-            model.addAttribute("errMsg", "등록 중 문제가 발생했습니다.");
+            boolean isUpgraded = operationBoardCommentService.setInsert(operationBoardCommentDTO, user);
+            if(isUpgraded) { //등급 상승시 "msg" 데이터를 같이 리다이렉트 시킴
+                redirectAttributes.addFlashAttribute("msg","축하합니다! 등급이 올랐습니다!🎉"); //윈도우 로고 키(⊞) + 마침표(.) --> 임티창
+                return "redirect:/operationBoard/view/" + operationBoardCommentDTO.getOperationBoardId();
+            }
+            return "redirect:/operationBoard/view/" + operationBoardCommentDTO.getOperationBoardId(); //등급 안올랐으면 걍 조용히 이동
+
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "error404");
+            model.addAttribute("errMsg", "요청하신 댓글을 찾을 수 없습니다.");
             return "error/error";
         }
     }
@@ -144,6 +153,7 @@ public class OperationBoardCommentController {
     }
 
     //대댓글 추가
+/*
     @GetMapping("/replyComment/{operationBoardCommentId}")
     public String replyComment(
             @PathVariable int operationBoardCommentId,
@@ -155,11 +165,12 @@ public class OperationBoardCommentController {
         model.addAttribute("operationBoardComment",operationBoardComment);
         return "operationBoard/replyComment";
     }
+*/
 
 
     //대댓글 추가처리
-    @PostMapping("/replyCreateProc")
-    public String replyCreateProc(
+    @PostMapping("/replyProc")
+    public String replyProc(
             OperationBoardCommentDTO operationBoardCommentDTO,
             Model model,
             Authentication authentication
@@ -168,7 +179,7 @@ public class OperationBoardCommentController {
             UserDetails userDetails=(UserDetails)authentication.getPrincipal();
 
             operationBoardCommentService.replysetInsert(operationBoardCommentDTO, userDetails);
-            return "redirect:/operationBoard/list";
+            return "redirect:/operationBoard/view/" + operationBoardCommentDTO.getOperationBoardId();
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "221213321");
             model.addAttribute("errMsg", e.getMessage());
@@ -179,4 +190,6 @@ public class OperationBoardCommentController {
             return "error/error";
         }
     }
+
+
  }

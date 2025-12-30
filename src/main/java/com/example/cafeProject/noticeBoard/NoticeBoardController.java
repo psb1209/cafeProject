@@ -1,7 +1,5 @@
 package com.example.cafeProject.noticeBoard;
 
-import com.example.cafeProject.boardLike.BoardLikeService;
-import com.example.cafeProject.boardLike.BoardType;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardComment;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentService;
@@ -30,7 +28,6 @@ public class NoticeBoardController {
     private final NoticeBoardService noticeBoardService;
     private final NoticeBoardCommentService noticeBoardCommentService;
     private final MemberService memberService;
-    private final BoardLikeService boardLikeService;
 
     @GetMapping("/list")
     public String list(
@@ -59,20 +56,6 @@ public class NoticeBoardController {
         Page<NoticeBoardComment> noticeBoardCommentList = noticeBoardCommentService.listByNoticeBoard(id, pageable);
         model.addAttribute("noticeBoardCommentList", noticeBoardCommentList);
 
-
-        int likeCount =
-                boardLikeService.getLikeCount(BoardType.NOTICE, id);
-        model.addAttribute("likeCount", likeCount);
-
-        if (authentication != null) {
-            int memberId =
-                    memberService.viewCurrentMember(authentication).getId();
-
-            boolean liked =
-                    boardLikeService.isLiked(BoardType.NOTICE, id, memberId);
-
-            model.addAttribute("liked", liked);
-        }
 
         noticeBoardService.cntUpdateProc(noticeBoard);
 

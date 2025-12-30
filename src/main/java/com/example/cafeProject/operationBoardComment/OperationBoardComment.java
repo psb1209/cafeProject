@@ -1,7 +1,7 @@
 package com.example.cafeProject.operationBoardComment;
 
-import com.example.cafeProject.member.Member;
 import com.example.cafeProject.operationBoard.OperationBoard;
+import com.example.cafeProject.member.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,4 +44,14 @@ public class OperationBoardComment {
     private int ref;
     private int step;
     private int level;
+
+    public static OperationBoardComment dtoToEntity(OperationBoardCommentDTO operationBoardCommentDTO,
+                                                      Member member, OperationBoard operationBoard) {
+
+        OperationBoardComment operationBoardComment = new OperationBoardComment();
+        operationBoardComment.setContent(operationBoardCommentDTO.getContent());
+        operationBoardComment.setMember(member);
+        operationBoardComment.setOperationBoard(operationBoard);
+        return operationBoardComment;
+    }
 }

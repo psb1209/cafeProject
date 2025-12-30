@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<h4>카페 홈</h4>
+
+<div class="cafe-topbar">
+    <div class="cafe-tabs">
+        <button class="tab active" onclick="loadMyCafe(this)"
+                th:classappend="${activeMenu == 'my'} ? ' active'">내 카페</button>
+        <button class="tab" onclick="loadFavoriteCafe(this)"
+                th:classappend="${activeMenu == 'favorite'} ? ' active'">즐겨찾는 카페</button>
+    </div>
+    <div class="cafe-manage">
+        <a href="#">⚙ 내 카페 관리</a>
+    </div>
+</div>
+
+<div class="cafe-list">
+    <div class="cafe-item">
+        <div class="cafe-thumb">
+            <img src="/assets/img/main.jpg" alt="헬사모">
+        </div>
+        <div class="cafe-content" th:onclick="|location.href='@{/healthCafe}'|">
+            <div class="cafe-title">헬사모</div>
+            <div class="cafe-desc">헬스를 사랑하는 사람들의 모임</div>
+            <div class="cafe-meta">
+                <span>주제 | 건강/다이어트</span>
+                <span>👤 5,325</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="cafe-item">
+        <div class="cafe-thumb">
+            <img src="/assets/img/home-bg.jpg" alt="스터디 카페">
+        </div>
+        <div class="cafe-content" th:onclick="|location.href='@{/studyCafe}'|">
+            <div class="cafe-title">스터디 카페</div>
+            <div class="cafe-desc">문제풀이 및 공부 팁을 공유해요</div>
+            <div class="cafe-meta">
+                <span>주제 | 공부/자습</span>
+                <span>👤 743</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
