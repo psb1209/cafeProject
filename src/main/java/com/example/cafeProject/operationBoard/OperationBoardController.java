@@ -68,6 +68,7 @@ public class OperationBoardController {
             model.addAttribute("operationBoard", operationBoard);
             Page<OperationBoardComment> commentList = operationBoardCommentService.getCommentListPage(operationBoardDTO.getId(), pageable);
             model.addAttribute("commentList", commentList);
+            model.addAttribute("activeMenu", "operationBoard");
             operationBoardService.cntPlus(operationBoard);
 
             boolean isLike = false;
