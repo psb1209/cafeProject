@@ -47,10 +47,23 @@ public class InformationBoardCommentService {
         return memberRepository.findByUsername(username).orElseThrow(()-> new IllegalArgumentException("해당 맴버 없음"));
     }
 
-    //댓글 페이지
+    //댓글 페이징
     @Transactional(readOnly = true)
     public Page<InformationBoardComment> getSelectAllPage(int id, Pageable pageable) {
         return informationBoardCommentRepository.findByInformationBoard_Id(id, pageable);
+    }
+
+    //회원등업
+    public Member updateGrade(Member member) {
+        member.increaseReplyCount(); //댓글작성 +1
+        int posts = member.getPostCount();
+        int replies = member.getReplyCount();
+
+        if (posts >= 7 && replies >= 12) member.setGrade(Grade.SPECIAL);
+        else if (posts >= 5 && replies >= 10) member.setGrade(Grade.BEST);
+        else if (posts >= 3 && replies >= 5) member.setGrade(Grade.REGULAR);
+        else member.setGrade(Grade.USER);
+        return member;
     }
 
 
@@ -59,32 +72,18 @@ public class InformationBoardCommentService {
     public boolean setInsert(InformationBoardCommentDTO informationBoardCommentDTO, User user) {
         InformationBoard informationBoard = getSelectOneById_informationBoard(informationBoardCommentDTO.getInformationBoardId()); //카페 게시글 정보 확인
         Member member = getSelectOneById_member(user.getUsername()); //로그인한 사용자가 카페회원이 맞는지 (인증:아이디,비번확인 + 인가:권한확인)
-       
-        RoleType oldRole = member.getRole(); //로그인한 사용자의 예전 등급
-        if (member.getUsername().equals(informationBoard.getMember().getUsername())) {
 
-            InformationBoardComment informationBoardComment = InformationBoardComment.dtoToEntity(informationBoardCommentDTO, member, informationBoard);
-            member.increaseReplyCount(); //댓글작성 +1
+        Grade oldGrade = member.getGrade(); //로그인한 사용자의 예전 등급
 
-            if (informationBoard.getMember().getPostCount() >= 7 && informationBoard.getMember().getReplyCount() >= 12) {
-                informationBoard.getMember().setGrade(Grade.SPECIAL); //최우수회원
+        InformationBoardComment informationBoardComment = InformationBoardComment.dtoToEntity(informationBoardCommentDTO, member, informationBoard);
+        informationBoardCommentRepository.save(informationBoardComment);
+        
+        updateGrade(member); //회원등업 메서드 호출
 
-            } else if (informationBoard.getMember().getPostCount() >= 5 && informationBoard.getMember().getReplyCount() >= 10) {
-                informationBoard.getMember().setGrade(Grade.BEST); //우수회원
-
-            } else if (informationBoard.getMember().getPostCount() >= 3 && informationBoard.getMember().getReplyCount() >= 5) {
-                informationBoard.getMember().setGrade(Grade.REGULAR); //성실회원
-
-            } else {
-                informationBoard.getMember().setGrade(Grade.USER); //일반회원
-            }
-
-            informationBoardCommentRepository.save(informationBoardComment);
-        }
-            RoleType newRole = informationBoard.getMember().getRole(); //새로운 등급
-            return oldRole != newRole; //등급이 바뀌었으면 true 반환
-
+        Grade newGrade = informationBoardComment.getMember().getGrade();//새로운 등급
+        return oldGrade != newGrade; //등급이 바뀌었으면 true 반환
     }
+
 
     //작성자만 댓글 수정
     @Transactional

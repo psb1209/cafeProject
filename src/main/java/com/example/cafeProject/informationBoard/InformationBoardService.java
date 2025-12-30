@@ -52,6 +52,20 @@ public class InformationBoardService {
         return informationBoardRepository.findAll(pageable);
     }
 
+    //회원등업
+    @Transactional
+    public void updateGrade(Member member) {
+
+        member.increasePostCount(); //게시글 작성 +1
+        int posts = member.getPostCount();
+        int replies = member.getReplyCount();
+
+        if (posts >= 7 && replies >= 12) member.setGrade(Grade.SPECIAL);
+        else if (posts >= 5 && replies >= 10) member.setGrade(Grade.BEST);
+        else if (posts >= 3 && replies >= 5) member.setGrade(Grade.REGULAR);
+        else member.setGrade(Grade.USER);
+    }
+
     //카페 회원만 게시글 작성
     @Transactional
     public boolean setInsert(InformationBoardDTO informationBoardDTO, User user) {
@@ -59,20 +73,10 @@ public class InformationBoardService {
        Grade oldGrade = member.getGrade(); //예전 등급
 
        InformationBoard informationBoard = InformationBoard.dtoToEntity(informationBoardDTO, member);
-       member.increasePostCount(); //게시글 작성 +1
        informationBoardRepository.save(informationBoard);
-        if (informationBoard.getMember().getPostCount() >= 7 && informationBoard.getMember().getReplyCount() >= 12) {
-            informationBoard.getMember().setGrade(Grade.SPECIAL); //최우수회원
 
-        } else if(informationBoard.getMember().getPostCount() >= 5 && informationBoard.getMember().getReplyCount() >= 10) {
-            informationBoard.getMember().setGrade(Grade.BEST); //우수회원
+        updateGrade(member); //회원등업 메서드 호출
 
-        } else if(informationBoard.getMember().getPostCount() >= 3 && informationBoard.getMember().getReplyCount() >= 5) {
-            informationBoard.getMember().setGrade(Grade.REGULAR); //성실회원
-
-        } else {
-            informationBoard.getMember().setGrade(Grade.USER); //일반회원
-        }
         Grade newGrade = informationBoard.getMember().getGrade(); //새로운 등급
         return oldGrade != newGrade; //비교해서 등급이 바뀌었으면 true 반환
     }

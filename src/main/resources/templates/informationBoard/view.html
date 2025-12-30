@@ -353,6 +353,10 @@
                 <h1 class="cafe-article-title"
                     th:text="${informationBoard.subject}"></h1>
 
+                <div th:if="${msg}">
+                    <span th:text="${msg}">메시지내용</span>
+                </div>
+
                 <div class="cafe-article-meta">
                     <span th:text="${informationBoard.member.username}"></span>
                     <span th:switch="${informationBoard.member.grade.name()}">
@@ -376,7 +380,6 @@
                 <!--게시글 작성자만 수정-->
                 <a th:href="@{|/informationBoard/update/${informationBoard.id}|}" class="cafe-action-btn"
                    th:if="${#authentication.name == informationBoard.member.username}">수정</a>
-
 
 
                 <!--삭제버튼 구분 : 작성자(아이디) 체크-->
@@ -419,6 +422,7 @@
                 <!--<div class="cafe-comment-title">
                     댓글 <span th:text="${commentList.totalElements}"></span>
                 </div>-->
+
 
                 <!--댓글작성 & 댓글수정-->
                 <form name="commentForm">
@@ -481,7 +485,7 @@
                                       onsubmit="return confirm('삭제하시겠습니까?');">
                                     <input type="hidden" name="informationBoardId"
                                            th:value="${informationBoard.id}"/>
-                                    <input type="hidden" name="informationBoardCommentId"
+                                    <input type="hidden" name="id"
                                            th:value="${comment.id}">
                                     <button class="comment-link-btn danger">삭제</button>
                                 </form>
