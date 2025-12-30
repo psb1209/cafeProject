@@ -100,6 +100,7 @@ public class NoticeBoardService {
         // 1. 댓글 삭제
         noticeBoardCommentRepository.deleteByNoticeBoardId(noticeBoardId);
 
+
         // 3. 게시글 삭제
         noticeBoardRepository.deleteById(noticeBoardId);
     }
