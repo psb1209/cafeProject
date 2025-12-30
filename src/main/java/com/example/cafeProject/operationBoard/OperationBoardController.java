@@ -13,11 +13,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
@@ -131,7 +134,9 @@ public class OperationBoardController {
     public String createProc(
             Model model,
             OperationBoardDTO operationBoardDTO,
-            Authentication authentication
+            RedirectAttributes redirectAttributes,
+            Authentication authentication,
+            @AuthenticationPrincipal User user
     ) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
@@ -147,13 +152,19 @@ public class OperationBoardController {
         }
 
         try {
-            operationBoardService.setInsert(operationBoardDTO);
-            return "redirect:/" + dirName + "/list";
-        } catch (Exception e) {
-            model.addAttribute("errCode", "err2222");
-            model.addAttribute("errMsg", "등록 중 문제가 발생했습니다.");
+            boolean isUpgraded = operationBoardService.setInsert(operationBoardDTO, authentication);
+            if(isUpgraded) { //등급 상승시 "msg" 데이터를 같이 리다이렉트 시킴
+                redirectAttributes.addFlashAttribute("msg","축하합니다! 등급이 올랐습니다!🎉"); //윈도우 로고 키(⊞) + 마침표(.) --> 임티창
+                return "redirect:/operationBoard/list";
+            }
+            return "redirect:/operationBoard/list"; //등급 안올랐으면 걍 조용히 이동
+
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "error404");
+            model.addAttribute("errMsg", "요청하신 게시글을 찾을 수 없습니다.");
             return "error/error";
         }
+
     }
 
     @PostMapping("/updateProc")

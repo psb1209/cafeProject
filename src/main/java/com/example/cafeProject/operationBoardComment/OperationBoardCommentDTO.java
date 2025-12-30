@@ -25,4 +25,8 @@ public class OperationBoardCommentDTO {
     private int step;
     private int level;
 
+
+
+
+
 }

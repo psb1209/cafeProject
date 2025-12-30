@@ -8,13 +8,13 @@
 <body>
 <div layout:fragment="content">
     <link th:href="@{/css/theme.css}" rel="stylesheet" />
-
     <div class="page-container">
 
         <!-- 좌측 사이드바 -->
 
         <nav class="sb-sidenav-menu">
             <div class="nav">
+
                 <a class="nav-link"
                    th:classappend="${activeMenu == 'main'} ? ' active'"
                    href="/">
@@ -62,6 +62,7 @@
                    href="/explore_cafes/featured_cafes">
                     <span class="nav-emoji">📈</span>카페 랭킹
                 </a>
+
             </div>
         </nav>
 
@@ -69,13 +70,13 @@
         <div class="cafe-layout">
 
             <!-- 중앙 카페 리스트 -->
-            <div class="cafe-list-wrap">
-                <h4>카페 홈</h4>
+            <div class="cafe-list-wrap" id="cafeList">
+                <h4>지역별 카페</h4>
 
                 <div class="cafe-topbar">
                     <div class="cafe-tabs">
-                        <button class="tab active">내 카페</button>
-                        <button class="tab">즐겨찾는 게시판</button>
+                        <button class="tab active" onclick="loadMyCafe(this)">내 카페</button>
+                        <button class="tab" onclick="loadFavoriteCafe(this)">즐겨찾는 카페</button>
                     </div>
                     <div class="cafe-manage">
                         <a href="#">⚙ 내 카페 관리</a>
@@ -117,19 +118,19 @@
             <aside class="cafe-side">
                 <!-- 로그인 카드 -->
                 <div class="side-card">
-<!--                    <div class="side-title">로그인</div>
-                    <input class="side-input" placeholder="아이디">
-                    <input class="side-input" type="password" placeholder="비밀번호">-->
+                    <!--                    <div class="side-title">로그인</div>
+                                        <input class="side-input" placeholder="아이디">
+                                        <input class="side-input" type="password" placeholder="비밀번호">-->
                     <button class="login-btn" th:onclick="|location.href='@{/member/login}'|">로그인</button>
 
                     <!-- ===== 로그인 하단 링크 ===== -->
                     <div class="login-footer">
                         <span>|</span>
-                        <a href="/signup">회원가입</a>
+                        <a href="/member/create">회원가입</a>
                         <span>|</span>
-<!--                        <a href="/find-id">아이디 찾기</a>
-                        <span>|</span>
-                        <a href="/find-password">비밀번호 찾기</a>-->
+                        <!--                        <a href="/find-id">아이디 찾기</a>
+                                                <span>|</span>
+                                                <a href="/find-password">비밀번호 찾기</a>-->
                     </div>
                 </div>
                 <div class="side-card">
@@ -140,12 +141,36 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         function toggleSide() {
             document.querySelector('.page-container')
                 .classList.toggle('folded');
         }
     </script>
+
+    <script>
+        function loadFavoriteCafe(btn) {
+            $.get("/explore_cafes/favorite", function(html) {
+                $("#cafeList").html(html);
+                setActive(btn);
+            });
+        }
+
+        function loadMyCafe(btn) {
+            $.get("/explore_cafes/my", function(html) {
+                $("#cafeList").html(html);
+                setActive(btn);
+            });
+        }
+
+        function setActive(btn) {
+            $(".tab").removeClass("active");
+            $(btn).addClass("active");
+        }
+
+    </script>
+
 
 </div>
 

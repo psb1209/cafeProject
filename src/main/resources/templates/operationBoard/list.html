@@ -155,6 +155,13 @@
             text-align: center;
         }
 
+        .td_underline {
+            padding: 14px 10px;
+            border-bottom: 1px solid #eef2f8;
+            color: var(--text-main);
+            text-align: center; /* 여기서 중앙 정렬 */
+        }
+
         .cafe-board-table .col-subject {
             text-align: left;
             padding-left: 20px;
@@ -360,6 +367,7 @@
                     <th class="col-subject">제목</th>
                     <th class="col-cnt">조회수</th>
                     <th class="col-writer">작성자</th>
+                    <th class="col-writer">회원등급</th>
                     <th class="col-date">작성일</th>
                 </tr>
                 </thead>
@@ -379,7 +387,13 @@
                     </td>
                     <td class="td_underline" th:text="${operationBoard.cnt}"></td>
                     <td class="td_underline" th:text="${operationBoard.member.username}"></td>
-                    <td class="td_underline" th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>
+                    <td class="td_underline text-center" th:switch="${operationBoard.member.grade.name()}">
+                        <span th:case="'USER'">일반🥉</span>
+                        <span th:case="'REGULAR'">성실🥈</span>
+                        <span th:case="'BEST'">우수🥇</span>
+                        <span th:case="'SPECIAL'">최우수🏆</span>
+                    </td>
+                    <td th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>
                 </tr>
                 </tbody>
             </table>

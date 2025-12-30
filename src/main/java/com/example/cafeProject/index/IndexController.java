@@ -1,5 +1,9 @@
 package com.example.cafeProject.index;
 
+import com.example.cafeProject.communityBoard.CommunityBoard;
+import com.example.cafeProject.communityBoard.CommunityBoardService;
+import com.example.cafeProject.informationBoard.InformationBoard;
+import com.example.cafeProject.informationBoard.InformationBoardService;
 import com.example.cafeProject.noticeBoard.NoticeBoard;
 import com.example.cafeProject.noticeBoard.NoticeBoardService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +19,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class IndexController {
     private final NoticeBoardService noticeBoardService;
+    private final CommunityBoardService communityBoardService;
+    private final InformationBoardService informationBoardService;
 
     @GetMapping({"healthCafe/", "healthCafe"})
     public String list(
@@ -23,6 +29,13 @@ public class IndexController {
     ) {
         Page<NoticeBoard> noticeBoardList = noticeBoardService.list(pageable);
         model.addAttribute("noticeBoardList", noticeBoardList);
+
+        Page<CommunityBoard> communityBoardList = communityBoardService.getSelectAllPage(pageable);
+        model.addAttribute("communityBoardList", communityBoardList);
+
+        Page<InformationBoard> informationBoardList = informationBoardService.getSelectAllPage(pageable);
+        model.addAttribute("informationBoardList", informationBoardList);
+
         return "index/index";
     }
 }

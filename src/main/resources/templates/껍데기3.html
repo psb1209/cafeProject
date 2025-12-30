@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorate="~{test_layout/layout2}">
+      layout:decorate="~{test_layout/layout2}"
+      th:with="headerImage=@{/assets/img/about-bg.jpg},
+               headerPosition='center center'">
 
 <body>
 
-<div layout:fragment="content">
+<div layout:fragment="cafeContent">
 
     <!-- 본문 내용 시작 -->
-    <h2>카페 홈 콘텐츠</h2>
 
     <!-- 본문 내용 종료 -->
 

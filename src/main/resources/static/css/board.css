@@ -1,0 +1,319 @@
+
+        :root {
+            --blue-main: #1e6fd9;
+            --blue-main-dark: #155fc0;
+
+            --blue-bg-grad: linear-gradient(90deg, #eaf4ff, #d6eaff);
+            --blue-bg-soft: #f3f8ff;
+            --blue-bg-light: #eaf4ff;
+            --blue-hover-bg: #f2f8ff;
+
+            --blue-border: #cfe1ff;
+            --blue-icon-grad: linear-gradient(135deg, #5fa0ff, #1e6fd9);
+
+            --text-main: #1f2a44;
+            --text-sub: #6b7a99;
+            --white: #ffffff;
+
+            --shadow-light: rgba(0,0,0,0.05);
+            --shadow-hover: rgba(0,0,0,0.08);
+        }
+
+
+        /* 게시글 카드 */
+        .cafe-article-wrap {
+            flex: 1;
+            background: var(--white);
+            border-top: 4px solid var(--blue-main);
+            border-radius: 10px;
+            padding: 30px;
+            font-size: 14px;
+        }
+
+        .cafe-article-header {
+            border-bottom: 1px solid var(--blue-border);
+            padding-bottom: 16px;
+            margin-bottom: 26px;
+        }
+
+        .cafe-article-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
+
+        .cafe-article-meta {
+            font-size: 13px;
+            color: var(--text-sub);
+            display: flex;
+            gap: 14px;
+        }
+
+        .cafe-article-content {
+            padding: 24px 0 40px;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        /* 게시글 버튼 */
+        .cafe-article-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
+
+        /* 기본 버튼 스타일 */
+        .cafe-action-btn {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--blue-border);
+            font-size: 13px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        /* 버튼별 색상 */
+        .cafe-action-btn.list {
+            background: #f5f5f5;
+            border-color: #ddd;
+            color: #333;
+        }
+        .cafe-action-btn.list:hover {
+            background: #e0e0e0;
+        }
+
+        .cafe-action-btn.edit {
+            background: #eaf4ff;
+            border-color: #cfe1ff;
+            color: var(--blue-main);
+        }
+        .cafe-action-btn.edit:hover {
+            background: #d6eaff;
+        }
+
+        .cafe-action-btn.danger {
+            background: #ffeaea;
+            border-color: #f5c2c2;
+            color: #d9534f;
+        }
+        .cafe-action-btn.danger:hover {
+            background: #ffc8c8;
+        }
+
+        /* 댓글 */
+        .cafe-comment-section {
+            border-top: 1px solid var(--blue-border);
+            padding-top: 24px;
+        }
+
+        .cafe-comment-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .cafe-comment-write {
+            border: 1px solid var(--blue-border);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 24px;
+        }
+
+        .cafe-comment-textarea {
+            width: 100%;
+            max-height: 100%;
+            min-height: 56px;
+            padding: 10px 12px;
+            box-sizing: border-box;
+            border: none;
+            resize: none;
+            overflow: hidden;
+            font-size: 14px;
+            line-height: 1.6;
+            outline: none;
+            display: block;
+        }
+
+        .comment-btn-wrap {
+            text-align: right;
+            margin-top: 8px;
+        }
+
+       .comment-btn-wrap:hover {
+           filter: brightness(0.95);
+       }
+
+
+        .cafe-comment-btn {
+            padding: 6px 16px;
+            border-radius: 6px;
+            border: none;
+            background: var(--blue-main);
+            color: var(--white);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .cafe-comment-item {
+            padding: 14px 0;
+            border-bottom: 1px solid #eef2f8;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .comment-writer {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .comment-link-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 12px;
+            color: var(--text-sub);
+            cursor: pointer;
+        }
+        .comment-link-btn:hover {
+            color: var(--blue-main);
+            text-decoration: underline;
+        }
+        .comment-link-btn.danger {
+            color: #d9534f;
+        }
+
+        .comment-content {
+            margin-top: 6px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .comment-meta {
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        /* 댓글 페이징 */
+        .cafe-comment-pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            min-width: 32px;
+            height: 32px;
+            line-height: 32px;
+            padding: 0 10px;
+            border: 1px solid var(--blue-border);
+            border-radius: 6px;
+            background: var(--white);
+            color: var(--text-main);
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .page-btn:hover {
+            background: var(--blue-bg-soft);
+            color: var(--blue-main);
+        }
+
+        .page-btn.active {
+            background: var(--blue-bg-grad);
+            border-color: var(--blue-main);
+            font-weight: 700;
+        }
+
+        .page-btn.disabled {
+            pointer-events: none;
+            color: var(--text-sub);
+            background: #f9fbff;
+        }
+
+        .cafe-pagination {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        /*=======================================================*/
+        /*======================= 좋아요 버튼 ===================*/
+        /*=======================================================*/
+
+        .like-form {
+          display: flex;
+          justify-content: center;
+          margin: 30px 0 10px;
+        }
+
+        .like-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          padding: 10px 18px;
+          border-radius: 30px;
+
+          background: var(--white);
+          border: 1px solid var(--blue-border);
+
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--text-main);
+
+          cursor: pointer;
+          transition: all 0.18s ease;
+          box-shadow: 0 4px 10px var(--shadow-light);
+        }
+
+        .like-btn:hover {
+          background: var(--blue-hover-bg);
+          border-color: var(--blue-main);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 14px var(--shadow-hover);
+        }
+
+        /* 하트 아이콘 */
+        .like-icon {
+            font-size: 18px;
+            line-height: 1;
+            transition: transform 0.15s ease;
+        }
+
+        .like-btn:hover .like-icon {
+          transform: scale(1.15);
+        }
+
+        .like-btn.active .like-icon {
+          filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+        }
+
+        /* 텍스트 */
+        .like-text {
+          font-size: 14px;
+        }
+
+        /* ================== 눌렀을 때 ================== */
+
+        .like-btn.active .like-count {
+          background: rgba(255,255,255,0.2);
+          color: var(--white);
+        }
+
+        .like-btn.active:hover {
+          background: linear-gradient(135deg, #4a90ff, var(--blue-main-dark));
+        }
+

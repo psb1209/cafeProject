@@ -38,6 +38,7 @@ public class InformationBoardController {
         try {
             Page<InformationBoard> informationBoardList = informationBoardService.getSelectAllPage(pageable);
             model.addAttribute("informationBoardList", informationBoardList);
+            model.addAttribute("activeMenu", "informationBoard");
             return "informationBoard/list";
         } catch (DataAccessException e) {
             model.addAttribute("errMsg", "접근 중 오류가 발생했습니다. 관리자에게 문의해주세요.");

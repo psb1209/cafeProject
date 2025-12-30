@@ -24,4 +24,6 @@ public interface OperationBoardCommentRepository extends JpaRepository<Operation
     @Modifying
     @Query("UPDATE OperationBoardComment c SET c.level=c.level + 1 WHERE c.ref = :ref AND c.level >:level")
     int updateRelevel(@Param("ref") int ref, @Param("level") int level);
+
+
 }

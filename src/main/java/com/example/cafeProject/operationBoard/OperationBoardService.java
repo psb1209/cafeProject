@@ -1,5 +1,7 @@
 package com.example.cafeProject.operationBoard;
 
+
+import com.example.cafeProject.member.Grade;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberRepository;
 import com.example.cafeProject.member.MemberService;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,6 +97,35 @@ public class OperationBoardService {
         operationBoardRepository.save(operationBoard);
     }
 
+    //회원등업
+    @Transactional
+    public void updateGrade(Member member) {
+
+        member.increasePostCount(); //게시글 작성 +1
+        int posts = member.getPostCount();
+        int replies = member.getReplyCount();
+
+        if (posts >= 7 && replies >= 12) member.setGrade(Grade.SPECIAL);
+        else if (posts >= 5 && replies >= 10) member.setGrade(Grade.BEST);
+        else if (posts >= 3 && replies >= 5) member.setGrade(Grade.REGULAR);
+        else member.setGrade(Grade.USER);
+    }
+
+    //카페 회원만 게시글 작성
+    @Transactional
+    public boolean setInsert(OperationBoardDTO operationBoardDTO, Authentication authentication) {
+        Member member = getSelectOneByUsername(authentication);
+        Grade oldGrade = member.getGrade(); //예전 등급
+
+        OperationBoard operationBoard = OperationBoard.dtoToEntity(operationBoardDTO, member);
+        operationBoardRepository.save(operationBoard);
+
+        updateGrade(member); //회원등업 메서드 호출
+
+        Grade newGrade = operationBoard.getMember().getGrade(); //새로운 등급
+        return oldGrade != newGrade; //비교해서 등급이 바뀌었으면 true 반환
+    }
+    
     //************************************************************************************************************************
 
     @Value("${app.image.upload-dir}")

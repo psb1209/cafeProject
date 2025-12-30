@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class MainCafeController {
@@ -45,5 +46,23 @@ public class MainCafeController {
         model.addAttribute("activeMenu", "main");
         return "index/test2";
     }
+
+    @GetMapping("/explore_cafes/my")
+    public String myCafe(
+            Model model
+    ) {
+        model.addAttribute("activeMenu", "my");
+        return "explore_cafes/my";
+    }
+
+    @GetMapping("/explore_cafes/favorite")
+    public String favoriteCafe(
+            Model model
+    ) {
+        model.addAttribute("activeMenu", "favorite");
+        return "explore_cafes/favorite";
+    }
+
+
 
 }

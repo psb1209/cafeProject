@@ -1,8 +1,8 @@
 package com.example.cafeProject.operationBoardComment;
 
-import com.example.cafeProject.communityBoardComment.CommunityBoardComment;
-import com.example.cafeProject.member.MemberRepository;
 import com.example.cafeProject.operationBoard.OperationBoard;
+import com.example.cafeProject.member.Grade;
+import com.example.cafeProject.member.MemberRepository;
 
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
@@ -11,6 +11,7 @@ import com.example.cafeProject.operationBoard.OperationBoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,32 +30,33 @@ public class OperationBoardCommentService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void setInsert (OperationBoardCommentDTO paramDTO, UserDetails userDetails) {
-        OperationBoardComment operationBoardComment = new OperationBoardComment();
-        Optional<OperationBoard> optionOperationBoard = operationBoardRepository.findById(paramDTO.getOperationBoardId());
-        OperationBoard operationBoard = null;
-        if (optionOperationBoard.isPresent()) {
-            operationBoard = optionOperationBoard.get();
-            operationBoardComment.setOperationBoard(operationBoard);
-            operationBoardComment.setContent(paramDTO.getContent());
-            operationBoardComment.setMember(memberService.view(paramDTO.getMemberId()));
+    public boolean setInsert(OperationBoardCommentDTO operationBoardCommentDTO, User user) {
+        OperationBoard operationBoard = getSelectOneById_operationBoard(operationBoardCommentDTO.getOperationBoardId()); //카페 게시글 정보 확인
+        Member member = getSelectOneById_member(user.getUsername()); //로그인한 사용자가 카페회원이 맞는지 (인증:아이디,비번확인 + 인가:권한확인)
 
-            Member member=memberRepository.findByUsername(userDetails.getUsername())
-                    .orElseThrow(() -> new IllegalArgumentException("해당 회원 없음"));
+        Grade oldGrade = member.getGrade(); //로그인한 사용자의 예전 등급
 
-            //새로운 댓글 엔티티 객체 생성해서 담은후 댓글 db저장
-            int ref = operationBoardCommentRepository.getMaxRef()+1;
-            operationBoardComment.setContent(paramDTO.getContent());
-            operationBoardComment.setOperationBoard(operationBoard);
-            operationBoardComment.setRef(ref); //새댓글 +1
-            operationBoardComment.setStep(0);   //새댓글 기본값 0
-            operationBoardComment.setLevel(0);  //새댓글 기본값 0
-            operationBoardComment.setMember(member);
-            operationBoardCommentRepository.save(operationBoardComment);
-            operationBoardCommentRepository.save(operationBoardComment);
-        }
+        OperationBoardComment operationBoardComment = OperationBoardComment.dtoToEntity(operationBoardCommentDTO, member, operationBoard);
+        operationBoardCommentRepository.save(operationBoardComment);
+
+        updateGrade(member); //회원등업 메서드 호출
+
+        Grade newGrade = operationBoardComment.getMember().getGrade();//새로운 등급
+        return oldGrade != newGrade; //등급이 바뀌었으면 true 반환
     }
 
+    //게시글 기본키로 게시글 레코드 한줄 찾기
+    @Transactional(readOnly = true)
+    public OperationBoard getSelectOneById_operationBoard(int id) {
+        return operationBoardRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("해당 게시글 없음"));
+    }
+
+    //아이디로 맴버 레코드 한줄 찾기
+    @Transactional(readOnly = true)
+    public Member getSelectOneById_member(String username) {
+        return memberRepository.findByUsername(username).orElseThrow(()-> new IllegalArgumentException("해당 맴버 없음"));
+    }
+    
     @Transactional
     public Page<OperationBoardComment> getCommentListPage(int operationBoardId, Pageable pageable) {
         return operationBoardCommentRepository.findByOperationBoardIdOrderByRefDescLevelAsc(operationBoardId, pageable);
@@ -127,5 +129,22 @@ public class OperationBoardCommentService {
 
         operationBoardCommentRepository.save(operationBoardComment);
     }
-    
+
+    //회원등업
+    public Member updateGrade(Member member) {
+        member.increaseReplyCount(); //댓글작성 +1
+        int posts = member.getPostCount();
+        int replies = member.getReplyCount();
+
+        if (posts >= 7 && replies >= 12) member.setGrade(Grade.SPECIAL);
+        else if (posts >= 5 && replies >= 10) member.setGrade(Grade.BEST);
+        else if (posts >= 3 && replies >= 5) member.setGrade(Grade.REGULAR);
+        else member.setGrade(Grade.USER);
+        return member;
+    }
+
+
 }
+
+
+

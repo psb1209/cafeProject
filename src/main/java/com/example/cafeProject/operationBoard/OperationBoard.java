@@ -1,5 +1,7 @@
 package com.example.cafeProject.operationBoard;
 
+import com.example.cafeProject.operationBoard.OperationBoard;
+import com.example.cafeProject.operationBoard.OperationBoardDTO;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardComment;
@@ -48,5 +50,13 @@ public class OperationBoard {
     @OneToMany(mappedBy = "operationBoard", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @OrderBy("id desc")
     private List<OperationBoardComment> commentList;
-
+    
+    public static OperationBoard dtoToEntity(OperationBoardDTO operationBoardDTO, Member member) {
+        OperationBoard operationBoard = new OperationBoard();
+        operationBoard.setSubject(operationBoardDTO.getSubject());
+        operationBoard.setContent(operationBoardDTO.getContent());
+        operationBoard.setCnt(0);
+        operationBoard.setMember(member);
+        return operationBoard;
+    }
 }
