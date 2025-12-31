@@ -63,6 +63,31 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 페이지네이션 -->
+                    <div class="cafe-pagination" th:if="${list.totalPages > 0}">
+
+                        <!-- 이전 버튼 -->
+                        <a class="page-btn"
+                           th:classappend="${list.first} ? ' disabled'"
+                           th:href="@{|?page=${list.number - 1}|}">이전</a>
+
+                        <!-- 페이지 번호 버튼 -->
+                        <th:block>
+
+                            <a class="page-btn"
+                               th:each="page : ${#numbers.sequence(0, list.totalPages-1)}"
+                               th:if="${page >= (list.number/5)*5 and page <= (list.number/5)*5 + 4}"
+                               th:text="${page + 1}"
+                               th:classappend="${page == list.number} ? ' active'"
+                               th:href="@{|?page=${page}|}"></a>
+                        </th:block>
+
+                        <!-- 다음 버튼 -->
+                        <a class="page-btn"
+                           th:classappend="${list.last} ? ' disabled'"
+                           th:href="@{|?page=${list.number + 1}|}">다음</a>
+                    </div>
                 </div>
             </div>
 
