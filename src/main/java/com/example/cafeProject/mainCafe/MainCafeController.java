@@ -34,7 +34,7 @@ public class MainCafeController {
 
     @GetMapping({"/", ""})
     public String mainIndex(
-            @PageableDefault(size = 30, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             Authentication authentication,
             Model model
     ) {
@@ -76,7 +76,7 @@ public class MainCafeController {
 
     @GetMapping("/explore_cafes/my")
     public String myCafe(
-            @PageableDefault(size = 30, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             Authentication authentication,
             Model model
     ) {

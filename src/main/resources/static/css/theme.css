@@ -37,3 +37,42 @@ body {
   padding: 0;
   background: linear-gradient(90deg, #fff2e6, #ffe8d9);
 }
+
+.cafe-pagination {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+.page-btn {
+    min-width: 34px;
+    height: 34px;
+    line-height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--blue-border);
+    border-radius: 6px;
+    background: var(--white);
+    color: var(--text-main);
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.page-btn:hover {
+    background: var(--blue-bg-soft);
+    color: var(--blue-main);
+}
+
+.page-btn.active {
+    background: var(--blue-bg-grad);
+    border-color: var(--blue-main);
+    color: var(--blue-main);
+    font-weight: 700;
+}
+
+.page-btn.disabled {
+    color: var(--text-sub);
+    background: #f9fbff;
+    pointer-events: none;
+}

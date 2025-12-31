@@ -71,6 +71,23 @@ public class PostService extends BaseImageService<Post, PostDTO> {
         return toDTO(viewDetail(id));
     }
 
+    /** 삭제된 게시글 조회 */
+    public Page<Post> trashListByBoardCode(String code, Pageable pageable) {
+        return postRepository.findTrashByBoard_Code(code, pageable);
+    }
+    public Page<PostDTO> trashListByBoardCodeDTO(String code, Pageable pageable) {
+        return trashListByBoardCode(code, pageable).map(this::toDTO);
+    }
+
+    /** 삭제된 게시글 상세 */
+    public Post viewTrash(int id) {
+        return postRepository.findTrashById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 id=" + id));
+    }
+    public PostDTO viewTrashDTO(int id) {
+        return toDTO(viewTrash(id));
+    }
+
     @Override
     protected Post toEntity(PostDTO dto) {
         Post post = super.toEntity(dto);

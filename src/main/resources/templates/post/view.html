@@ -20,7 +20,8 @@
 
     <hr class="my-3"/>
 
-    <div class="d-flex justify-content-end mb-3">
+    <div class="d-flex justify-content-end mb-3"
+         th:if="${isTrash != true}">
         <a href="#"
            class="small text-decoration-none"
            onclick="copyPostLink(event)">

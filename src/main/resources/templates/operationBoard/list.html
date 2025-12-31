@@ -93,7 +93,8 @@
                         <span th:case="'BEST'">우수🥇</span>
                         <span th:case="'SPECIAL'">최우수🏆</span>
                     </td>
-                    <td th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>
+                    <td class="td_underline text-center"
+                        th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>
                 </tr>
                 </tbody>
             </table>
