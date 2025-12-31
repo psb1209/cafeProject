@@ -45,16 +45,21 @@
                         </div>
                     </div>
 
-                    <div class="cafe-item">
+                    <!-- 반복 -->
+                    <div class="cafe-item" th:each="data : ${list.content}">
                         <div class="cafe-thumb">
-                            <img src="/assets/img/home-bg.jpg" alt="스터디 카페">
+                            <img th:src="${#strings.isEmpty(data.imgName)}
+                             ? @{/assets/img/post-sample-image.jpg}
+                             : @{|${imageUrlPrefix}${data.imgName}|}"
+                                 alt=""
+                                 loading="lazy">
                         </div>
-                        <div class="cafe-content" th:onclick="|location.href='@{/studyCafe}'|">
-                            <div class="cafe-title">스터디 카페</div>
-                            <div class="cafe-desc">문제풀이 및 공부 팁을 공유해요</div>
+                        <div class="cafe-content" th:onclick="|location.href='@{|/board/${data.code}|}'|">
+                            <div class="cafe-title" th:text="${data.name}">카페 이름</div>
+                            <div class="cafe-desc" th:text="${data.description}">카페 설명</div>
                             <div class="cafe-meta">
-                                <span>주제 | 공부/자습</span>
-                                <span>👤 743</span>
+                                <span>주제 | 000</span>
+                                <span>👤 000</span>
                             </div>
                         </div>
                     </div>

@@ -43,7 +43,7 @@
                      alt=""
                      loading="lazy">
             </div>
-            <div class="cafe-content" th:onclick="|location.href='@{/000}'|">
+            <div class="cafe-content" th:onclick="|location.href='@{|/board/${data.code}|}'|">
                 <div class="cafe-title" th:text="${data.name}">카페 이름</div>
                 <div class="cafe-desc" th:text="${data.description}">카페 설명</div>
                 <div class="cafe-meta">
