@@ -30,7 +30,7 @@ public class IndexController {
         Page<NoticeBoard> noticeBoardList = noticeBoardService.list(pageable);
         model.addAttribute("noticeBoardList", noticeBoardList);
 
-        Page<CommunityBoard> communityBoardList = communityBoardService.getSelectAllPage(pageable);
+        Page<CommunityBoard> communityBoardList = communityBoardService.list(pageable,null);
         model.addAttribute("communityBoardList", communityBoardList);
 
         Page<InformationBoard> informationBoardList = informationBoardService.getSelectAllPage(pageable, null);

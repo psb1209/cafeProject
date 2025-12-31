@@ -1,16 +1,13 @@
 package com.example.cafeProject.communityBoardComment;
 
-import com.example.cafeProject.communityBoard.CommunityBoard;
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Timestamp;
 
-@Setter
 @Getter
+@Setter
 public class CommunityBoardCommentDTO {
-
 
     private int id;
 
@@ -20,14 +17,16 @@ public class CommunityBoardCommentDTO {
 
     private int memberId;
 
-    private int ref;
-
-    private int step;
-
-    private int level;
+    private int communityBoardId;
 
     private int communityBoardCommentId;
 
+    private int ref;
+    private int step;
+    private int level;
 
-    private int communityBoardId;
+
+
+
+
 }
