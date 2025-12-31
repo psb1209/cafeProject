@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav class="sb-sidenav-menu" th:fragment="cafe_sidebar">
+    <div class="nav">
+
+        <!-- 카페 홈 -->
+        <a class="nav-link"
+           th:classappend="${activeMenu == 'main'} ? ' active'"
+           th:href="@{/healthCafe}">
+            <span class="nav-emoji">🏠</span>카페 홈
+        </a>
+
+        <!-- 공지 -->
+        <a class="nav-link"
+           th:classappend="${activeMenu == 'noticeBoard'} ? ' active'"
+           th:href="@{/noticeBoard/list}">
+            <span class="nav-emoji">📢</span>공지사항
+        </a>
+
+        <div class="sidenav-section-title">관리자 기능</div>
+
+        <!-- 회원 관리 -->
+        <a class="nav-link"
+           th:classappend="${activeMenu == 'member'} ? ' active'"
+           th:href="@{/member/list}">
+            <span class="nav-emoji">👥</span>회원 관리
+        </a>
+
+        <!-- 게시판 관리 -->
+        <a class="nav-link"
+           th:classappend="${activeMenu == 'boardManagement'} ? ' active'"
+           th:href="@{/boardManagement/list}">
+            <span class="nav-emoji">📋</span>게시판 관리
+        </a>
+
+        <!-- 게시판 추가 -->
+        <a class="nav-link"
+           th:classappend="${activeMenu == 'boardCreate'} ? ' active'"
+           th:href="@{/boardManagement/create}">
+            <span class="nav-emoji">📋</span>게시판 추가
+        </a>
+
+        <!-- 삭제된 게시글 관리 -->
+        <a class="nav-link"
+           th:if="${board != null
+                and board.code != null
+                and !#strings.isEmpty(board.code)}"
+           th:classappend="${activeMenu == 'trash'} ? ' active'"
+           th:href="@{|/post/trashList?b=${board.code}|}">
+            <span class="nav-emoji">🗑️</span>삭제된 게시글
+        </a>
+
+        <!-- 운영 게시판 -->
+        <a class="nav-link"
+           th:classappend="${activeMenu == 'operationBoard'} ? ' active'"
+           th:href="@{/operationBoard/list}">
+            <span class="nav-emoji">📋</span>운영 게시판
+        </a>
+
+        <div class="sidenav-section-title">카페 정보</div>
+
+        <!-- 메타데이터 (미구현) -->
+        <a class="nav-link"
+           th:classappend="${activeMenu == 'meta'} ? ' active'"
+           th:href="@{/healthCafe/meta}">
+            <span class="nav-emoji">⚙</span>메타데이터
+        </a>
+
+        <!-- 소개 -->
+        <a class="nav-link"
+           th:classappend="${activeMenu == 'about'} ? ' active'"
+           th:href="@{/healthCafe/healthCafeIntroduction}">
+            <span class="nav-emoji">ℹ️</span>카페 소개
+        </a>
+
+    </div>
+</nav>
+</body>
+</html>

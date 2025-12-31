@@ -3,6 +3,8 @@ package com.example.cafeProject._postTest;
 import com.example.cafeProject._boardTest.BoardDTO;
 import com.example.cafeProject._boardTest.BoardService;
 import com.example.cafeProject.member.MemberService;
+import com.example.cafeProject.validation.AdminOnly;
+import com.example.cafeProject.validation.ManagementOnly;
 import com.example.cafeProject.validation.ValidationGroups;
 import com.example.exception.PermissionDeniedException;
 import lombok.RequiredArgsConstructor;
@@ -110,6 +112,35 @@ public class PostController {
         return "post/view";
     }
 
+    @ManagementOnly
+    @GetMapping("/trashList")
+    public String trashList(
+            @RequestParam(name = "b") String code,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            Model model
+    ) {
+        Page<PostDTO> dto = postService.trashListByBoardCodeDTO(code, pageable);
+        model.addAttribute("list", dto);
+        model.addAttribute("trash", true);
+        return "post/list";
+    }
+
+    @AdminOnly
+    @GetMapping("/trash/{id}")
+    public String trashView(
+            @RequestParam(name="b", required = false) String code,
+            @PathVariable int id,
+            Authentication authentication,
+            Model model
+    ) {
+        PostDTO dto = postService.viewTrashDTO(id);
+        if (code == null || code.isBlank()) return "redirect:/post/trash/" + id + "?b=" + dto.getBoardCode();
+        model.addAttribute("data", dto);
+        model.addAttribute("isTrash", true);
+        model.addAttribute("canEdit", false);
+        return "post/view";
+    }
+
     @GetMapping("/create")
     public String create(
             @RequestParam(name="b") String code,
@@ -186,7 +217,7 @@ public class PostController {
             PostDTO dto = postService.newDTO();
             dto.setId(id);
 
-            postService.softDelete(dto); // 소프트 삭제로 동작 (@SQLDelete)
+            postService.softDelete(dto); // 소프트 삭제로 동작
             return "redirect:/post/list?b=" + code;
         } catch (AccessDeniedException | PermissionDeniedException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
