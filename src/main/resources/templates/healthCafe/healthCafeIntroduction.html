@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{main_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center',
+               sidebarKey='cafe'">
+<body>
+
+<h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
+
+<div layout:fragment="content">
+
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+
+    <!-- ================= 본문 시작 ================= -->
+
+    <div class="cafe-board-wrap">
+
+        <div class="cafe-board-header">
+            <h2 class="cafe-board-title">헬스카페 소개</h2>
+        </div>
+
+        <div class="cafe-article-content">
+            <p>
+                헬스카페는 운동을 좋아하는 사람들이 모여<br>
+                건강한 라이프스타일을 함께 만들어가는 커뮤니티입니다.
+            </p>
+
+            <p>
+                운동은 단순히 몸을 단련하는 것을 넘어<br>
+                스스로를 성장시키고 삶의 균형을 찾아가는 과정이라고 믿습니다.<br>
+                헬스카페는 그 과정을 혼자가 아닌, 함께할 수 있는 공간입니다.
+            </p>
+
+            <p>
+                헬스, 웨이트 트레이닝, 다이어트, 식단 관리, 생활 습관 개선까지<br>
+                운동과 건강에 관한 다양한 이야기를 자유롭게 나눌 수 있으며,<br>
+                경험이 많은 회원부터 이제 막 시작한 초보자까지<br>
+                누구나 부담 없이 참여할 수 있습니다.
+            </p>
+
+            <p>
+                잘하는 사람만을 위한 공간이 아니라,<br>
+                포기하지 않고 꾸준히 이어가고 싶은 모든 사람을 응원합니다.<br>
+                작은 변화와 노력 하나하나가 모여<br>
+                결국 큰 성장을 만들어낸다고 믿기 때문입니다.
+            </p>
+
+            <ul style="margin: 24px 0 28px 18px; line-height: 1.8;">
+                <li>💪 헬스 · 웨이트 · PT 정보 공유</li>
+                <li>🥗 다이어트 · 식단 · 건강한 식습관</li>
+                <li>🔥 운동 인증과 목표 달성 기록</li>
+                <li>🤝 회원 간 소통과 동기부여</li>
+                <li>📈 꾸준함을 위한 습관 형성</li>
+            </ul>
+
+            <p>
+                혼자였다면 쉽게 포기했을 운동도,<br>
+                함께라면 조금 더 오래, 조금 더 즐겁게 이어갈 수 있습니다.
+            </p>
+
+            <p>
+                오늘의 운동 기록이 내일의 변화를 만들고,<br>
+                그 변화가 다시 새로운 동기가 되는 공간.<br>
+                헬스카페에서 당신의 건강한 도전을 시작해보세요 💙
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- ================= 본문 종료 ================= -->
+
+</div>
+</body>
+</html>

@@ -85,7 +85,7 @@
                                   th:text="|[${#lists.size(operationBoard.commentList)}]|">
                             </span>
                     </td>
-                    <td class="td_underline" th:text="${operationBoard.cnt}"></td>
+                    <td class="td_underline" th:text="${viewCntMap[operationBoard.id]}"></td>
                     <td class="td_underline" th:text="${operationBoard.member.username}"></td>
                     <td class="td_underline text-center" th:switch="${operationBoard.member.grade.name()}">
                         <span th:case="'USER'">일반🥉</span>
@@ -93,7 +93,8 @@
                         <span th:case="'BEST'">우수🥇</span>
                         <span th:case="'SPECIAL'">최우수🏆</span>
                     </td>
-                    <td th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>
+                    <td class="td_underline text-center"
+                        th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>
                 </tr>
                 </tbody>
             </table>

@@ -36,6 +36,16 @@ public class IndexController {
         Page<InformationBoard> informationBoardList = informationBoardService.getSelectAllPage(pageable, null);
         model.addAttribute("informationBoardList", informationBoardList);
 
+        model.addAttribute("activeMenu", "main");
+
         return "index/index";
+    }
+
+    @GetMapping("/healthCafe/healthCafeIntroduction")
+    public String healthCafeIntroduction(
+            Model model
+    ) {
+        model.addAttribute("activeMenu", "about");
+        return "healthCafe/healthCafeIntroduction";
     }
 }

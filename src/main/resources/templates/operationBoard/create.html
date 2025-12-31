@@ -97,6 +97,36 @@
         });
     </script>
 
+    <script>
+        function uploadSummernoteImageFile(file, editor) {
+            let data = new FormData();
+            data.append("file", file);
+
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
+
+            $.ajax({
+                url: "/operationBoard/uploadImage",
+                type: "POST",
+                data: data,
+                contentType: false,
+                processData: false,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function (res) {
+                    $(editor).summernote('insertImage', res.url);
+                },
+                error: function (xhr) {
+                    console.log("status:", xhr.status);
+                    console.log("response:", xhr.responseText);
+                    alert("이미지 업로드 실패");
+                }
+            });
+        }
+    </script>
+
+
 </div>
 </body>
 </html>

@@ -10,73 +10,22 @@
     <link th:href="@{/css/theme.css}" rel="stylesheet" />
     <div class="page-container">
 
-        <!-- 좌측 사이드바 -->
-
-        <nav class="sb-sidenav-menu">
-            <div class="nav">
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'main'} ? ' active'"
-                   href="/">
-                    <span class="nav-emoji">🏠</span>카페 홈
-                </a>
-
-                <a class="nav-link" href="/explore_cafes/neighbor">
-                    <span class="nav-emoji">👥</span>이웃
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'subscribe'} ? ' active'"
-                   href="/explore_cafes/subscribe">
-                    <span class="nav-emoji">⭐</span>구독
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'notice'} ? ' active'"
-                   href="/explore_cafes/notice">
-                    <span class="nav-emoji">🔔</span>내 소식
-                </a>
-
-                <div class="sidenav-section-title">카페 탐색</div>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'THEMED'} ? ' active'"
-                   href="/explore_cafes/themed_cafes">
-                    <span class="nav-emoji">📂</span>주제별 카페
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'LOCATION'} ? ' active'"
-                   href="/explore_cafes/cafes_by_location">
-                    <span class="nav-emoji">📍</span>지역별 카페
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'TOP'} ? ' active'"
-                   href="/explore_cafes/top_cafes">
-                    <span class="nav-emoji">👑</span>대표 카페
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'FEATURED'} ? ' active'"
-                   href="/explore_cafes/featured_cafes">
-                    <span class="nav-emoji">📈</span>카페 랭킹
-                </a>
-
-            </div>
-        </nav>
-
-        <!-- 중앙 콘텐츠 + 오른쪽 카드 -->
         <div class="cafe-layout">
 
             <!-- 중앙 카페 리스트 -->
-            <div class="cafe-list-wrap" id="cafeList">
+            <div class="cafe-list-wrap" id="cafeList" th:fragment="cafeList">
+
                 <h4>지역별 카페</h4>
 
                 <div class="cafe-topbar">
                     <div class="cafe-tabs">
-                        <button class="tab active" onclick="loadMyCafe(this)">내 카페</button>
-                        <button class="tab" onclick="loadFavoriteCafe(this)">즐겨찾는 카페</button>
+                        <button class="tab" type="button"
+                                onclick="loadMyCafe()"
+                                th:classappend="${activeTab == 'my'} ? ' active'">내 카페</button>
+
+                        <button class="tab" type="button"
+                                onclick="loadFavoriteCafe()"
+                                th:classappend="${activeTab == 'favorite'} ? ' active'">즐겨찾는 카페</button>
                     </div>
                     <div class="cafe-manage">
                         <a href="#">⚙ 내 카페 관리</a>
@@ -134,7 +83,7 @@
                     </div>
                 </div>
                 <div class="side-card">
-                    <button class="create-btn">카페 만들기</button>
+                    <button class="create-btn" onclick="location.href='/boardManagement/create'">카페 만들기</button>
                 </div>
             </aside>
 
@@ -150,25 +99,22 @@
     </script>
 
     <script>
-        function loadFavoriteCafe(btn) {
-            $.get("/explore_cafes/favorite", function(html) {
-                $("#cafeList").html(html);
-                setActive(btn);
-            });
+        function loadFavoriteCafe() {
+          $.get("/explore_cafes/favorite", function (html) {
+            $("#cafeList").replaceWith(html);
+          });
         }
 
-        function loadMyCafe(btn) {
-            $.get("/explore_cafes/my", function(html) {
-                $("#cafeList").html(html);
-                setActive(btn);
-            });
+        function loadMyCafe() {
+          $.get("/explore_cafes/my", function (html) {
+            $("#cafeList").replaceWith(html);
+          });
         }
 
         function setActive(btn) {
             $(".tab").removeClass("active");
             $(btn).addClass("active");
         }
-
     </script>
 
 
