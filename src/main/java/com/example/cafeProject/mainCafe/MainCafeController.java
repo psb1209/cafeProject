@@ -54,7 +54,7 @@ public class MainCafeController {
     ) {
         model.addAttribute("activeMenu", "main");
         model.addAttribute("activeTab", "my");
-        return "index/mainIndex :: cafeList"; // index/mainIndex의 cafeList 조각만 로딩
+        return "explore_cafes/my :: cafeList"; // index/mainIndex의 cafeList 조각만 로딩
     }
 
     @GetMapping("/explore_cafes/favorite")
@@ -63,7 +63,7 @@ public class MainCafeController {
     ) {
         model.addAttribute("activeMenu", "main");
         model.addAttribute("activeTab", "favorite");
-        return "index/mainIndex :: cafeList"; // index/mainIndex의 cafeList 조각만 로딩
+        return "explore_cafes/favorite :: cafeList"; // index/mainIndex의 cafeList 조각만 로딩
     }
 
 }
