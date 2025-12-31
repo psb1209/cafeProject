@@ -209,10 +209,10 @@
 <!--==================================================================================================================-->
         <div class="cafe-board-wrap">
             <div class="cafe-board-header">
-                <div class="cafe-board-title" onclick="location.href='/noticeBoard/list'" style="cursor: pointer;">공지사항</div>
+                <div class="cafe-board-title" onclick="location.href='/noticeBoard22/list'" style="cursor: pointer;">공지사항</div>
 
                 <div class="cafe-article-actions">
-                    <a th:href="@{/noticeBoard/create}"
+                    <a th:href="@{/noticeBoard2/create}"
                        class="cafe-action-btn write">
                         ✏️ 게시글 작성
                     </a>
@@ -229,12 +229,12 @@
                 </thead>
 
                 <tbody>
-                <tr th:each="noticeBoard, loop : ${noticeBoardList}"
-                    th:onclick="|location.href='@{|/noticeBoard/view/${noticeBoard.id}|}'|">
+                <tr th:each="noticeBoard2, loop : ${noticeBoard2List}"
+                    th:onclick="|location.href='@{|/noticeBoard2/view/${noticeBoard2.id}|}'|">
 
                     <td th:text="${loop.index + 1}"></td>
-                    <td class="col-subject" th:text="${noticeBoard.subject}"></td>
-                    <!--<td th:text="${noticeBoard.member.username}"></td>-->
+                    <td class="col-subject" th:text="${noticeBoard2.subject}"></td>
+                    <!--<td th:text="${noticeBoard2.member.username}"></td>-->
                     <td> -</td>
                 </tr>
                 </tbody>
@@ -313,7 +313,7 @@
 </div>
 </div>
 
-<script th:if="${noticeBoardList.isEmpty()}">
+<script th:if="${noticeBoard2List.isEmpty()}">
     alert([[${errMsg}]]);
 </script>
 

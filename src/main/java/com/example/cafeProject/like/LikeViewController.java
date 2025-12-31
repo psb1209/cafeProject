@@ -33,7 +33,7 @@ public class LikeViewController {
             if (likeDTO.getCommunityBoardNumber() != null)
                 return "redirect:/communityBoard/view/" + likeDTO.getCommunityBoardNumber();
             if (likeDTO.getNoticeBoardNumber() != null)
-                return "redirect:/noticeBoard/view/" + likeDTO.getNoticeBoardNumber();
+                return "redirect:/noticeBoard2/view/" + likeDTO.getNoticeBoardNumber();
             if (likeDTO.getInformationBoardNumber() != null)
                 return "redirect:/informationBoard/view/" + likeDTO.getInformationBoardNumber();
             if (likeDTO.getOperationBoardNumber() != null)

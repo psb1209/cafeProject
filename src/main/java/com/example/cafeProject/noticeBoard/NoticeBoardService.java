@@ -30,18 +30,19 @@ public class NoticeBoardService {
     private final NoticeBoardCommentRepository noticeBoardCommentRepository;
     private final MemberService memberService;
     protected final Logger log = LoggerFactory.getLogger(getClass());
+    private final LikeRepository likeRepository;
 
 
     public Page<NoticeBoard> list(Pageable pageable) {
 
-//        Page<NoticeBoard> list = noticeBoardRepository.findAll(pageable);
-//
-//        for (NoticeBoard board : list) {
-//            int cnt = noticeBoardRepository.countByNoticeBoardId(board.getId());
-//            board.setLikeCnt(cnt);
-//        }
-//        return list;
-        return noticeBoardRepository.findAll(pageable);
+        Page<NoticeBoard> list = noticeBoardRepository.findAll(pageable);
+
+        //게시글 list 좋아요 표시
+        for (NoticeBoard board : list) {
+            int cnt = likeRepository.countByNoticeBoardNumber(board.getId());
+            board.setLikeCnt(cnt);
+        }
+        return list;
     }
 
     public NoticeBoard view(NoticeBoardDTO noticeBoardDTO) {
@@ -111,7 +112,7 @@ public class NoticeBoardService {
         noticeBoardCommentRepository.deleteByNoticeBoardId(noticeBoardId);
 
 
-        // 3. 게시글 삭제
+        // 2. 게시글 삭제
         noticeBoardRepository.deleteById(noticeBoardId);
     }
 

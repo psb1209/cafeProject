@@ -3,7 +3,7 @@ package com.example.cafeProject.operationBoard;
 import com.example.cafeProject.operationBoard.OperationBoard;
 import com.example.cafeProject.operationBoard.OperationBoardDTO;
 import com.example.cafeProject.member.Member;
-import com.example.cafeProject.noticeBoardComment.NoticeBoardComment;
+import com.example.cafeProject.noticeBoardComment2.NoticeBoardComment2;
 import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

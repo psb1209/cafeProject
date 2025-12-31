@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{main_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center',
+               sidebarKey='cafe'">
+
+<body>
+
+<h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
+
+<div layout:fragment="content">
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+
+    <!-- ================= 본문 ================= -->
+    <div class="page-container">
+
+        <!-- 게시글 상세 -->
+        <div class="cafe-article-wrap">
+
+            <!-- 제목 -->
+            <div class="cafe-article-header">
+                <h1 class="cafe-article-title"
+                    th:text="${noticeBoard2.subject}"></h1>
+
+
+
+                <div class="cafe-article-meta">
+                    <span th:text="${noticeBoard2.member.username}"></span>
+                    <span th:switch="${noticeBoard2.member.grade.name()}">
+                        <span th:case="'USER'">일반🥉</span>
+                        <span th:case="'REGULAR'">성실🥈</span>
+                        <span th:case="'BEST'">우수🥇</span>
+                        <span th:case="'SPECIAL'">최우수🏆</span></span>
+                    <span th:text="${#dates.format(noticeBoard2.createDate,'yyyy.MM.dd')}"></span>
+                    <span>조회 <b th:text="${viewCnt}"></b></span>
+                    <span>좋아요 <b th:text="${likeCnt}"></b></span>
+
+                    <span th:if="${msg}">
+                            <span th:text="${msg}">메시지내용</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- 본문 -->
+            <div class="cafe-article-content"
+                 th:utext="${noticeBoard2.content}"></div>
+
+            <!-- 버튼 -->
+            <div class="cafe-article-actions">
+                <a href="/noticeBoard2/list" class="cafe-action-btn">목록</a>
+                <a th:href="@{|/noticeBoard2/update/${noticeBoard2.id}|}"
+                   class="cafe-action-btn">수정</a>
+                <form name="noticeBoard2Delete">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" name="id" th:value="${noticeBoard2.id}">
+                    <button type="button" onclick="confirmDelete();" class="cafe-action-btn danger">삭제</button>
+                </form>
+            </div>
+
+            <!--========================= 좋아요 ============================-->
+            <form class="like-form" action="/like/createProc" method="post">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+                <input type="hidden" name="noticeBoardNumber" th:value="${noticeBoard2.id}">
+
+                <button type="submit" class="like-btn" th:classappend="${isLike} ? ' active' : ''">
+                    <span class="like-icon" th:if="${!isLike}">🤍</span>
+                    <span class="like-icon" th:if="${isLike}">❤️</span>
+                    <span class="like-text">좋아요</span>
+                </button>
+            </form>
+
+
+            <!-- 댓글 -->
+            <div class="cafe-comment-section">
+
+                <div class="cafe-comment-title">
+                    댓글 <span th:text="${noticeBoardComment2List.totalElements}"></span>
+                </div>
+
+                <!-- 댓글 작성 -->
+                <form name="commentForm">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" name="noticeBoardId"
+                           th:value="${noticeBoard2.id}"/>
+                    <input type="hidden" name="noticeBoardCommentId"
+                           th:if="${noticeBoardComment2Update != null}"
+                           th:value="${noticeBoardComment2Update.id}">
+
+                    <div class="cafe-comment-write" th:if="${noticeBoardComment2Update == null}">
+                        <textarea name="content"
+                                  class="cafe-comment-textarea"
+                                  placeholder="댓글을 남겨보세요"></textarea>
+                        <div class="comment-btn-wrap">
+                            <button type="button"
+                                    class="cafe-comment-btn"
+                                    onclick="commentSave();">등록</button>
+                        </div>
+                    </div>
+                    <div class="cafe-comment-write" th:if="${noticeBoardComment2Update != null}">
+                        <textarea name="content"
+                                  class="cafe-comment-textarea"
+                                  th:text="${noticeBoardComment2Update.content}"></textarea>
+                        <div class="comment-btn-wrap">
+                            <button type="button"
+                                    class="cafe-comment-btn"
+                                    onclick="commentUpdate();">수정</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="cafe-comment-list">
+                    <div class="cafe-comment-item"
+                         th:each="comment : ${noticeBoardComment2List.content}"
+                         th:style="'padding-left:' + (${comment.step} * 30) + 'px'">
+
+                        <!-- 댓글 헤더 -->
+                        <div class="comment-header">
+                            <span>
+                                <span class="comment-writer" th:text="${comment.member.username}"></span>
+                                    <span th:switch="${comment.member.grade.name()}">
+                                        <span th:case="'USER'">일반🥉</span>
+                                        <span th:case="'REGULAR'">성실🥈</span>
+                                        <span th:case="'BEST'">우수🥇</span>
+                                        <span th:case="'SPECIAL'">최우수🏆</span>
+                                    </span>
+                            </span>
+                            <div class="comment-actions">
+                                <form>
+                                    <button type="button" class="comment-link-btn" th:onclick="|toggleReplyForm(${comment.id})|">답글</button>
+                                </form>
+                                <form th:action="@{/noticeBoardComment2/update}"
+                                      method="post">
+                                    <input type="hidden" name="noticeBoardId"
+                                           th:value="${noticeBoard2.id}"/>
+                                    <input type="hidden" name="noticeBoardCommentId"
+                                           th:value="${comment.id}">
+                                    <button class="comment-link-btn">수정</button>
+                                </form>
+
+                                <form th:action="@{/noticeBoardComment2/deleteProc}"
+                                      method="post"
+                                      onsubmit="return confirm('삭제하시겠습니까?');">
+                                    <input type="hidden" name="noticeBoardId"
+                                           th:value="${noticeBoard2.id}"/>
+                                    <input type="hidden" name="noticeBoardCommentId"
+                                           th:value="${comment.id}">
+                                    <button class="comment-link-btn danger">삭제</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- 댓글 내용 -->
+                        <div class="comment-content"
+                             th:text="${comment.content}"></div>
+
+
+                        <div class="comment-meta">
+                            <span class="comment-date"
+                                  th:text="${#dates.format(comment.createDate,'MM.dd HH:mm')}"></span>
+
+                        </div>
+
+
+                        <!-- 🔽 대댓글 입력폼 (댓글 바로 아래) -->
+                        <div class="comment-reply-box"
+                             th:id="'reply-form-' + ${comment.id}"
+                             style="display:none;">
+                            <form th:action="@{/noticeBoardComment2/replyProc}" method="post"
+                                  class="comment-reply-form">
+
+                                <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+                                <input type="hidden" name="noticeBoardId"
+                                       th:value="${noticeBoard2.id}">
+                                <input type="hidden" name="noticeBoardCommentId"
+                                       th:value="${comment.id}">
+
+                                <input type="text"
+                                       name="content"
+                                       class="comment-reply-input"
+                                       placeholder="답글을 입력하세요">
+
+                                <button type="submit"
+                                        class="comment-reply-btn">
+                                    답글 등록
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 댓글 페이징 -->
+            <div class="cafe-pagination" th:if="${!noticeBoardComment2List.isEmpty()}">
+
+                    <!-- 이전 버튼 -->
+                    <a class="page-btn"
+                       th:classappend="${noticeBoardComment2List.first} ? ' disabled'"
+                       th:href="@{|/noticeBoard2/view/${noticeBoard2.id}?page=${noticeBoardComment2List.number - 1}|}">이전</a>
+
+                    <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
+                    <th:block th:with="
+                        startPage=${noticeBoardComment2List.number - 2 > 0 ? noticeBoardComment2List.number - 2 : 0},
+                        endPage=${noticeBoardComment2List.number + 2 < noticeBoardComment2List.totalPages - 1 ? noticeBoardComment2List.number + 2 : noticeBoardComment2List.totalPages - 1}">
+
+                        <a class="page-btn"
+                           th:each="page : ${#numbers.sequence(startPage, endPage)}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == noticeBoardComment2List.number} ? ' active'"
+                           th:href="@{|/noticeBoard2/view/${noticeBoard2.id}?page=${page}|}"></a>
+                    </th:block>
+
+                    <!-- 다음 버튼 -->
+                    <a class="page-btn"
+                       th:classappend="${noticeBoardComment2List.last} ? ' disabled'"
+                       th:href="@{|/noticeBoard2/view/${noticeBoard2.id}?page=${noticeBoardComment2List.number + 1}|}">다음</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script>
+        function commentSave() {
+            const form = document.commentForm;
+            if (form.content.value.trim() === '') {
+                alert('내용을 입력해주세요');
+                form.content.focus();
+                return;
+            }
+            if (confirm('등록하시겠습니까?')) {
+                form.action = '/noticeBoardComment2/createProc';
+                form.method = 'post';
+                form.submit();
+            }
+        }
+
+        function commentUpdate() {
+            const form = document.commentForm;
+            if (form.content.value.trim() === '') {
+                alert('내용을 입력해주세요');
+                form.content.focus();
+                return;
+            }
+            if (confirm('수정하시겠습니까?')) {
+                form.action = '/noticeBoardComment2/updateProc';
+                form.method = 'post';
+                form.submit();
+            }
+        }
+    </script>
+
+    <script>
+        function toggleReplyForm(commentId) {
+            const form = document.getElementById('reply-form-' + commentId);
+
+            // 다른 대댓글 폼 닫기 (선택)
+            document.querySelectorAll('.reply-form').forEach(f => {
+                if (f !== form) f.style.display = 'none';
+            });
+
+            // 현재 클릭한 댓글 폼 토글
+            form.style.display = (form.style.display === 'none') ? 'block' : 'none';
+        }
+    </script>
+
+
+    <script>
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        // 모든 댓글 textarea에 적용
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.cafe-comment-textarea').forEach(textarea => {
+                autoResize(textarea);
+                textarea.addEventListener('input', () => autoResize(textarea));
+            });
+        });
+    </script>
+
+    <script>
+        function confirmDelete() {
+            if (confirm('삭제된 글은 복구할 수 없습니다. 삭제하시겠습니까?')) {
+                document.noticeBoard2Delete.action = "/noticeBoard2/deleteProc";
+                document.noticeBoard2Delete.method = "post";
+                document.noticeBoard2Delete.submit();
+            }
+        }
+    </script>
+</div>
+</body>
+</html>
