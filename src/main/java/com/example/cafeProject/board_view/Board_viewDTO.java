@@ -12,8 +12,6 @@ public class Board_viewDTO {
 
     private int UserId;
 
-    private int likeCnt;
-
     private Integer communityBoardNumber;
 
     private Integer operationBoardNumber;

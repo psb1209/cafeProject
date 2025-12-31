@@ -35,7 +35,7 @@
                         <span th:case="'BEST'">우수🥇</span>
                         <span th:case="'SPECIAL'">최우수🏆</span></span>
                     <span th:text="${#dates.format(operationBoard.createDate,'yyyy.MM.dd')}"></span>
-                    <span>조회 <b th:text="${operationBoard.cnt}"></b></span>
+                    <span>조회 <b th:text="${viewCnt}"></b></span>
                     <span>좋아요 <b th:text="${likeCnt}"></b></span>
 
                     <span th:if="${msg}">

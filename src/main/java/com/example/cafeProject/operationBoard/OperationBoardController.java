@@ -1,5 +1,7 @@
 package com.example.cafeProject.operationBoard;
 
+import com.example.cafeProject.board_view.Board_viewDTO;
+import com.example.cafeProject.board_view.Board_viewService;
 import com.example.cafeProject.like.LikeDTO;
 import com.example.cafeProject.like.LikeService;
 import com.example.cafeProject.member.Member;
@@ -39,6 +41,7 @@ public class OperationBoardController {
     private final OperationBoardCommentService operationBoardCommentService;
     private final MemberService memberService;
     private final LikeService likeService;
+    private final Board_viewService board_viewService;
 
     String dirName = "operationBoard";
 
@@ -53,6 +56,22 @@ public class OperationBoardController {
         model.addAttribute("operationBoardList", operationBoardList);
         model.addAttribute("activeMenu", "operationBoard");
         model.addAttribute("keyword", keyword);
+
+        // ======================
+        // ✅ 조회수 Map 생성
+        // ======================
+        Map<Integer, Integer> viewCntMap = new HashMap<>(); // 한 게시글에 여러명의 id값이 있기에 Map으로 값을 여러개 받는다
+
+        for (OperationBoard board : operationBoardList.getContent()) {
+            int viewCnt = board_viewService.board_viewCnt(
+                    "operation",
+                    board.getId()
+            );
+            viewCntMap.put(board.getId(), viewCnt);
+        }
+
+        model.addAttribute("viewCntMap", viewCntMap);
+
         return dirName + "/list";
     }
 
@@ -69,7 +88,7 @@ public class OperationBoardController {
             Page<OperationBoardComment> commentList = operationBoardCommentService.getCommentListPage(operationBoardDTO.getId(), pageable);
             model.addAttribute("commentList", commentList);
             model.addAttribute("activeMenu", "operationBoard");
-            operationBoardService.cntPlus(operationBoard);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
             boolean isLike = false;
 
@@ -80,6 +99,22 @@ public class OperationBoardController {
 
             model.addAttribute("isLike", isLike);
             model.addAttribute("likeCnt", likeService.likeCnt(dirName, operationBoard.getId()));
+
+            if (!memberService.isNotLogin(authentication)) {
+                Member member = memberService.viewCurrentMember(authentication);
+
+                Board_viewDTO board_viewDTO = new Board_viewDTO();
+                board_viewDTO.setUserId(member.getId());
+                board_viewDTO.setOperationBoardNumber(operationBoard.getId());
+
+                board_viewService.createProc(board_viewDTO);
+            }
+
+            int viewCnt = board_viewService.board_viewCnt(
+                    "operation",
+                    operationBoard.getId()
+            );
+            model.addAttribute("viewCnt", viewCnt);
 
             return dirName + "/view";
         } catch (IllegalArgumentException e) {
