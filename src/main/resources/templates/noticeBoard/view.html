@@ -351,6 +351,7 @@
                     <span th:text="${#dates.format(noticeBoard.createDate,'yyyy.MM.dd')}"></span>
                     <span>조회 <b th:text="${noticeBoard.cnt}"></b></span>
                     <span>댓글 <b th:text="${noticeBoard.commentCnt}"></b></span>
+                    <span>좋아요 <b th:text="${likeCnt}"></b></span>
                 </div>
             </div>
 
@@ -363,6 +364,17 @@
                 <a th:href="@{|/noticeBoard/delete/${noticeBoard.id}|}"
                    class="cafe-action-btn danger">삭제</a>
             </div>
+
+            <form class="like-form" action="/like/createProc" method="post">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+                <input type="hidden" name="noticeBoardNumber" th:value="${noticeBoard.id}">
+
+                <button type="submit" class="like-btn" th:classappend="${isLike} ? ' active' : ''">
+                    <span class="like-icon" th:if="${!isLike}">🤍</span>
+                    <span class="like-icon" th:if="${isLike}">❤️</span>
+                    <span class="like-text">좋아요</span>
+                </button>
+            </form>
 
             <!-- ================= 댓글 ================= -->
             <div class="cafe-comment-section">

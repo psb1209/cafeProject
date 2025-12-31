@@ -1,5 +1,6 @@
 package com.example.cafeProject.noticeBoard;
 
+import com.example.cafeProject.like.LikeRepository;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,16 @@ public class NoticeBoardService {
     private final MemberService memberService;
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
+
     public Page<NoticeBoard> list(Pageable pageable) {
+
+//        Page<NoticeBoard> list = noticeBoardRepository.findAll(pageable);
+//
+//        for (NoticeBoard board : list) {
+//            int cnt = noticeBoardRepository.countByNoticeBoardId(board.getId());
+//            board.setLikeCnt(cnt);
+//        }
+//        return list;
         return noticeBoardRepository.findAll(pageable);
     }
 
@@ -128,6 +138,7 @@ public class NoticeBoardService {
         noticeBoard.setCnt(noticeBoard.getCnt() + 1);
         noticeBoardRepository.save(noticeBoard);
     }
+
 
     @Value("${app.image.upload-dir}")
     protected String imgPath;

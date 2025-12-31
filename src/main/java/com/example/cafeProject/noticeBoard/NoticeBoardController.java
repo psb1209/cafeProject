@@ -1,5 +1,7 @@
 package com.example.cafeProject.noticeBoard;
 
+import com.example.cafeProject.like.LikeService;
+import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardComment;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentService;
@@ -28,6 +30,7 @@ public class NoticeBoardController {
     private final NoticeBoardService noticeBoardService;
     private final NoticeBoardCommentService noticeBoardCommentService;
     private final MemberService memberService;
+    private final LikeService likeService;
 
     @GetMapping("/list")
     public String list(
@@ -52,6 +55,17 @@ public class NoticeBoardController {
         if (noticeBoard == null) {
             return "redirect:/";
         }
+
+        boolean isLike = false;
+
+        if(!memberService.isNotLogin(authentication)) {
+            Member member = memberService.viewCurrentMember(authentication);
+            isLike = likeService.isLike(noticeBoard.getId(), member.getId());
+        }
+
+        model.addAttribute("isLike", isLike);
+        model.addAttribute("likeCnt", likeService.likeCnt("noticeBoard",noticeBoard.getId()));
+
         model.addAttribute("noticeBoard", noticeBoard);
         Page<NoticeBoardComment> noticeBoardCommentList = noticeBoardCommentService.listByNoticeBoard(id, pageable);
         model.addAttribute("noticeBoardCommentList", noticeBoardCommentList);
@@ -149,9 +163,6 @@ public class NoticeBoardController {
             NoticeBoardDTO noticeBoardDTO
     ) {
         try {
-//            noticeBoardCommentService.setDeleteAll(noticeBoardDTO);
-//            boardLikeService.deleteByNoticeBoardId();
-//            noticeBoardService.setDelete(noticeBoardDTO);
             noticeBoardService.deleteNoticeBoard(noticeBoardDTO.getId());
             return "redirect:/noticeBoard/list";
         } catch (IllegalArgumentException e) {

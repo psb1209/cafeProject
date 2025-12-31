@@ -174,6 +174,7 @@
                     <th>작성자</th>
                     <th>작성일</th>
                     <th>조회수</th>
+                    <th>좋아요</th>
                 </tr>
                 </thead>
 
@@ -194,6 +195,7 @@
                     <td th:text="${noticeBoard.member != null ? noticeBoard.member.username : '-'}"></td>
                     <td th:text="${#dates.format(noticeBoard.createDate,'yyyy-MM-dd')}"></td>
                     <td th:text="${noticeBoard.cnt}"></td>
+                    <td th:text="${noticeBoard.likeCnt}"></td>
                 </tr>
                 </tbody>
             </table>

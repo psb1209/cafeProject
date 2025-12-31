@@ -8,4 +8,7 @@ public interface NoticeBoardRepository extends JpaRepository<NoticeBoard, Intege
     // 댓글수 카운트
     @Query("SELECT COUNT(*) FROM NoticeBoardComment WHERE noticeBoard.id = :noticeBoardId")
     int countCommentsByNoticeBoardId(@Param("noticeBoardId") int noticeBoardId);
+
+//    @Query("SELECT COUNT(*) FROM NoticeBoard WHERE noticeBoard.id = :noticeBoardId")
+//    int countByNoticeBoardId(@Param("noticeBoardId") int noticeBoardId);
 }
