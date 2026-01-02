@@ -1,45 +1,100 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorate="~{_layout/layout}"
+      layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
-               headerPosition='center center'">
-
+               headerPosition='center center',
+               sidebarKey='cafe'">
 <body>
 
-<h1 layout:fragment="pageTitle">My Cafe</h1>
-<span layout:fragment="pageSubTitle">first page</span>
+<h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
 
 <div layout:fragment="content">
-    <!-- 본문 내용 시작 -->
-    <h2>자유게시판 수정</h2>
-    <form name="form">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-        <input type="hidden" name="id" th:value="${communityBoard.id}">
-        <div class="mb-3 mt-3">
-            <label for="subject">subject:</label>
-            <input type="text" class="form-control" id="subject"  name="subject" th:value="${communityBoard.subject}">
-        </div>
-        <div class="mb-3">
-            <label for="content">content:</label>
-            <input type="text" class="form-control" id="content" name="content" th:value="${communityBoard.content}">
-        </div>
 
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
 
-        <button type="button" class="btn btn-secondary" onclick="save();">게시글수정</button>
-    </form>
+    <div class="write-page">
+
+        <!-- 글쓰기 카드 -->
+        <div class="write-card">
+
+            <div class="write-header">게시글 수정</div>
+
+            <form name="DirForm"
+                  id="DirForm"
+                  th:action="@{/communityBoard/updateProc}"
+                  method="post">
+
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}" />
+
+                <input type="hidden" name="id" th:value="${communityBoard.id}">
+
+                <!-- 제목 -->
+                <div class="write-group">
+                    <label class="write-label">제목</label>
+                    <input type="text"
+                           name="subject"
+                           class="write-title-input"
+                           th:value="${communityBoard.subject}">
+                </div>
+
+                <!-- 내용 -->
+                <div class="write-group">
+                    <label class="write-label">내용</label>
+                    <div class="write-editor-wrap">
+                    <textarea id="content"
+                              name="content" th:utext="${communityBoard.content}"></textarea>
+                    </div>
+                </div>
+
+                <!-- 버튼 -->
+                <div class="write-action-bar">
+                    <button type="button"
+                            class="write-btn"
+                            onclick="history.back();">
+                        취소
+                    </button>
+                    <button type="button"
+                            class="write-btn primary"
+                            onclick="update();">
+                        수정
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
 
     <script>
-        function save() {
-            if (confirm('수정할까요?')) {
-                document.form.action = "/communityBoard/updateProc";
-                document.form.method = "post";
-                document.form.submit();
+        function update() {
+            if (document.DirForm.subject.value.trim() === '') {
+                alert('제목을 입력해주세요');
+                document.DirForm.subject.focus();
+                return;
+            }
+            if (document.DirForm.content.value.trim() === '') {
+                alert('내용을 입력해주세요');
+                document.DirForm.content.focus();
+                return;
+            }
+            if (confirm('수정하시겠습니까?')) {
+                document.getElementById('DirForm').submit();
             }
         }
     </script>
-    <!-- 본문 내용 종료 -->
-</div>
 
+    <script>
+        $(document).ready(function() {
+            $("#content").summernote({
+                height: 300,
+                lang: 'ko-KR'
+            });
+       });
+    </script>
+
+</div>
 </body>
 </html>

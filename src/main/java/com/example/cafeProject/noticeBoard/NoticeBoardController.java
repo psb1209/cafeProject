@@ -1,5 +1,9 @@
 package com.example.cafeProject.noticeBoard;
 
+import com.example.cafeProject.board_view.Board_viewDTO;
+import com.example.cafeProject.board_view.Board_viewService;
+import com.example.cafeProject.like.LikeService;
+import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardComment;
 import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentService;
@@ -10,114 +14,192 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
-@RequestMapping("/noticeBoard")
 @RequiredArgsConstructor
+@RequestMapping("/noticeBoard")
 @Controller
 public class NoticeBoardController {
 
     private final NoticeBoardService noticeBoardService;
     private final NoticeBoardCommentService noticeBoardCommentService;
     private final MemberService memberService;
+    private final LikeService likeService;
+    private final Board_viewService board_viewService;
+
+    String dirName = "noticeBoard";
+
 
     @GetMapping("/list")
     public String list(
             Model model,
-            @PageableDefault(size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable
+            @RequestParam(required = false) String keyword,
+            @PageableDefault(size=2, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<NoticeBoard> noticeBoardList = noticeBoardService.list(pageable);
+        Page<NoticeBoard> noticeBoardList = noticeBoardService.list(pageable, keyword);
         model.addAttribute("noticeBoardList", noticeBoardList);
-        return "noticeBoard/list";
+        model.addAttribute("activeMenu", "noticeBoard");
+        model.addAttribute("keyword", keyword);
+
+        // ======================
+        // ✅ 조회수 Map 생성
+        // ======================
+        Map<Integer, Integer> viewCntMap = new HashMap<>(); // 한 게시글에 여러명의 id값이 있기에 Map으로 값을 여러개 받는다
+
+        for (NoticeBoard board : noticeBoardList.getContent()) {
+            int viewCnt = board_viewService.board_viewCnt(
+                    "notice",
+                    board.getId()
+            );
+            viewCntMap.put(board.getId(), viewCnt);
+        }
+
+        model.addAttribute("viewCntMap", viewCntMap);
+
+        return dirName + "/list";
     }
 
     @GetMapping("/view/{id}")
     public String view(
             Model model,
-            @PathVariable("id") int id,
-            @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-            Authentication authentication
+            NoticeBoardDTO noticeBoardDTO,
+            Authentication authentication,
+            @PageableDefault(size=3, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        NoticeBoardDTO noticeBoardDTO = new NoticeBoardDTO();
-            noticeBoardDTO.setId(id);
-        NoticeBoard noticeBoard = noticeBoardService.view(noticeBoardDTO);
-        if (noticeBoard == null) {
-            return "redirect:/";
+        try {
+            NoticeBoard noticeBoard = noticeBoardService.getSelectOneById(noticeBoardDTO);
+            model.addAttribute("noticeBoard", noticeBoard);
+            Page<NoticeBoardComment> commentList = noticeBoardCommentService.getCommentListPage(noticeBoardDTO.getId(), pageable);
+            model.addAttribute("commentList", commentList);
+            model.addAttribute("activeMenu", "noticeBoard");
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+            boolean isLike = false;
+
+            if(!memberService.isNotLogin(authentication)) {
+                Member member = memberService.viewCurrentMember(authentication);
+                isLike = likeService.isLike(noticeBoard.getId(), member.getId());
+            }
+
+            model.addAttribute("isLike", isLike);
+            model.addAttribute("likeCnt", likeService.likeCnt(dirName, noticeBoard.getId()));
+
+            if (!memberService.isNotLogin(authentication)) {
+                Member member = memberService.viewCurrentMember(authentication);
+
+                Board_viewDTO board_viewDTO = new Board_viewDTO();
+                board_viewDTO.setUserId(member.getId());
+                board_viewDTO.setNoticeBoardNumber(noticeBoard.getId());
+
+                board_viewService.createProc(board_viewDTO);
+            }
+
+            int viewCnt = board_viewService.board_viewCnt(
+                    "notice",
+                    noticeBoard.getId()
+            );
+            model.addAttribute("viewCnt", viewCnt);
+
+            return dirName + "/view";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "err1111");
+            model.addAttribute("errMsg", e.getMessage());
+            return "error/error";
         }
-        model.addAttribute("noticeBoard", noticeBoard);
-        Page<NoticeBoardComment> noticeBoardCommentList = noticeBoardCommentService.listByNoticeBoard(id, pageable);
-        model.addAttribute("noticeBoardCommentList", noticeBoardCommentList);
-
-
-        noticeBoardService.cntUpdateProc(noticeBoard);
-
-        model.addAttribute("noticeBoard", noticeBoard);
-        return "noticeBoard/view";
     }
 
     @GetMapping("/create")
-    public String create() {
-
-        return "noticeBoard/create";
+    public String create(
+            Model model
+    ) {
+        model.addAttribute("activeMenu", "noticeBoard");
+        return dirName + "/create";
     }
 
     @GetMapping("/update/{id}")
     public String update(
             Model model,
-            @PathVariable("id") int id
+            NoticeBoardDTO noticeBoardDTO
     ) {
-        NoticeBoardDTO noticeBoardDTO = new NoticeBoardDTO();
-        noticeBoardDTO.setId(id);
-        NoticeBoard noticeBoard = noticeBoardService.view(noticeBoardDTO);
-        if (noticeBoard == null) {
-            model.addAttribute("errCode", "err0001");
-            model.addAttribute("errMsg", "존재하지 않는 게시글입니다.");
+        try {
+            NoticeBoard noticeBoard = noticeBoardService.getSelectOneById(noticeBoardDTO);
+            model.addAttribute("noticeBoard", noticeBoard);
+            model.addAttribute("activeMenu", "noticeBoard");
+            return dirName + "/update";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "err1111");
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
-        model.addAttribute("noticeBoard", noticeBoard);
-        return "noticeBoard/update";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(
             Model model,
-            @PathVariable("id") int id
+            NoticeBoardDTO noticeBoardDTO
     ) {
-        NoticeBoardDTO noticeBoardDTO = new NoticeBoardDTO();
-        noticeBoardDTO.setId(id);
-        NoticeBoard noticeBoard = noticeBoardService.view(noticeBoardDTO);
-        if (noticeBoard == null) {
-            model.addAttribute("errCode", "err0001");
-            model.addAttribute("errMsg", "존재하지 않는 게시글입니다.");
+        try {
+            NoticeBoard noticeBoard = noticeBoardService.getSelectOneById(noticeBoardDTO);
+            model.addAttribute("noticeBoard", noticeBoard);
+            model.addAttribute("activeMenu", "noticeBoard");
+            return dirName + "/delete";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "err1111");
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
-        model.addAttribute("noticeBoard", noticeBoard);
-        return "noticeBoard/delete";
     }
 
     @PostMapping("/createProc")
     public String createProc(
             Model model,
             NoticeBoardDTO noticeBoardDTO,
-            Authentication authentication
+            RedirectAttributes redirectAttributes,
+            Authentication authentication,
+            @AuthenticationPrincipal User user
     ) {
-        int authenticationId = memberService.viewCurrentMember(authentication).getId();
-        noticeBoardDTO.setMemberId(authenticationId);
-        int result = noticeBoardService.createProc(noticeBoardDTO);
-        if (result > 0) { //실패
-            model.addAttribute("errCode", "err0002");
-            model.addAttribute("errMsg", "게시글 등록 중 오류가 발생했습니다.");
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        String loginId = userDetails.getUsername(); // 로그인했을 때 아이디
+
+        try {
+            Member member = noticeBoardService.getSelectOneByUsername(authentication);
+            noticeBoardDTO.setMemberId(member.getId());
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "err1111");
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
-        return "redirect:/noticeBoard/list";
+
+        try {
+            boolean isUpgraded = noticeBoardService.setInsert(noticeBoardDTO, authentication);
+            if(isUpgraded) { //등급 상승시 "msg" 데이터를 같이 리다이렉트 시킴
+                redirectAttributes.addFlashAttribute("msg","축하합니다! 등급이 올랐습니다!🎉"); //윈도우 로고 키(⊞) + 마침표(.) --> 임티창
+                return "redirect:/noticeBoard/list";
+            }
+            return "redirect:/noticeBoard/list"; //등급 안올랐으면 걍 조용히 이동
+
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "error404");
+            model.addAttribute("errMsg", "요청하신 게시글을 찾을 수 없습니다.");
+            return "error/error";
+        }
+
     }
 
     @PostMapping("/updateProc")
@@ -125,22 +207,18 @@ public class NoticeBoardController {
             Model model,
             NoticeBoardDTO noticeBoardDTO
     ) {
-        NoticeBoard noticeBoard = noticeBoardService.view(noticeBoardDTO);
-        if (noticeBoard == null) {
-            model.addAttribute("errCode", "err0003");
-            model.addAttribute("errMsg", "등록된 게시글이 아닙니다.");
+        try {
+            NoticeBoard noticeBoard = noticeBoardService.setUpdate(noticeBoardDTO);
+            return "redirect:/" + dirName + "/view/" + noticeBoardDTO.getId();
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "err1111");
+            model.addAttribute("errMsg", e.getMessage());
+            return "error/error";
+        } catch (Exception e) {
+            model.addAttribute("errCode", "err2322");
+            model.addAttribute("errMsg", "수정 중 문제가 발생했습니다.");
             return "error/error";
         }
-
-        noticeBoardDTO.setCreateDate(noticeBoard.getCreateDate());
-        noticeBoardDTO.setCnt(noticeBoard.getCnt());
-        int result = noticeBoardService.updateProc(noticeBoardDTO);
-        if (result > 0) { //실패
-            model.addAttribute("errCode", "err0002");
-            model.addAttribute("errMsg", "게시글 수정중 예외가 발생했습니다.");
-            return "error/error";
-        }
-        return "redirect:/noticeBoard/view/" + noticeBoardDTO.getId();
     }
 
     @PostMapping("/deleteProc")
@@ -149,14 +227,12 @@ public class NoticeBoardController {
             NoticeBoardDTO noticeBoardDTO
     ) {
         try {
-//            noticeBoardCommentService.setDeleteAll(noticeBoardDTO);
-//            boardLikeService.deleteByNoticeBoardId();
-//            noticeBoardService.setDelete(noticeBoardDTO);
-            noticeBoardService.deleteNoticeBoard(noticeBoardDTO.getId());
-            return "redirect:/noticeBoard/list";
+            noticeBoardCommentService.setDeleteAll(noticeBoardDTO);
+            noticeBoardService.setDelete(noticeBoardDTO);
+            return "redirect:/" + dirName + "/list";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1111");
-            model.addAttribute("errCode", e.getMessage());
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         } catch (Exception e) {
             model.addAttribute("errCode", "err2422");
@@ -191,6 +267,7 @@ public class NoticeBoardController {
                 : urlPrefix + "/" + fileName);
         return response;
     }
+    //********************************************************************************************
 
 
 }

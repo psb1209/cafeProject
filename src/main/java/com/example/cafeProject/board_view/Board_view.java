@@ -23,9 +23,6 @@ public class Board_view {
 
     private int userId;
 
-    @Transient
-    private int board_viewCnt;
-
     private Integer communityBoardNumber;
 
     private Integer operationBoardNumber;

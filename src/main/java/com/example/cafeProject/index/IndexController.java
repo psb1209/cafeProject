@@ -27,15 +27,25 @@ public class IndexController {
             Model model,
             @PageableDefault(size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<NoticeBoard> noticeBoardList = noticeBoardService.list(pageable);
+        Page<NoticeBoard> noticeBoardList = noticeBoardService.list(pageable, null);
         model.addAttribute("noticeBoardList", noticeBoardList);
 
-        Page<CommunityBoard> communityBoardList = communityBoardService.getSelectAllPage(pageable);
+        Page<CommunityBoard> communityBoardList = communityBoardService.list(pageable,null);
         model.addAttribute("communityBoardList", communityBoardList);
 
         Page<InformationBoard> informationBoardList = informationBoardService.getSelectAllPage(pageable, null);
         model.addAttribute("informationBoardList", informationBoardList);
 
+        model.addAttribute("activeMenu", "main");
+
         return "index/index";
+    }
+
+    @GetMapping("/healthCafe/healthCafeIntroduction")
+    public String healthCafeIntroduction(
+            Model model
+    ) {
+        model.addAttribute("activeMenu", "about");
+        return "healthCafe/healthCafeIntroduction";
     }
 }

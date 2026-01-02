@@ -1,7 +1,10 @@
 package com.example.cafeProject.noticeBoard;
 
+
+import com.example.cafeProject.member.Grade;
+import com.example.cafeProject.member.Member;
+import com.example.cafeProject.member.MemberRepository;
 import com.example.cafeProject.member.MemberService;
-import com.example.cafeProject.noticeBoardComment.NoticeBoardCommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,100 +23,59 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class NoticeBoardService {
 
     private final NoticeBoardRepository noticeBoardRepository;
-    private final NoticeBoardCommentRepository noticeBoardCommentRepository;
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
+    private final MemberService memberService;
 
+    public Page<NoticeBoard> list(Pageable pageable, String keyword) {
+        if (keyword == null || keyword.isBlank()) // 검색을 안 했을 경우
+            return noticeBoardRepository.findAll(pageable);
 
-    public Page<NoticeBoard> list(Pageable pageable) {
-        Page<NoticeBoard> noticeBoardPage = noticeBoardRepository.findAll(pageable);
-
-        for (NoticeBoard noticeBoard : noticeBoardPage.getContent()) {
-        }
-
-        return noticeBoardPage;
+        return noticeBoardRepository.searchBySubject(keyword.trim(), pageable);
     }
 
-    public NoticeBoard view(NoticeBoardDTO noticeBoardDTO) {
-        Optional<NoticeBoard> optionalNoticeBoard = noticeBoardRepository.findById(noticeBoardDTO.getId());
-        NoticeBoard noticeBoard = null;
-        if (optionalNoticeBoard.isPresent()) {
-            noticeBoard = optionalNoticeBoard.get();
-        }
-        //댓글 수 표시
-        int commentCnt = noticeBoardCommentRepository.countCommentsByNoticeBoardId(noticeBoard.getId());
-        noticeBoard.setCommentCnt(commentCnt);
+    @Transactional(readOnly = true)
+    public NoticeBoard getSelectOneById(NoticeBoardDTO paramDTO) {
+        return noticeBoardRepository.findById(paramDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+    }
+
+    @Transactional(readOnly = true)
+    public Member getSelectOneByUsername(Authentication authentication) {
+        return memberRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+    }
+
+    @Transactional
+    public void setInsert(NoticeBoardDTO paramDTO) {
+        NoticeBoard noticeBoard = new NoticeBoard();
+        noticeBoard.setSubject(paramDTO.getSubject());
+        noticeBoard.setContent(paramDTO.getContent());
+        noticeBoard.setMember(memberService.view(paramDTO.getMemberId()));
+        noticeBoard.setCnt(0);
+
+        noticeBoardRepository.save(noticeBoard);
+    }
+
+    @Transactional
+    public NoticeBoard setUpdate(NoticeBoardDTO paramDTO) {
+        NoticeBoard noticeBoard = getSelectOneById(paramDTO);
+
+        noticeBoard.setSubject(paramDTO.getSubject());
+        noticeBoard.setContent(paramDTO.getContent());
+        /*noticeBoard.setCnt(paramDTO.getCnt());*/
 
         return noticeBoard;
     }
 
-    public int createProc(NoticeBoardDTO noticeBoardDTO) {
-        NoticeBoard noticeBoard = new NoticeBoard();
-        noticeBoard.setSubject(noticeBoardDTO.getSubject());
-        noticeBoard.setContent(noticeBoardDTO.getContent());
-        noticeBoard.setCnt(0);
-        noticeBoard.setMember(memberService.view(noticeBoardDTO.getMemberId()));
-
-        int result = 0;
-        try {
-            noticeBoardRepository.save(noticeBoard);
-        } catch (Exception e) {
-            //e.printStackTrace();
-            result++;
-        }
-        return result;
-    }
-
-    public int updateProc(NoticeBoardDTO noticeBoardDTO) {
-        NoticeBoard noticeBoard = view(noticeBoardDTO);
-        noticeBoard.setSubject(noticeBoardDTO.getSubject());
-        noticeBoard.setContent(noticeBoardDTO.getContent());
-        int result = 0;
-        try {
-            noticeBoardRepository.save(noticeBoard);
-        } catch (Exception e) {
-            //e.printStackTrace();
-            result++;
-        }
-        return result;
-    }
-
-//    public int deleteProc(NoticeBoardDTO noticeBoardDTO) {
-//        NoticeBoard noticeBoard = new NoticeBoard();
-//        noticeBoard.setId(noticeBoardDTO.getId());
-//        int result = 0;
-//        try {
-//            //noticeBoardCommentRepository.deleteByNoticeBoardId(noticeBoardDTO.getId());
-//            noticeBoardRepository.delete(noticeBoard);
-//
-//        } catch (Exception e) {
-//            //e.printStackTrace();
-//            result++;
-//        }
-//        return result;
-//    }
-
-    //게시글 삭제 전용 메소드
     @Transactional
-    public void deleteNoticeBoard(int noticeBoardId) {
-
-        // 1. 댓글 삭제
-        noticeBoardCommentRepository.deleteByNoticeBoardId(noticeBoardId);
-
-
-        // 3. 게시글 삭제
-        noticeBoardRepository.deleteById(noticeBoardId);
-    }
-
-
     public void setDelete(NoticeBoardDTO paramDTO) {
         NoticeBoard noticeBoard = getSelectOneById(paramDTO);
 
@@ -125,16 +88,43 @@ public class NoticeBoardService {
         noticeBoardRepository.delete(noticeBoard);
     }
 
-    public NoticeBoard getSelectOneById(NoticeBoardDTO paramDTO) {
-        return noticeBoardRepository.findById(paramDTO.getId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
-    }
-
-
-    void cntUpdateProc(NoticeBoard noticeBoard) {
+    @Transactional
+    public void cntPlus(NoticeBoard noticeBoard) {
         noticeBoard.setCnt(noticeBoard.getCnt() + 1);
+
         noticeBoardRepository.save(noticeBoard);
     }
+
+    //회원등업
+    @Transactional
+    public void updateGrade(Member member) {
+
+        member.increasePostCount(); //게시글 작성 +1
+        int posts = member.getPostCount();
+        int replies = member.getReplyCount();
+
+        if (posts >= 7 && replies >= 12) member.setGrade(Grade.SPECIAL);
+        else if (posts >= 5 && replies >= 10) member.setGrade(Grade.BEST);
+        else if (posts >= 3 && replies >= 5) member.setGrade(Grade.REGULAR);
+        else member.setGrade(Grade.USER);
+    }
+
+    //카페 회원만 게시글 작성
+    @Transactional
+    public boolean setInsert(NoticeBoardDTO noticeBoardDTO, Authentication authentication) {
+        Member member = getSelectOneByUsername(authentication);
+        Grade oldGrade = member.getGrade(); //예전 등급
+
+        NoticeBoard noticeBoard = NoticeBoard.dtoToEntity(noticeBoardDTO, member);
+        noticeBoardRepository.save(noticeBoard);
+
+        updateGrade(member); //회원등업 메서드 호출
+
+        Grade newGrade = noticeBoard.getMember().getGrade(); //새로운 등급
+        return oldGrade != newGrade; //비교해서 등급이 바뀌었으면 true 반환
+    }
+    
+    //************************************************************************************************************************
 
     @Value("${app.image.upload-dir}")
     protected String imgPath;
@@ -176,4 +166,7 @@ public class NoticeBoardService {
             }
         }
     }
+    //************************************************************************************************************************
+
+
 }

@@ -8,14 +8,20 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 public class NoticeBoardDTO {
+
     private int id;
+
     private String subject;
+
     private String content;
+
     private int cnt;
+
     private Timestamp createDate;
+
     private int memberId;
 
-//    private int likeCnt;
-    private int commentCnt;
+    private int noticeBoardCommentId;
 
+    private String noticeBoardCommentContent;
 }

@@ -2,12 +2,15 @@ package com.example.cafeProject.communityBoardComment;
 
 import com.example.cafeProject.communityBoard.CommunityBoard;
 import com.example.cafeProject.member.Member;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Timestamp;
 
@@ -15,8 +18,8 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "communityBoardComment")
 @Entity
-@Table(name = "CommentBoardComments")
 public class CommunityBoardComment {
 
     @Id
@@ -31,14 +34,25 @@ public class CommunityBoardComment {
     private Timestamp createDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "username")
+    @JoinColumn(name = "userid")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "communityBoardId")
     private CommunityBoard communityBoard;
 
     private int ref;
     private int step;
     private int level;
+
+    public static CommunityBoardComment dtoToEntity(CommunityBoardCommentDTO communityBoardCommentDTO,
+                                                    Member member, CommunityBoard communityBoard) {
+
+        CommunityBoardComment communityBoardComment = new CommunityBoardComment();
+        communityBoardComment.setContent(communityBoardCommentDTO.getContent());
+        communityBoardComment.setMember(member);
+        communityBoardComment.setCommunityBoard(communityBoard);
+        return communityBoardComment;
+    }
 }

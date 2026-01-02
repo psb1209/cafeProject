@@ -13,10 +13,23 @@
 </div>
 
 <div class="layout-main" th:classappend="${showSidebar} == false ? ' no-sidebar'">
+    <!-- 왼쪽 사이드바 -->
+    <aside class="layout-sidebar" th:if="${showSidebar} != false">
+        <th:block th:switch="${sidebarKey}">
+            <!-- 카페 전용 -->
+            <th:block th:case="'cafe'">
+                <th:block th:replace="~{main_layout/cafe_sidebar :: cafe_sidebar}"></th:block>
+            </th:block>
 
+            <!-- 기본 -->
+            <th:block th:case="*">
+                <th:block th:replace="~{main_layout/inc_sidebar :: inc_sidebar}"></th:block>
+            </th:block>
+        </th:block>
+    </aside>
     <!-- 본문 내용 -->
     <section class="layout-content">
-        <th:block layout:fragment="content" class="page-container"></th:block>
+        <th:block layout:fragment="content"></th:block>
     </section>
 </div>
 

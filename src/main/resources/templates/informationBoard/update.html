@@ -3,7 +3,8 @@
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
-               headerPosition='center center'">
+               headerPosition='center center',
+               sidebarKey='cafe'">
 <body>
 
 <h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
@@ -104,88 +105,6 @@
     </style>
 
     <div class="write-page">
-
-        <!-- 좌측 사이드바 -->
-
-        <nav class="sb-sidenav-menu">
-            <div class="nav">
-
-                <!-- 카페 홈 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'main'} ? ' active'"
-                   th:href="@{/healthCafe}">
-                    <span class="nav-emoji">🏠</span>카페 홈
-                </a>
-
-                <!-- 공지 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'noticeBoard'} ? ' active'"
-                   th:href="@{/noticeBoard/list}">
-                    <span class="nav-emoji">📢</span>공지사항
-                </a>
-
-                <div class="sidenav-section-title">게시판</div>
-
-                <!-- 전체글 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'all'} ? ' active'"
-                   href="#">
-                    <span class="nav-emoji">📄</span>전체글보기
-                </a>
-
-                <!-- 자유게시판 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'communityBoard'} ? ' active'"
-                   th:href="@{/communityBoard/list}">
-                    <span class="nav-emoji">🧩</span>자유게시판
-                </a>
-
-                <!-- 정보게시판 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'informationBoard'} ? ' active'"
-                   th:href="@{/informationBoard/list}">
-                    <span class="nav-emoji">🔍</span>정보게시판
-                </a>
-
-                <!-- 운영게시판 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'operationBoard'} ? ' active'"
-                   th:href="@{/operationBoard/list}">
-                    <span class="nav-emoji">📋</span>운영게시판
-                </a>
-
-                <!-- 사진 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'photo'} ? ' active'"
-                   href="#">
-                    <span class="nav-emoji">📸</span>사진게시판
-                </a>
-
-                <!-- 질문/정보 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'qna'} ? ' active'"
-                   href="#">
-                    <span class="nav-emoji">💡</span>질문/정보
-                </a>
-
-                <div class="sidenav-section-title">카페 정보</div>
-
-                <!-- 멤버 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'members'} ? ' active'"
-                   href="#">
-                    <span class="nav-emoji">👥</span>멤버
-                </a>
-
-                <!-- 소개 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'about'} ? ' active'"
-                   href="#">
-                    <span class="nav-emoji">ℹ️</span>카페 소개
-                </a>
-
-            </div>
-        </nav>
 
         <!-- 글쓰기 카드 -->
         <div class="write-card">

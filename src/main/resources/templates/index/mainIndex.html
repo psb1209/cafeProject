@@ -7,78 +7,27 @@
 
 <body>
 <div layout:fragment="content">
+
     <link th:href="@{/css/theme.css}" rel="stylesheet" />
+
     <div class="page-container">
 
-        <!-- 좌측 사이드바 -->
-
-        <nav class="sb-sidenav-menu">
-            <div class="nav">
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'main'} ? ' active'"
-                   href="/">
-                    <span class="nav-emoji">🏠</span>카페 홈
-                </a>
-
-                <a class="nav-link" href="/explore_cafes/neighbor">
-                    <span class="nav-emoji">👥</span>이웃
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'subscribe'} ? ' active'"
-                   href="/explore_cafes/subscribe">
-                    <span class="nav-emoji">⭐</span>구독
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'notice'} ? ' active'"
-                   href="/explore_cafes/notice">
-                    <span class="nav-emoji">🔔</span>내 소식
-                </a>
-
-                <div class="sidenav-section-title">카페 탐색</div>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'THEMED'} ? ' active'"
-                   href="/explore_cafes/themed_cafes">
-                    <span class="nav-emoji">📂</span>주제별 카페
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'LOCATION'} ? ' active'"
-                   href="/explore_cafes/cafes_by_location">
-                    <span class="nav-emoji">📍</span>지역별 카페
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'TOP'} ? ' active'"
-                   href="/explore_cafes/top_cafes">
-                    <span class="nav-emoji">👑</span>대표 카페
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'FEATURED'} ? ' active'"
-                   href="/explore_cafes/featured_cafes">
-                    <span class="nav-emoji">📈</span>카페 랭킹
-                </a>
-
-            </div>
-        </nav>
-
-        <!-- 중앙 콘텐츠 + 오른쪽 카드 -->
         <div class="cafe-layout">
 
             <!-- 중앙 카페 리스트 -->
-            <div class="cafe-list-wrap" id="cafeList">
+            <div class="cafe-list-wrap" id="cafeList" th:fragment="cafeList">
+
                 <h4>카페 홈</h4>
 
                 <div class="cafe-topbar">
                     <div class="cafe-tabs">
-                        <button class="tab active" onclick="loadMyCafe(this)"
-                                th:classappend="${activeMenu == 'my'} ? ' active'">내 카페</button>
-                        <button class="tab" onclick="loadFavoriteCafe(this)"
-                                th:classappend="${activeMenu == 'favorite'} ? ' active'">즐겨찾는 카페</button>
+                        <button class="tab" type="button"
+                                onclick="loadMyCafe()"
+                                th:classappend="${activeTab == 'my'} ? ' active'">내 카페</button>
+
+                        <button class="tab" type="button"
+                                onclick="loadFavoriteCafe()"
+                                th:classappend="${activeTab == 'favorite'} ? ' active'">즐겨찾는 카페</button>
                     </div>
                     <div class="cafe-manage">
                         <a href="#">⚙ 내 카페 관리</a>
@@ -100,18 +49,48 @@
                         </div>
                     </div>
 
-                    <div class="cafe-item">
+                    <!-- 반복 -->
+                    <div class="cafe-item" th:each="data : ${list.content}">
                         <div class="cafe-thumb">
-                            <img src="/assets/img/home-bg.jpg" alt="스터디 카페">
+                            <img th:src="${#strings.isEmpty(data.imgName)}
+                             ? @{/assets/img/post-sample-image.jpg}
+                             : @{|${imageUrlPrefix}${data.imgName}|}"
+                                 alt=""
+                                 loading="lazy">
                         </div>
-                        <div class="cafe-content" th:onclick="|location.href='@{/studyCafe}'|">
-                            <div class="cafe-title">스터디 카페</div>
-                            <div class="cafe-desc">문제풀이 및 공부 팁을 공유해요</div>
+                        <div class="cafe-content" th:onclick="|location.href='@{|/board/${data.code}|}'|">
+                            <div class="cafe-title" th:text="${data.name}">카페 이름</div>
+                            <div class="cafe-desc" th:text="${data.description}">카페 설명</div>
                             <div class="cafe-meta">
-                                <span>주제 | 공부/자습</span>
-                                <span>👤 743</span>
+                                <span>주제 | 000</span>
+                                <span>👤 000</span>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- 페이지네이션 -->
+                    <div class="cafe-pagination" th:if="${list.totalPages > 0}">
+
+                        <!-- 이전 버튼 -->
+                        <a class="page-btn"
+                           th:classappend="${list.first} ? ' disabled'"
+                           th:href="@{|?page=${list.number - 1}|}">이전</a>
+
+                        <!-- 페이지 번호 버튼 -->
+                        <th:block>
+
+                            <a class="page-btn"
+                               th:each="page : ${#numbers.sequence(0, list.totalPages-1)}"
+                               th:if="${page >= (list.number/5)*5 and page <= (list.number/5)*5 + 4}"
+                               th:text="${page + 1}"
+                               th:classappend="${page == list.number} ? ' active'"
+                               th:href="@{|?page=${page}|}"></a>
+                        </th:block>
+
+                        <!-- 다음 버튼 -->
+                        <a class="page-btn"
+                           th:classappend="${list.last} ? ' disabled'"
+                           th:href="@{|?page=${list.number + 1}|}">다음</a>
                     </div>
                 </div>
             </div>
@@ -136,7 +115,7 @@
                     </div>
                 </div>
                 <div class="side-card">
-                    <button class="create-btn">카페 만들기</button>
+                    <button class="create-btn" onclick="location.href='/boardManagement/create'">카페 만들기</button>
                 </div>
             </aside>
 
@@ -152,25 +131,22 @@
     </script>
 
     <script>
-        function loadFavoriteCafe(btn) {
-            $.get("/explore_cafes/favorite", function(html) {
-                $("#cafeList").html(html);
-                setActive(btn);
-            });
+        function loadFavoriteCafe() {
+          $.get("/explore_cafes/favorite", function (html) {
+            $("#cafeList").replaceWith(html);
+          });
         }
 
-        function loadMyCafe(btn) {
-            $.get("/explore_cafes/my", function(html) {
-                $("#cafeList").html(html);
-                setActive(btn);
-            });
+        function loadMyCafe() {
+          $.get("/explore_cafes/my", function (html) {
+            $("#cafeList").replaceWith(html);
+          });
         }
 
         function setActive(btn) {
             $(".tab").removeClass("active");
             $(btn).addClass("active");
         }
-
     </script>
 
 

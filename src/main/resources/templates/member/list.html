@@ -1,67 +1,82 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorate="~{_layout/layout}"
-      th:with="showHeader=false">
+      layout:decorate="~{main_layout/layout}"
+      th:with="showHeader=false,
+               showSidebar=false">
 
 <body>
 
+<h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
+
 <div layout:fragment="content">
-    <!-- 본문 내용 시작 -->
-    <h1>유저 목록</h1>
 
-    <table class="table table-hover">
-        <thead>
-        <tr>
-            <th>번호</th>
-            <th>아이디</th>
-            <th>이메일</th>
-            <th>권한</th>
-            <th>가입일자</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="data : ${list}"
-            th:onclick="|location.href='@{|/member/view/${data.id}|}'|"
-            style="cursor: pointer;">
-            <td th:text="${data.id}"></td>
-            <td th:text="${data.username}"></td>
-            <td th:text="${data.email}"></td>
-            <td th:text="${data.role}"></td>
-            <td th:text="${#dates.format(data.createDate, 'yyyy-MM-dd')}"></td>
-        </tr>
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+    <link th:href="@{/css/admin.css}" rel="stylesheet" />
 
-        </tbody>
-    </table>
+    <!-- ================= 본문 시작 ================= -->
 
-    <div style="margin-top: 25px;" th:if="${list.totalPages > 0}">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${list.first} ? 'disabled'">
-                <a class="page-link"
-                   th:href="${list.first} ? '#' : @{|?page=${list.number-1}|}">
-                    Prev
-                </a>
-            </li>
+    <div class="cafe-board-wrap">
+        <!-- 헤더 -->
+        <div class="cafe-board-header">
+            <h1 class="cafe-board-title">유저 목록</h1>
+        </div>
 
-            <li class="page-item"
-                th:each="page: ${#numbers.sequence(0, list.totalPages-1)}"
-                th:classappend="${page == list.number} ? 'active'">
-                <a class="page-link"
+        <!-- 테이블 -->
+        <table class="cafe-board-table">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>아이디</th>
+                <th>이메일</th>
+                <th>권한</th>
+                <th>가입일자</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="data : ${list}"
+                th:onclick="|location.href='@{|/member/view/${data.id}|}'|">
+                <td class="td_underline" th:text="${data.id}"></td>
+                <td class="td_underline" th:text="${data.username}"></td>
+                <td class="td_underline" th:text="${data.email}"></td>
+                <td class="td_underline" th:text="${data.role}"></td>
+                <td class="td_underline"
+                    th:text="${#dates.format(data.createDate, 'yyyy-MM-dd')}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- 페이지네이션 -->
+        <div class="cafe-pagination" th:if="${list.totalPages > 0}">
+
+            <!-- 이전 버튼 -->
+            <a class="page-btn"
+               th:classappend="${list.first} ? ' disabled'"
+               th:href="@{|?page=${list.number - 1}|}">이전</a>
+
+            <!-- 페이지 번호 버튼 -->
+            <th:block>
+
+                <a class="page-btn"
+                   th:each="page : ${#numbers.sequence(0, list.totalPages-1)}"
+                   th:if="${page >= (list.number/5)*5 and page <= (list.number/5)*5 + 4}"
                    th:text="${page + 1}"
-                   th:href="@{|?page=${page}|}">
-                </a>
-            </li>
+                   th:classappend="${page == list.number} ? ' active'"
+                   th:href="@{|?page=${page}|}"></a>
+            </th:block>
 
-            <li class="page-item" th:classappend="${list.last} ? 'disabled'">
-                <a class="page-link"
-                   th:href="${list.last} ? '#' : @{|?page=${list.number+1}|}">
-                    Next
-                </a>
-            </li>
-        </ul>
+            <!-- 다음 버튼 -->
+            <a class="page-btn"
+               th:classappend="${list.last} ? ' disabled'"
+               th:href="@{|?page=${list.number + 1}|}">다음</a>
+        </div>
+
     </div>
-    <!-- 본문 내용 종료 -->
-</div>
 
+    <!-- ================= 본문 종료 ================= -->
+
+</div>
 </body>
 </html>

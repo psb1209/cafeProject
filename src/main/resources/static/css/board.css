@@ -4,17 +4,34 @@
 :root {
     --blue-main: #1e6fd9;
     --blue-main-dark: #155fc0;
+    --blue-main-light: #2b7cff;
+
     --blue-bg-grad: linear-gradient(90deg, #eaf4ff, #d6eaff);
     --blue-bg-soft: #f3f8ff;
     --blue-bg-light: #eaf4ff;
     --blue-hover-bg: #f2f8ff;
+
     --blue-border: #cfe1ff;
+    --blue-border-strong: #dbe7ff;
+    --blue-border-input: #dfe5f1;
+
     --blue-icon-grad: linear-gradient(135deg, #5fa0ff, #1e6fd9);
+
     --text-main: #1f2a44;
     --text-sub: #6b7a99;
+
     --white: #ffffff;
+
     --shadow-light: rgba(0,0,0,0.05);
     --shadow-hover: rgba(0,0,0,0.08);
+    --shadow-focus: rgba(30,111,217,0.12);
+
+    --danger-bg: #ffeaea;
+    --danger-border: #f5c2c2;
+    --danger-text: #d9534f;
+
+    --gray-hover: #f0f0f0;
+    --table-border-light: #eef2f8;
 }
 
 /* ==============================
@@ -23,7 +40,7 @@
 .write-page {
     display: flex;
     gap: 24px;
-    background: #f4f8ff;
+    background: var(--blue-bg-soft);
     padding: 16px;
     border-radius: 12px;
     gap: 24px;
@@ -32,9 +49,9 @@
 
 .write-card {
     flex: 1;
-    background: #fff;
-    border: 1px solid #dbe7ff;
-    border-top: 4px solid #1e6fd9;
+    background: var(--white);
+    border: 1px solid var(--blue-border-strong);
+    border-top: 4px solid var(--blue-main);
     border-radius: 12px;
     padding: 28px 32px 32px;
 }
@@ -43,7 +60,7 @@
     font-size: 20px;
     font-weight: 700;
     margin-bottom: 24px;
-    color: #1f2a44;
+    color: var(--text-main);
 }
 
 .write-group {
@@ -55,7 +72,7 @@
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 8px;
-    color: #1f2a44;
+    color: var(--text-main);
 }
 
 .write-title-input {
@@ -63,20 +80,20 @@
     height: 46px;
     padding: 0 14px;
     border-radius: 8px;
-    border: 1px solid #dfe5f1;
+    border: 1px solid var(--blue-border-input);
     font-size: 15px;
 }
 
 .write-title-input:focus {
     outline: none;
-    border-color: #1e6fd9;
-    box-shadow: 0 0 0 3px rgba(30,111,217,0.12);
+    border-color: var(--blue-main);
+    box-shadow: 0 0 0 3px var(--shadow-focus);
 }
 
 .write-editor-wrap {
-    border: 1px solid #dbe7ff;
+    border: 1px solid var(--blue-border);
     border-radius: 8px;
-    background: #f7faff;
+    background: var(--blue-bg-soft);
 }
 
 /* Summernote 첫 줄부터 입력 */
@@ -97,21 +114,25 @@
     border-radius: 8px;
     font-size: 14px;
     cursor: pointer;
-    border: 1px solid #dfe5f1;
-    background: #fff;
+    border: 1px solid var(--blue-border-input);
+    background: var(--white);
     transition: 0.2s;
 }
 
 .write-btn:hover {
-    background: #f0f0f0; /* 연한 회색 */
+    background: var(--gray-hover); /* 연한 회색 */
 }
 
 .write-btn.primary {
-    background: linear-gradient(180deg, #2b7cff, #1e6fd9);
-    border-color: #1e6fd9;
-    color: #fff;
-    font-weight: 600;
-}
+    background: linear-gradient(
+            180deg,
+            var(--blue-main-light),
+            var(--blue-main)
+        );
+        border-color: var(--blue-main);
+        color: var(--white);
+        font-weight: 600;
+    }
 
 .write-btn.primary:hover {
     filter: brightness(0.95);
@@ -364,7 +385,6 @@
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-    margin-bottom: 40px;
 }
 
 .like-form {
@@ -555,3 +575,107 @@
     font-size: 13px;
     cursor: pointer;
 }
+
+/* ==============================
+   로그인 페이지 전용
+   ============================== */
+
+/* 로그인 카드 중앙 정렬용 */
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 60px 16px;
+}
+
+/* 로그인 카드 크기 제한 */
+.login-card {
+    max-width: 420px;
+    width: 100%;
+}
+
+/* 로그인 에러 메시지 */
+.login-error {
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    background: var(--blue-bg-soft);        /* #ffeaea → 연한 크림 */
+    border: 1px solid var(--blue-border);  /* #f5c2c2 → 연한 노랑 */
+    color: var(--text-main);               /* #d9534f → 메인 텍스트 */
+    font-size: 14px;
+}
+
+/* 로그인 버튼 너비 */
+.login-btn {
+    min-width: 100%;
+}
+
+/* 로그인 입력 에러 상태 */
+.write-title-input.error {
+    border-color: var(--blue-main-dark);   /* #d9534f → 진한 노랑 */
+}
+
+.write-title-input.error:focus {
+    box-shadow: 0 0 0 3px var(--shadow-focus); /* rgba(...) → 노랑 포커스 */
+}
+
+/* ==============================
+   카드 폭 제한 (회원가입 / 로그인)
+   ============================== */
+.write-card.narrow {
+    max-width: 420px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.write-card.medium {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* ==============================
+   회원 상세보기 전용 박스
+   ============================== */
+.member-view-group {
+    margin-bottom: 20px;
+}
+
+.member-view-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-main);
+}
+
+.member-view-box {
+    display: block;               /* block 요소로 설정 */
+    min-height: 46px;             /* input 높이와 동일하게 */
+    padding: 10px 14px;           /* 텍스트 중앙 정렬용 padding */
+    line-height: 1.4;
+    box-sizing: border-box;       /* padding 포함 */
+    border: 1px solid var(--blue-border-input);
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 15px;
+    color: var(--text-main);
+}
+
+/* ==============================
+   카드 + 배경 폭 제한
+   ============================== */
+/*
+.write-page.narrow {
+    max-width: 440px;   */
+/* 카드 max-width + 여유 패딩 *//*
+
+    width: 100%;
+    margin: 0 auto;     */
+/* 가운데 정렬 *//*
+
+    padding: 16px;      */
+/* 기존 패딩 유지 *//*
+
+}
+*/

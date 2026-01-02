@@ -2,7 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       layout:decorate="~{main_layout/layout}"
-      th:with="headerImage=@{/assets/img/main.jpg}, headerPosition='center center'">
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center',
+               sidebarKey='cafe'">
 
 <body>
 
@@ -10,92 +12,9 @@
 <span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
 
 <div layout:fragment="content">
-
     <link th:href="@{/css/board.css}" rel="stylesheet" />
 
     <div class="page-container">
-
-        <!-- 좌측 사이드바 -->
-
-        <nav class="sb-sidenav-menu">
-            <div class="nav">
-
-                <!-- 카페 홈 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'main'} ? ' active'"
-                   th:href="@{/healthCafe}">
-                    <span class="nav-emoji">🏠</span>카페 홈
-                </a>
-
-                <!-- 공지 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'noticeBoard'} ? ' active'"
-                   th:href="@{/noticeBoard/list}">
-                    <span class="nav-emoji">📢</span>공지사항
-                </a>
-
-                <div class="sidenav-section-title">게시판</div>
-
-                <!-- 전체글 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'all'} ? ' active'"
-                   href="#">
-                    <span class="nav-emoji">📄</span>전체글보기
-                </a>
-
-                <!-- 자유게시판 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'communityBoard'} ? ' active'"
-                   th:href="@{/communityBoard/list}">
-                    <span class="nav-emoji">🧩</span>자유게시판
-                </a>
-
-                <!-- 정보게시판 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'informationBoard'} ? ' active'"
-                   th:href="@{/informationBoard/list}">
-                    <span class="nav-emoji">🔍</span>정보게시판
-                </a>
-
-                <!-- 운영게시판 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'operationBoard'} ? ' active'"
-                   th:href="@{/operationBoard/list}">
-                    <span class="nav-emoji">📋</span>운영게시판
-                </a>
-
-                <!-- 사진 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'photo'} ? ' active'"
-                   href="#">
-                    <span class="nav-emoji">📸</span>사진게시판
-                </a>
-
-                <!-- 질문/정보 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'qna'} ? ' active'"
-                   href="#">
-                    <span class="nav-emoji">💡</span>질문/정보
-                </a>
-
-                <div class="sidenav-section-title">카페 정보</div>
-
-                <!-- 멤버 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'members'} ? ' active'"
-                   href="#">
-                    <span class="nav-emoji">👥</span>멤버
-                </a>
-
-                <!-- 소개 -->
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'about'} ? ' active'"
-                   href="#">
-                    <span class="nav-emoji">ℹ️</span>카페 소개
-                </a>
-
-            </div>
-        </nav>
 
         <div class="cafe-board-wrap">
             <div class="cafe-board-header">
@@ -157,7 +76,8 @@
                 <tr th:each="operationBoard, loop : ${operationBoardList}"
                     th:onclick="|location.href='@{|/operationBoard/view/${operationBoard.id}|}'|">
 
-                    <td class="td_underline" th:text="${loop.index + 1}"></td>
+                    <td class="td_underline"
+                        th:text="${operationBoardList.number * operationBoardList.size + loop.index + 1}"></td>
                     <td>
                         <span th:text="${operationBoard.subject}" class="col-subject" style="text-align: left;"></span>
                             <!--게시글 제목 옆 댓글수 표시-->
@@ -166,7 +86,7 @@
                                   th:text="|[${#lists.size(operationBoard.commentList)}]|">
                             </span>
                     </td>
-                    <td class="td_underline" th:text="${operationBoard.cnt}"></td>
+                    <td class="td_underline" th:text="${viewCntMap[operationBoard.id]}"></td>
                     <td class="td_underline" th:text="${operationBoard.member.username}"></td>
                     <td class="td_underline text-center" th:switch="${operationBoard.member.grade.name()}">
                         <span th:case="'USER'">일반🥉</span>
@@ -174,7 +94,8 @@
                         <span th:case="'BEST'">우수🥇</span>
                         <span th:case="'SPECIAL'">최우수🏆</span>
                     </td>
-                    <td th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>
+                    <td class="td_underline text-center"
+                        th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>
                 </tr>
                 </tbody>
             </table>

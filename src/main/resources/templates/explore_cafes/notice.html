@@ -11,62 +11,6 @@
 
     <div class="page-container">
 
-        <!-- 좌측 사이드바 -->
-
-        <nav class="sb-sidenav-menu">
-            <div class="nav">
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'main'} ? ' active'"
-                   href="/">
-                    <span class="nav-emoji">🏠</span>카페 홈
-                </a>
-
-                <a class="nav-link" href="/explore_cafes/neighbor">
-                    <span class="nav-emoji">👥</span>이웃
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'subscribe'} ? ' active'"
-                   href="/explore_cafes/subscribe">
-                    <span class="nav-emoji">⭐</span>구독
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'notice'} ? ' active'"
-                   href="/explore_cafes/notice">
-                    <span class="nav-emoji">🔔</span>내 소식
-                </a>
-
-                <div class="sidenav-section-title">카페 탐색</div>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'THEMED'} ? ' active'"
-                   href="/explore_cafes/themed_cafes">
-                    <span class="nav-emoji">📂</span>주제별 카페
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'LOCATION'} ? ' active'"
-                   href="/explore_cafes/cafes_by_location">
-                    <span class="nav-emoji">📍</span>지역별 카페
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'TOP'} ? ' active'"
-                   href="/explore_cafes/top_cafes">
-                    <span class="nav-emoji">👑</span>대표 카페
-                </a>
-
-                <a class="nav-link"
-                   th:classappend="${activeMenu == 'FEATURED'} ? ' active'"
-                   href="/explore_cafes/featured_cafes">
-                    <span class="nav-emoji">📈</span>카페 랭킹
-                </a>
-
-            </div>
-        </nav>
-
         <!-- 중앙 콘텐츠 + 오른쪽 카드 -->
         <div class="cafe-layout">
 
