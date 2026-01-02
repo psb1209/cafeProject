@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Timestamp;
 
@@ -15,27 +17,42 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
 @Table(name = "noticeBoardComment")
+@Entity
 public class NoticeBoardComment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false, length = 100)
+    @Lob
+    @Column(nullable = false)
     private String content;
 
     @CreationTimestamp
     private Timestamp createDate;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userid")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "noticeBoardid")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "noticeBoardId")
     private NoticeBoard noticeBoard;
 
+    private int ref;
+    private int step;
+    private int level;
 
+    public static NoticeBoardComment dtoToEntity(
+            NoticeBoardCommentDTO noticeBoardCommentDTO,
+            Member member, NoticeBoard noticeBoard) {
 
+        NoticeBoardComment noticeBoardComment = new NoticeBoardComment();
+        noticeBoardComment.setContent(noticeBoardCommentDTO.getContent());
+        noticeBoardComment.setMember(member);
+        noticeBoardComment.setNoticeBoard(noticeBoard);
+        return noticeBoardComment;
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.cafeProject.noticeBoard2;
+package com.example.cafeProject._noticeBoard;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,21 +7,15 @@ import java.sql.Timestamp;
 
 @Getter
 @Setter
-public class NoticeBoard2DTO {
-
+public class NoticeBoardDTO1 {
     private int id;
-
     private String subject;
-
     private String content;
-
     private int cnt;
-
     private Timestamp createDate;
-
     private int memberId;
 
-    private int noticeBoardCommentId;
+//    private int likeCnt;
+    private int commentCnt;
 
-    private String noticeBoardBoardCommentContent;
 }

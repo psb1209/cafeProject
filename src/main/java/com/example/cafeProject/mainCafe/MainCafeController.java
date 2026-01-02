@@ -44,14 +44,6 @@ public class MainCafeController {
         return "index/mainIndex";
     }
 
-    @GetMapping("/testIndex")
-    public String testindex(
-            Model model
-    ) {
-        model.addAttribute("activeMenu", "main");
-        return "index/testIndex";
-    }
-
     @GetMapping("/explore_cafes/{code}")
     public String explore_cafes(
             @PathVariable("code") String code,
@@ -64,14 +56,6 @@ public class MainCafeController {
         else if ("themed_cafes".equals(code)) model.addAttribute("activeMenu", "THEMED");
         else if ("top_cafes".equals(code)) model.addAttribute("activeMenu", "TOP");
         return "explore_cafes/" + code;
-    }
-
-    @GetMapping("/test2")
-    public String test2(
-            Model model
-    ) {
-        model.addAttribute("activeMenu", "main");
-        return "index/test2";
     }
 
     @GetMapping("/explore_cafes/my")

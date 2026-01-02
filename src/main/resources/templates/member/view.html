@@ -2,39 +2,64 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      layout:decorate="~{_layout/layout}"
-      th:with="showHeader=false">
+      layout:decorate="~{main_layout/layout}"
+      th:with="showHeader=false, showSidebar=false">
 
 <body>
 
 <div layout:fragment="content">
-    <!-- 본문 내용 시작 -->
-    <h1>회원상세보기</h1>
 
-    <div class="mb-3">
-        <label for="username">username:</label>
-        <span class="form-control" id="username" th:text="${data.username}"></span>
-    </div>
-    <div class="mb-3">
-        <label for="email">email:</label>
-        <span class="form-control" id="email" th:text="${data.email}"></span>
-    </div>
-    <div class="mb-3">
-        <label for="role">role:</label>
-        <span class="form-control" id="role" th:text="${data.role}"></span>
-    </div>
-    <div class="mb-3">
-        <label for="createDate">createDate:</label>
-        <span class="form-control" id="createDate" th:text="${#dates.format(data.createDate, 'yyyy-MM-dd')}"></span><br>
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+    <link th:href="@{/css/theme.css}" rel="stylesheet" />
+
+    <!-- 카드 배경 적용 -->
+    <div class="write-page medium">
+        <div class="write-card medium">
+
+            <h1 class="write-header">회원상세보기</h1>
+
+            <div class="member-view-group">
+                <label for="username" class="member-view-label">Username:</label>
+                <div class="member-view-box" id="username" th:text="${data.username}"></div>
+            </div>
+
+            <div class="member-view-group">
+                <label for="email" class="member-view-label">Email:</label>
+                <div class="member-view-box" id="email" th:text="${data.email}"></div>
+            </div>
+
+            <div class="member-view-group">
+                <label for="role" class="member-view-label">Role:</label>
+                <div class="member-view-box" id="role" th:text="${data.role}"></div>
+            </div>
+
+            <div class="member-view-group">
+                <label for="createDate" class="member-view-label">Create Date:</label>
+                <div class="member-view-box" id="createDate" th:text="${#dates.format(data.createDate, 'yyyy-MM-dd')}"></div>
+            </div>
+
+
+            <!-- 버튼 영역 -->
+            <div class="write-action-bar">
+                <a th:href="@{/}"
+                   class="cafe-action-btn">메인 페이지</a>
+
+                <a th:href="@{|/member/roleUpdate/${data.id}|}"
+                   sec:authorize="hasAnyRole('MANAGER','ADMIN')"
+                   class="cafe-action-btn">권한 수정</a>
+
+                <a th:href="@{/member/passwordUpdate}"
+                   sec:authorize="${#authentication.name == #vars.data.username}"
+                   class="cafe-action-btn danger">비밀번호 변경</a>
+
+                <a th:href="@{/member/delete}"
+                   sec:authorize="${#authentication.name == #vars.data.username}"
+                   class="cafe-action-btn danger">회원 탈퇴</a>
+            </div>
+
+        </div>
     </div>
 
-    <div>
-        <a th:href="@{/}" class="btn btn-secondary">메인 페이지</a>
-        <a th:href="@{|/member/roleUpdate/${data.id}|}" sec:authorize="hasAnyRole('MANAGER','ADMIN')" class="btn btn-secondary">권한 수정</a>
-        <a th:href="@{/member/passwordUpdate}" sec:authorize="${#authentication.name == #vars.data.username}" class="btn btn-danger">비밀번호 변경</a>
-        <a th:href="@{/member/delete}" sec:authorize="${#authentication.name == #vars.data.username}" class="btn btn-danger">회원 탈퇴</a>
-    </div>
-    <!-- 본문 내용 종료 -->
 </div>
 
 </body>

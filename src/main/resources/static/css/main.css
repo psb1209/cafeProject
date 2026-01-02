@@ -14,7 +14,7 @@
   --text-sub: #6b7a99;
 
   /* 추가 변수 */
-  --text-dark: #333;
+  --text-dark: #1a2b4c;
   --text-sub-light: #aaa;
   --border-light: #dcdcdc;
   --shadow-light: rgba(0,0,0,0.05);
@@ -41,6 +41,10 @@ body {
   background: var(--blue-bg-grad);
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
 /* box-sizing 통일 (레이아웃 삐걱임 예방) */
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -55,6 +59,15 @@ body {
   overflow-x: hidden;
   min-width: 0;
 }
+
+.page-btn {
+  display: inline-flex;   /* 🔥 핵심 */
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box; /* 🔥 필수 */
+  white-space: nowrap;
+}
+
 
 /*=======================================================*/
 /*======================= 사이드바 ======================*/
@@ -87,7 +100,7 @@ body {
 
 .sb-sidenav-menu .nav-link:hover {
   background: var(--blue-hover-bg);
-  color: var(--blue-main);
+  color: var(--blue-main-dark);
 }
 
 .sb-sidenav-menu .nav-link.active {
@@ -151,7 +164,7 @@ body {
 .tab {
   padding: 6px 14px;
   border-radius: 18px;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--blue-border) !important;
   background: var(--white);
   font-size: 14px;
   cursor: pointer;
@@ -169,6 +182,15 @@ body {
 .tab:hover:not(.active) {
   background: var(--blue-hover-bg);
   color: var(--blue-main);
+}
+
+.cafe-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /*-------------------------------------------------------*/
@@ -218,7 +240,7 @@ body {
 }
 
 .cafe-item:hover {
-  background: var(--blue-bg-light);
+  background: var(--blue-bg-soft);
 }
 
 .cafe-thumb {
@@ -337,7 +359,7 @@ body {
 }
 
 .create-btn:hover {
-  background: var(--blue-bg-light);
+  background: var(--blue-bg-soft);
   border-color: var(--blue-main-dark);
 }
 
@@ -397,18 +419,17 @@ body {
   .sb-sidenav-menu, .cafe-side, .layout-sidebar {
     display: none;
   }
+
   .cafe-list-wrap {
     min-width: 0;
     width: 100%;
   }
 }
 
+/* 공통 보정 */
 .cafe-list-wrap {
-    min-width: 0;
-    width: 100%;
-  }
-}
-
+  min-width: 0;
+  width: 100%;
 }
 
 /*=======================================================*/
@@ -625,3 +646,5 @@ body {
     padding: 0;
     height: 12px;
 }
+
+

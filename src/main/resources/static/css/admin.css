@@ -1,0 +1,39 @@
+:root {
+    /* 메인 그린 */
+    --blue-main: #2fa36b;
+    --blue-main-dark: #238457;
+    --blue-main-light: #3fba82;
+
+    /* 배경 계열 */
+    --blue-bg-grad: linear-gradient(90deg, #e9f8f0, #d2f0e1);
+    --blue-bg-soft: #f3fbf7;
+    --blue-bg-light: #e9f8f0;
+    --blue-hover-bg: #eefaf4;
+
+    /* 테두리 */
+    --blue-border: #c6ebda;
+    --blue-border-strong: #d9f2e6;
+    --blue-border-input: #dfeee7;
+
+    /* 아이콘 그라데이션 */
+    --blue-icon-grad: linear-gradient(135deg, #6fd8a6, #2fa36b);
+
+    /* 텍스트 & 공통 */
+    --text-main: #1f2a44;
+    --text-sub: #6b7a99;
+    --white: #ffffff;
+
+    /* 그림자 */
+    --shadow-light: rgba(0,0,0,0.05);
+    --shadow-hover: rgba(0,0,0,0.08);
+    --shadow-focus: rgba(47,163,107,0.18);
+
+    /* 상태 색상 */
+    --danger-bg: #ffeaea;
+    --danger-border: #f5c2c2;
+    --danger-text: #d9534f;
+
+    /* 기타 UI */
+    --gray-hover: #f0f0f0;
+    --table-border-light: #eef2f8;
+}

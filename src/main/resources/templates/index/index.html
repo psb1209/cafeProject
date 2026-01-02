@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center',
@@ -13,210 +14,20 @@
 
 <div layout:fragment="content">
 
-    <style>
-        :root {
-            --blue-main: #1e6fd9;
-            --blue-bg-grad: linear-gradient(90deg, #eaf4ff, #d6eaff);
-            --blue-bg-soft: #f3f8ff;
-            --blue-border: #cfe1ff;
-
-            --text-main: #1f2a44;
-            --text-sub: #6b7a99;
-            --white: #ffffff;
-        }
-
-        .cafe-board-wrap {
-            border-top: 4px solid #1e6fd9;
-            background: var(--white);
-            border-radius: 10px;
-            padding: 28px;
-            font-size: 14px;
-            flex: 1;
-            min-width: 0;
-            overflow-x: auto; /* 가로 스크롤 추가 */
-        }
-
-        /* 게시판 상단 (제목 + 글쓰기 버튼) */
-        .cafe-board-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--blue-main);
-        }
-
-        /* 게시판 제목 */
-        .cafe-board-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin: 0;
-        }
-
-        /* 글쓰기 버튼 영역 */
-        .cafe-article-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        /* 공통 버튼 */
-        .cafe-action-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 14px;
-            border-radius: 6px;
-            border: 1px solid var(--blue-border);
-            background: var(--white);
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-main);
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        /* 글쓰기 버튼 강조 */
-        .cafe-action-btn.write {
-            background: #e6f0ff;
-            border-color: #9fc0f5;
-            color: var(--blue-main);
-        }
-
-        .cafe-action-btn.write:hover {
-            background: #d6e8ff;
-        }
-
-        /* ===============================
-           테이블
-        =============================== */
-        .cafe-board-table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed; /* 고정 레이아웃 */
-        }
-
-        .cafe-board-table th,
-        .cafe-board-table td {
-            overflow: hidden; /* 말줄임 적용 */
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .cafe-board-table thead th {
-            background: var(--blue-bg-soft);
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 13px;
-            padding: 13px 10px;
-            border-bottom: 1px solid var(--blue-border);
-            text-align: center;
-        }
-
-        .cafe-board-table tbody td {
-            padding: 14px 10px;
-            border-bottom: 1px solid #eef2f8;
-            color: var(--text-main);
-            text-align: center;
-        }
-
-        /* 컬럼 최소 폭 */
-        .cafe-board-table th.col-no { min-width: 50px; }
-        .cafe-board-table th.col-subject { min-width: 250px; text-align: left; }
-        .cafe-board-table th.col-cnt { min-width: 70px; }
-        .cafe-board-table th.col-writer { min-width: 100px; }
-        .cafe-board-table th.col-date { min-width: 100px; }
-
-        .cafe-board-table th.col-subject,
-        .cafe-board-table td.col-subject {
-            text-align: center;   /* 중앙 정렬 */
-            padding-left: 0;      /* 좌측 패딩 제거 */
-        }
-
-        /* 제목 컬럼 좌측 패딩 */
-        .cafe-board-table .col-subject {
-            padding-left: 20px;
-            font-weight: 500;
-        }
-
-        /* hover */
-        .cafe-board-table tbody tr {
-            cursor: pointer;
-            transition: background-color 0.15s ease;
-        }
-
-        .cafe-board-table tbody tr:hover {
-            background: var(--blue-bg-soft);
-        }
-
-        .cafe-board-table tbody tr:hover .col-subject {
-            color: var(--blue-main);
-            text-decoration: underline;
-        }
-
-        /* 보조 컬럼 톤 다운 */
-        .col-cnt,
-        .col-date {
-            color: var(--text-sub);
-            font-size: 13px;
-        }
-
-        /* 페이지네이션 */
-        .cafe-pagination {
-            margin-top: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .page-btn {
-            min-width: 34px;
-            height: 34px;
-            line-height: 34px;
-            padding: 0 12px;
-            border: 1px solid var(--blue-border);
-            border-radius: 6px;
-            background: var(--white);
-            color: var(--text-main);
-            font-size: 13px;
-            text-decoration: none;
-            transition: all 0.15s ease;
-        }
-
-        .page-btn:hover {
-            background: var(--blue-bg-soft);
-            color: var(--blue-main);
-        }
-
-        .page-btn.active {
-            background: var(--blue-bg-grad);
-            border-color: var(--blue-main);
-            color: var(--blue-main);
-            font-weight: 700;
-        }
-
-        .page-btn.disabled {
-            color: var(--text-sub);
-            background: #f9fbff;
-            pointer-events: none;
-        }
-
-    </style>
-
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
 
     <div class="page-container">
 <!--==================================================================================================================-->
         <div class="cafe-board-wrap">
             <div class="cafe-board-header">
-                <div class="cafe-board-title" onclick="location.href='/noticeBoard22/list'" style="cursor: pointer;">공지사항</div>
+                <div class="cafe-board-title" onclick="location.href='/noticeBoard/list'" style="cursor: pointer;">공지사항</div>
 
-                <div class="cafe-article-actions">
-                    <a th:href="@{/noticeBoard2/create}"
+<!--                <div class="cafe-article-actions" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')">
+                    <a th:href="@{/noticeBoard/create}"
                        class="cafe-action-btn write">
                         ✏️ 게시글 작성
                     </a>
-                </div>
+                </div>-->
             </div>
 
             <table class="cafe-board-table">
@@ -228,14 +39,19 @@
                 </tr>
                 </thead>
 
-                <tbody>
-                <tr th:each="noticeBoard2, loop : ${noticeBoard2List}"
-                    th:onclick="|location.href='@{|/noticeBoard2/view/${noticeBoard2.id}|}'|">
+                <tbody th:if="${!noticeBoardList.isEmpty()}">
+                <tr th:each="noticeBoard, loop : ${noticeBoardList}" class="text-center"
+                    th:onclick="|location.href='@{|/noticeBoard/view/${noticeBoard.id}|}'|">
 
                     <td th:text="${loop.index + 1}"></td>
-                    <td class="col-subject" th:text="${noticeBoard2.subject}"></td>
-                    <!--<td th:text="${noticeBoard2.member.username}"></td>-->
-                    <td> -</td>
+                    <td class="col-subject" th:text="${noticeBoard.subject}"></td>
+                    <td class="col-writer text-center" th:text="${noticeBoard.member.username}"></td>
+                </tr>
+                </tbody>
+
+                <tbody th:if="${noticeBoardList.isEmpty()}">
+                <tr>
+                    <td class="text-center" colspan="3">게시글이 없습니다.</td>
                 </tr>
                 </tbody>
             </table>
@@ -245,12 +61,12 @@
             <div class="cafe-board-header">
                 <div class="cafe-board-title" onclick="location.href='/informationBoard/list'" style="cursor: pointer;">정보게시판</div>
 
-                <div class="cafe-article-actions">
+  <!--              <div class="cafe-article-actions">
                     <a th:href="@{/informationBoard/create}"
                        class="cafe-action-btn write">
                         ✏️ 게시글 작성
                     </a>
-                </div>
+                </div>-->
             </div>
 
             <table class="cafe-board-table">
@@ -262,14 +78,19 @@
                 </tr>
                 </thead>
 
-                <tbody>
-                <tr th:each="informationBoard, loop : ${informationBoardList}"
+                <tbody th:if="${!informationBoardList.isEmpty()}">
+                <tr th:each="informationBoard, loop : ${informationBoardList}" class="text-center"
                     th:onclick="|location.href='@{|/informationBoard/view/${informationBoard.id}|}'|">
 
                     <td th:text="${loop.index + 1}"></td>
                     <td class="col-subject" th:text="${informationBoard.subject}"></td>
-                    <!--<td th:text="${informationBoard.member.username}"></td>-->
-                    <td> -</td>
+                    <!--<td class="col-writer text-center th:text="${informationBoard.member.username}"></td>-->
+                    <td class="col-writer text-center"> -</td>
+                </tr>
+                </tbody>
+                <tbody th:if="${informationBoardList.isEmpty()}">
+                <tr>
+                    <td class="text-center" colspan="3">게시글이 없습니다.</td>
                 </tr>
                 </tbody>
             </table>
@@ -279,12 +100,12 @@
             <div class="cafe-board-header">
                 <div class="cafe-board-title" onclick="location.href='/communityBoard/list'" style="cursor: pointer;">자유게시판</div>
 
-                <div class="cafe-article-actions">
+<!--                <div class="cafe-article-actions">
                     <a th:href="@{/communityBoard/create}"
                        class="cafe-action-btn write">
                         ✏️ 게시글 작성
                     </a>
-                </div>
+                </div>-->
             </div>
 
             <table class="cafe-board-table">
@@ -296,14 +117,18 @@
                 </tr>
                 </thead>
 
-                <tbody>
-                <tr th:each="communityBoard, loop : ${communityBoardList}"
+                <tbody th:if="${!communityBoardList.isEmpty()}">
+                <tr th:each="communityBoard, loop : ${communityBoardList}"  class=" text-center"
                     th:onclick="|location.href='@{|/communityBoard/view/${communityBoard.id}|}'|">
 
                     <td th:text="${loop.index + 1}"></td>
                     <td class="col-subject" th:text="${communityBoard.subject}"></td>
-                    <!--<td th:text="${communityBoard.member.username}"></td>-->
-                    <td> - </td>
+                    <td class="col-writer text-center" th:text="${communityBoard.member.username}"></td>
+                </tr>
+                </tbody>
+                <tbody th:if="${communityBoardList.isEmpty()}">
+                <tr>
+                    <td class="text-center" colspan="3">게시글이 없습니다.</td>
                 </tr>
                 </tbody>
             </table>

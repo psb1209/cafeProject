@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -16,9 +18,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
 @Table(name = "noticeBoard")
+@Entity
 public class NoticeBoard {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -35,17 +38,21 @@ public class NoticeBoard {
     @CreationTimestamp
     private Timestamp createDate;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "userid")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
     private Member member;
 
-    //게시글 제목 옆에 댓글 수 표시
-    @OneToMany(mappedBy = "noticeBoard", cascade = CascadeType.REMOVE)
-    private List<NoticeBoardComment> noticeBoardCommentList;
-
-//    @Transient //db에 데이터를 저장할 목적이 아니라 화면에 숫자 띄우는 용도로 사용함
-//    private int likeCnt;
-
-    @Transient
-    private int commentCnt;
+    @OneToMany(mappedBy = "noticeBoard", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OrderBy("id desc")
+    private List<NoticeBoardComment> commentList;
+    
+    public static NoticeBoard dtoToEntity(NoticeBoardDTO noticeBoardDTO, Member member) {
+        NoticeBoard noticeBoard = new NoticeBoard();
+        noticeBoard.setSubject(noticeBoardDTO.getSubject());
+        noticeBoard.setContent(noticeBoardDTO.getContent());
+        noticeBoard.setCnt(0);
+        noticeBoard.setMember(member);
+        return noticeBoard;
+    }
 }

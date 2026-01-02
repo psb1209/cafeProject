@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <body>
 
 <nav class="sb-sidenav-menu" th:fragment="cafe_sidebar">
@@ -14,8 +14,8 @@
 
         <!-- 공지 -->
         <a class="nav-link"
-           th:classappend="${activeMenu == 'noticeBoard2'} ? ' active'"
-           th:href="@{/noticeBoard2/list}">
+           th:classappend="${activeMenu == 'noticeBoard'} ? ' active'"
+           th:href="@{/noticeBoard/list}">
             <span class="nav-emoji">📢</span>공지사항
         </a>
 
@@ -45,6 +45,7 @@
         <!-- 운영게시판 -->
         <a class="nav-link"
            th:classappend="${activeMenu == 'operationBoard'} ? ' active'"
+           sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')"
            th:href="@{/operationBoard/list}">
             <span class="nav-emoji">📋</span>운영게시판
         </a>

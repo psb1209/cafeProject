@@ -5,176 +5,70 @@
       th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center',
                sidebarKey='cafe'">
+
 <body>
 
-<h1 layout:fragment="pageTitle"
-    onclick="location.href='/healthCafe'"
-    style="cursor: pointer;">헬 사 모</h1>
-<span layout:fragment="pageSubTitle">헬스를 사랑하는 사람들의 모임</span>
+<h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
 
 <div layout:fragment="content">
-
-    <style>
-        :root {
-            --blue-main: #1e6fd9;
-            --blue-bg-grad: linear-gradient(90deg, #eaf4ff, #d6eaff);
-            --blue-bg-soft: #f3f8ff;
-            --blue-border: #cfe1ff;
-
-            --text-main: #1f2a44;
-            --text-sub: #6b7a99;
-            --white: #ffffff;
-        }
-
-        .cafe-board-wrap {
-            border-top: 4px solid var(--blue-main);
-            background: var(--white);
-            border-radius: 10px;
-            padding: 28px;
-            font-size: 14px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .cafe-board-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--blue-main);
-        }
-
-        .cafe-board-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin: 0;
-        }
-
-        .cafe-article-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .cafe-action-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 14px;
-            border-radius: 6px;
-            border: 1px solid var(--blue-border);
-            background: var(--white);
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-main);
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .cafe-action-btn.write {
-            background: #e6f0ff;
-            border-color: #9fc0f5;
-            color: var(--blue-main);
-        }
-
-        .cafe-board-table {
-            margin-top: 6px;
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .cafe-board-table thead th {
-            background: var(--blue-bg-soft);
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 13px;
-            padding: 13px 10px;
-            border-bottom: 1px solid var(--blue-border);
-            text-align: center;
-        }
-
-        .cafe-board-table tbody td {
-            padding: 14px 10px;
-            border-bottom: 1px solid #eef2f8;
-            color: var(--text-main);
-            text-align: center;
-        }
-
-        .col-subject {
-            text-align: left;
-            padding-left: 20px;
-            font-weight: 500;
-        }
-
-        .cafe-board-table tbody tr {
-            cursor: pointer;
-            transition: background-color 0.15s ease;
-        }
-
-        .cafe-board-table tbody tr:hover {
-            background: var(--blue-bg-soft);
-        }
-
-        .cafe-board-table tbody tr:hover .col-subject {
-            color: var(--blue-main);
-            text-decoration: underline;
-        }
-
-        .cafe-pagination {
-            margin-top: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .page-btn {
-            min-width: 34px;
-            height: 34px;
-            line-height: 34px;
-            padding: 0 12px;
-            border: 1px solid var(--blue-border);
-            border-radius: 6px;
-            background: var(--white);
-            color: var(--text-main);
-            font-size: 13px;
-            text-decoration: none;
-            transition: all 0.15s ease;
-        }
-
-        .page-btn.active {
-            background: var(--blue-bg-grad);
-            border-color: var(--blue-main);
-            color: var(--blue-main);
-            font-weight: 700;
-        }
-
-        .page-btn.disabled {
-            color: var(--text-sub);
-            background: #f9fbff;
-            pointer-events: none;
-        }
-    </style>
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
 
     <div class="page-container">
-        <!-- 본문 -->
-        <div class="cafe-board-wrap">
 
+        <div class="cafe-board-wrap">
             <div class="cafe-board-header">
-                <div class="cafe-board-title">공지사항</div>
-                <a th:href="@{/noticeBoard/create}" class="cafe-action-btn write">✏️ 글쓰기</a>
+                <div class="cafe-board-title">운영 게시판</div>
+
+                <div th:if="${msg}">
+                    <span th:text="${msg}">메시지내용</span>
+                </div>
+
+                <!--사용자가 게시글의 정렬조건 선택-->
+                <div class="cafe-article-actions">
+                    <select onchange="location.href='?page=0&sort=' + this.value" class="cafe-action-btn write">
+                        <option value="createDate,desc" th:selected="${param.sort != null and param.sort[0] == 'createDate,desc'}" class="cafe-action-btn write">최근 등록일 순</option>
+                        <option value="createDate,asc" th:selected="${param.sort != null and param.sort[0] == 'createDate,asc'}" class="cafe-action-btn write">오래된 순</option>
+                        <option value="cnt,desc" th:selected="${param.sort != null and param.sort[0] == 'cnt,desc'}" class="cafe-action-btn write">조회수 높은 순</option>
+                        <option value="cnt,asc" th:selected="${param.sort != null and param.sort[0] == 'cnt,asc'}" class="cafe-action-btn write">조회수 낮은 순</option>
+                    </select>
+
+                    <!--사용자에게 목록에 보여질 갯수 선택-->
+                    <select onchange="location.href='?page=0&size=' + this.value" class="cafe-action-btn write">
+                        <option value="5" th:selected="${noticeBoardList.size == 5}" class="cafe-action-btn write">5개씩 보기</option>
+                        <option value="10" th:selected="${noticeBoardList.size == 10}" class="cafe-action-btn write">10개씩 보기</option>
+                        <option value="15" th:selected="${noticeBoardList.size == 15}" class="cafe-action-btn write">15개씩 보기</option>
+                        <option value="20" th:selected="${noticeBoardList.size == 20}" class="cafe-action-btn write">20개씩 보기</option>
+                    </select>
+
+                    <a th:href="@{/noticeBoard/create}"
+                       class="cafe-action-btn write">
+                        ✏️ 게시글 작성
+                    </a>
+                </div>
+            </div>
+
+            <div class="cafe-board-search">
+                <form method="get"
+                      th:action="@{/noticeBoard/list}"
+                      class="cafe-search-form">
+                    <input type="search"
+                           name="keyword"
+                           placeholder="게시판 검색"
+                           th:value="${keyword}">
+                    <button type="submit">🔍</button>
+                </form>
             </div>
 
             <table class="cafe-board-table">
                 <thead>
                 <tr>
-                    <th>번호</th>
+                    <th class="col-no">순번</th>
                     <th class="col-subject">제목</th>
-                    <th>작성자</th>
-                    <th>작성일</th>
-                    <th>조회수</th>
-                    <th>좋아요</th>
+                    <th class="col-cnt">조회수</th>
+                    <th class="col-writer">작성자</th>
+                    <th class="col-writer">회원등급</th>
+                    <th class="col-date">작성일</th>
                 </tr>
                 </thead>
 
@@ -182,43 +76,63 @@
                 <tr th:each="noticeBoard, loop : ${noticeBoardList}"
                     th:onclick="|location.href='@{|/noticeBoard/view/${noticeBoard.id}|}'|">
 
-                    <td th:text="${loop.index + 1}"></td>
-
-                    <td class="col-subject">
-                        <span th:text="${noticeBoard.subject}"></span>
-                        <span class="text-danger small"
-                              th:if="${#lists.size(noticeBoard.noticeBoardCommentList) > 0}"
-                              th:text="|[${#lists.size(noticeBoard.noticeBoardCommentList)}]|">
-                        </span>
+                    <td class="td_underline" th:text="${loop.index + 1}"></td>
+                    <td>
+                        <span th:text="${noticeBoard.subject}" class="col-subject" style="text-align: left;"></span>
+                            <!--게시글 제목 옆 댓글수 표시-->
+                            <span class="text-danger small ms-2"
+                                  th:if="${#lists.size(noticeBoard.commentList) > 0}"
+                                  th:text="|[${#lists.size(noticeBoard.commentList)}]|">
+                            </span>
                     </td>
-
-                    <td th:text="${noticeBoard.member != null ? noticeBoard.member.username : '-'}"></td>
-                    <td th:text="${#dates.format(noticeBoard.createDate,'yyyy-MM-dd')}"></td>
-                    <td th:text="${noticeBoard.cnt}"></td>
-                    <td th:text="${noticeBoard.likeCnt}"></td>
+                    <td class="td_underline" th:text="${viewCntMap[noticeBoard.id]}"></td>
+                    <td class="td_underline" th:text="${noticeBoard.member.username}"></td>
+                    <td class="td_underline text-center" th:switch="${noticeBoard.member.grade.name()}">
+                        <span th:case="'USER'">일반🥉</span>
+                        <span th:case="'REGULAR'">성실🥈</span>
+                        <span th:case="'BEST'">우수🥇</span>
+                        <span th:case="'SPECIAL'">최우수🏆</span>
+                    </td>
+                    <td class="td_underline text-center"
+                        th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd')}"></td>
                 </tr>
                 </tbody>
             </table>
 
-            <div class="cafe-pagination" th:if="${!noticeBoardList.isEmpty()}">
-                <a class="page-btn"
-                   th:classappend="${noticeBoardList.first} ? ' disabled'"
-                   th:href="@{|?page=${noticeBoardList.number - 1}|}">이전</a>
+                <!-- 댓글 페이징 -->
+                <div class="cafe-pagination" th:if="${!noticeBoardList.isEmpty()}">
 
-                <a class="page-btn"
-                   th:each="page : ${#numbers.sequence(0, noticeBoardList.totalPages - 1)}"
-                   th:text="${page + 1}"
-                   th:classappend="${page == noticeBoardList.number} ? ' active'"
-                   th:href="@{|?page=${page}|}"></a>
+                    <!-- 이전 버튼 -->
+                    <a class="page-btn"
+                       th:classappend="${noticeBoardList.first} ? ' disabled'"
+                       th:href="@{|/noticeBoard/list?page=${noticeBoardList.number - 1}|}">이전</a>
 
-                <a class="page-btn"
-                   th:classappend="${noticeBoardList.last} ? ' disabled'"
-                   th:href="@{|?page=${noticeBoardList.number + 1}|}">다음</a>
+                    <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
+                    <th:block th:with="
+                            startPage=${noticeBoardList.number - 2 > 0 ? noticeBoardList.number - 2 : 0},
+                            endPage=${noticeBoardList.number + 2 < noticeBoardList.totalPages - 1 ? noticeBoardList.number + 2 : noticeBoardList.totalPages - 1}">
+
+                        <a class="page-btn"
+                           th:each="page : ${#numbers.sequence(startPage, endPage)}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == noticeBoardList.number} ? ' active'"
+                           th:href="@{|/noticeBoard/list?page=${page}|}"></a>
+                    </th:block>
+
+                    <!-- 다음 버튼 -->
+                    <a class="page-btn"
+                       th:classappend="${noticeBoardList.last} ? ' disabled'"
+                       th:href="@{|/noticeBoard/list?page=${noticeBoardList.number + 1}|}">다음</a>
+                </div>
             </div>
 
         </div>
     </div>
 </div>
+
+<script th:if="${noticeBoardList.isEmpty()}">
+    alert([[${errMsg}]]);
+</script>
 
 </body>
 </html>

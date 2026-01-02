@@ -1,132 +1,132 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      layout:decorate="~{_layout/layout}"
+      layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
-               headerPosition='center center'">
+               headerPosition='center center',
+               sidebarKey='cafe'">
+<body>
 
-
-<h1 layout:fragment="pageTitle">헬 사 모</h1>
-<span layout:fragment="pageSubTitle">헬스를 사랑하는 사람들의 모임</span>
+<h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
 
 <div layout:fragment="content">
-    <div class="container">
-    <!-- 본문 내용 시작 -->
-    <h1>글쓰기</h1>
 
-        <form name="DirForm" id="DirForm" th:action="@{/noticeBoard/createProc}" th:method="post">
-            <!--        <input type="text" name="_csrf" th:value="${_csrf.token}">-->
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <div class="mb-3">
-                <label for="subject">제목:</label>
-                <input type="text" class="form-control" id="bbb" placeholder="Enter subject" name="subject" disabled
-                       sec:authorize="isAnonymous()">
-                <input type="text" class="form-control" id="subject" placeholder="Enter subject" name="subject"
-                       sec:authorize="isAuthenticated()">
-            </div>
-            <div class="mb-3">
-                <label for="content">내용:</label>
-                <textarea class="form-control" rows="5" id="aaa" name="content" disabled
-                          sec:authorize="isAnonymous()"></textarea>
-                <textarea class="form-control" rows="5" id="content" name="content"
-                          sec:authorize="isAuthenticated()"></textarea>
-            </div>
-        </form>
-        <!--    <button id="btn-save" class="btn btn-secondary" type="button" onclick="save();" sec:authorize="isAuthenticated()">등록하기</button>-->
-        <button id="btn-save" class="btn btn-secondary" type="button" onclick="save();">등록하기</button>
-<!--    <script>-->
-<!--        function save() {-->
-<!--            if (confirm('등록할까요?')) {-->
-<!--                document.form.action = "/noticeBoard/createProc";-->
-<!--                document.form.method = "post";-->
-<!--                document.form.submit();-->
-<!--            }-->
-<!--        }-->
-<!--    </script>-->
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
 
-<!--    <script>-->
-<!--        $(document).ready(function() {-->
-<!--            $("#content").summernote({-->
-<!--                height: 300-->
-<!--            });-->
-<!--        });-->
-<!--    </script>-->
-        <script>
-            function save() {
+    <!-- ================= 본문 ================= -->
+    <div class="write-page">
+
+        <!-- 글쓰기 카드 -->
+        <div class="write-card">
+
+            <div class="write-header">글 쓰기</div>
+
+            <form name="DirForm" id="DirForm" th:action="@{/noticeBoard/createProc}" method="post">
+
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <!-- 제목 -->
+                <div class="write-group">
+                    <label class="write-label">제목</label>
+                    <input type="text" name="subject" class="write-title-input" placeholder="제목을 입력하세요">
+                </div>
+
+                <!-- 내용 -->
+                <div class="write-group">
+                    <label class="write-label">내용</label>
+                    <div class="write-editor-wrap">
+                        <textarea id="content" name="content"></textarea>
+                    </div>
+                </div>
+
+                <!-- 버튼 -->
+                <div class="write-action-bar">
+                    <button type="button" class="write-btn" onclick="history.back();">취소</button>
+                    <button type="button" class="write-btn primary" onclick="save();">등록</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= JS ================= -->
+    <script>
+        function save() {
             if (document.DirForm.subject.value.trim() === '') {
-                alert('제목을 입력해주세요.');
+                alert('제목을 입력해주세요');
                 document.DirForm.subject.focus();
                 return;
             }
-            if (document.DirForm.content.value.trim() === '') {
-                alert('내용을 입력해주세요.');
-                document.DirForm.content.focus();
+            if ($('#content').summernote('isEmpty')) {
+                alert('내용을 입력해주세요');
+                $('#content').focus();
                 return;
             }
-            if (confirm('등록 하시겠습니까?')) {
+            if (confirm('등록하시겠습니까?')) {
                 document.getElementById('DirForm').submit();
             }
-           }
-        </script>
+        }
 
-    <script>
-        $(document).ready(function() {
-
-
-            // CSRF META 태그에서 값 읽기
-            let header = $("meta[name='_csrf_header']").attr("content");
-            let token = $("meta[name='_csrf']").attr("content");
-
-            // 모든 AJAX 요청마다 CSRF 자동 추가
-            $.ajaxSetup({
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader(header, token);
-                }
-            });
-
-
-
+        $(document).ready(function () {
             $("#content").summernote({
                 height: 300,
-                // (선택적) Summernote 설정 보완
-                lang: 'ko-KR', // 언어 설정
-                placeholder: '여기에 내용을 작성하세요...',
+                lang: 'ko-KR',
+                placeholder: '내용을 입력하세요',
                 toolbar: [
-                    ['style', ['style']],
-                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['bold', 'italic', 'underline']],
                     ['para', ['ul', 'ol', 'paragraph']],
                     ['insert', ['link', 'picture']]
                 ],
                 callbacks: {
-                    onImageUpload: function(files) {
+                    onImageUpload: function (files) {
                         uploadSummernoteImageFile(files[0], this);
                     }
                 }
             });
-        });
 
+            // placeholder hide/show
+            $('#content').on('summernote.focus', function() {
+                $(this).siblings('.note-editor').find('.note-placeholder').hide();
+            });
+
+            $('#content').on('summernote.blur', function() {
+                if ($(this).summernote('isEmpty')) {
+                    $(this).siblings('.note-editor').find('.note-placeholder').show();
+                }
+            });
+        });
+    </script>
+
+    <script>
         function uploadSummernoteImageFile(file, editor) {
             let data = new FormData();
             data.append("file", file);
 
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
+
             $.ajax({
-                url: "/noticeBoard/uploadImage",   // 업로드 URL
+                url: "/noticeBoard/uploadImage",
                 type: "POST",
-                enctype: 'multipart/form-data',
                 data: data,
-                processData: false,
                 contentType: false,
-                success: function (response) {
-                    // 업로드된 이미지 URL을 에디터에 삽입
-                    $(editor).summernote('insertImage', response.url);
+                processData: false,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(header, token);
                 },
-                error: function() {
+                success: function (res) {
+                    $(editor).summernote('insertImage', res.url);
+                },
+                error: function (xhr) {
+                    console.log("status:", xhr.status);
+                    console.log("response:", xhr.responseText);
                     alert("이미지 업로드 실패");
                 }
             });
         }
     </script>
+
+
 </div>
-</div>
+</body>
 </html>
