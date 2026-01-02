@@ -8,6 +8,7 @@ import com.example.cafeProject.operationBoard.OperationBoard;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +19,16 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 @RequestMapping("/informationBoard")
 @RequiredArgsConstructor
@@ -134,6 +144,33 @@ public class InformationBoardController {
                     "history.back();" + // 이전 상세 페이지로 되돌리기
                     "</script>";
         }
+    }
+
+    @Value("${app.image.upload-dir}")
+    protected String uploadDir; //저장할 폴더
+
+    @Value("${app.image.url-prefix}")
+    protected String urlPrefix; // 클라이언트에 반환할 URL
+
+    @ResponseBody
+    @PostMapping(value = "/uploadImage", produces = "application/json")
+    public Map<String, Object> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
+        File folder = new File(uploadDir);
+        if (!folder.exists() && !folder.mkdirs() && !folder.exists()) throw new IOException("업로드 폴더 생성 실패: " + folder.getAbsolutePath());
+
+        //파일명에서 한글 제거:
+        String original = Objects.requireNonNull(file.getOriginalFilename(), "파일 이름이 null입니다.")
+                .replaceAll("[^a-zA-Z0-9._-]", "_");
+        String fileName = UUID.randomUUID() + "_" + original;
+
+        file.transferTo(Paths.get(uploadDir, fileName).toFile()); // 파일 저장
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("url", urlPrefix.endsWith("/")
+                ? urlPrefix + fileName
+                : urlPrefix + "/" + fileName);
+        return response;
     }
 
 }
