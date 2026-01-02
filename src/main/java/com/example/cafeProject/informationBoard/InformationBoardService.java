@@ -51,7 +51,7 @@ public class InformationBoardService {
     @Transactional(readOnly = true)
     public Page<InformationBoard> getSelectAllPage(Pageable pageable, String keyword) {
         if (keyword == null || keyword.isBlank()) // 검색을 안 했을 경우
-            return informationBoardRepository.findAll(pageable);
+            return informationBoardRepository.findAll(pageable); //if문 뒤에 중괄호가 없으면, 딱 그 다음 한 문장(;으로 끝나는 곳까지)만 if문에 속한 것으로 간주
 
         return informationBoardRepository.searchBySubject(keyword.trim(), pageable);
     }

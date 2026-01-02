@@ -3,226 +3,15 @@
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg}, headerPosition='center center'">
+
 <body>
 
 <h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
-<span layout:fragment="pageSubTitle">근육 빵빵!!</span>
+<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
 
 <div layout:fragment="content">
 
-    <style>
-        :root {
-            --blue-main: #1e6fd9;
-            --blue-bg-grad: linear-gradient(90deg, #eaf4ff, #d6eaff);
-            --blue-bg-soft: #f3f8ff;
-            --blue-border: #cfe1ff;
-
-            --text-main: #1f2a44;
-            --text-sub: #6b7a99;
-            --white: #ffffff;
-        }
-
-        .cafe-board-wrap {
-            border-top: 4px solid #1e6fd9;
-            background: var(--white);
-            border-radius: 10px;
-            padding: 28px;
-            font-size: 14px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        /* 게시판 상단 (제목 + 글쓰기 버튼) */
-        .cafe-board-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--blue-main);
-        }
-
-        /* 게시판 제목 */
-        .cafe-board-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin: 0;
-        }
-
-        /* 글쓰기 버튼 영역 */
-        .cafe-article-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        /* 공통 버튼 */
-        .cafe-action-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 14px;
-            border-radius: 6px;
-            border: 1px solid var(--blue-border);
-            background: var(--white);
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-main);
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        /* 글쓰기 버튼 강조 */
-          .cafe-action-btn.write {
-            background: #e6f0ff;
-            border-color: #9fc0f5;
-            color: var(--blue-main);
-        }
-
-        .cafe-action-btn.write:hover {
-            background: #d6e8ff;
-        }
-
-         /* ===============================
-           리스트 상단 검색 영역
-           =============================== */
-        .cafe-board-search {
-            display: flex;
-            justify-content: flex-end;
-            margin: 6px 0 10px;
-        }
-
-        .cafe-search-form {
-            display: flex;
-            align-items: center;
-            padding: 4px 12px;
-            border-radius: 18px;
-            border: 1px solid var(--blue-border);
-            background: var(--white);
-        }
-
-        .cafe-search-form input {
-            width: 160px;
-            border: none;
-            outline: none;
-            font-size: 13px;
-            color: var(--text-main);
-            background: transparent;
-        }
-
-        .cafe-search-form input::placeholder {
-            color: var(--text-sub);
-        }
-
-        .cafe-search-form button {
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-size: 14px;
-            color: var(--blue-main);
-            padding-left: 4px;
-        }
-
-        .cafe-search-form:focus-within {
-            border-color: var(--blue-main);
-            box-shadow: 0 0 0 2px rgba(30, 111, 217, 0.15);
-        }
-
-        /* ===============================
-           테이블
-        =============================== */
-        .cafe-board-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .cafe-board-table thead th {
-            background: var(--blue-bg-soft);
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 13px;
-            padding: 13px 10px;
-            border-bottom: 1px solid var(--blue-border);
-            text-align: center;
-        }
-
-        .cafe-board-table tbody td {
-            padding: 14px 10px;
-            border-bottom: 1px solid #eef2f8;
-            color: var(--text-main);
-            text-align: center;
-        }
-
-        /* 제목 컬럼 */
-        .cafe-board-table .col-subject {
-            text-align: left;
-            padding-left: 20px;
-            font-weight: 500;
-        }
-
-        /* hover */
-        .cafe-board-table tbody tr {
-            cursor: pointer;
-            transition: background-color 0.15s ease;
-        }
-
-        .cafe-board-table tbody tr:hover {
-            background: var(--blue-bg-soft);
-        }
-
-        .cafe-board-table tbody tr:hover .col-subject {
-            color: var(--blue-main);
-            text-decoration: underline;
-        }
-
-        /* 보조 컬럼 톤 다운 */
-        .col-cnt,
-        .col-date {
-            color: var(--text-sub);
-            font-size: 13px;
-        }
-
-                .cafe-pagination {
-            margin-top: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .page-btn {
-            min-width: 34px;
-            height: 34px;
-            line-height: 34px;
-            padding: 0 12px;
-            border: 1px solid var(--blue-border);
-            border-radius: 6px;
-            background: var(--white);
-            color: var(--text-main);
-            font-size: 13px;
-            text-decoration: none;
-            transition: all 0.15s ease;
-        }
-
-        .page-btn:hover {
-            background: var(--blue-bg-soft);
-            color: var(--blue-main);
-        }
-
-        .page-btn.active {
-            background: var(--blue-bg-grad);
-            border-color: var(--blue-main);
-            color: var(--blue-main);
-            font-weight: 700;
-        }
-
-        .page-btn.disabled {
-            color: var(--text-sub);
-            background: #f9fbff;
-            pointer-events: none;
-        }
-
-    </style>
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
 
     <div class="page-container">
 
@@ -366,69 +155,55 @@
 
                 <tbody>
                 <tr th:each="informationBoard, loop : ${informationBoardList}"
-                    th:onclick="|location.href='@{|/informationBoard/view/${informationBoard.id}|}'|"
-                    style="cursor: pointer;">
-                    <td th:text="${loop.index+1}"></td>
-                    <td class="col-subject" th:text="${informationBoard.subject}"></td>
-                    <td th:text="${informationBoard.cnt}"></td>
-                    <td th:text="${informationBoard.member.username}"></td>
-                    <td th:switch="${informationBoard.member.grade.name()}">
+                    th:onclick="|location.href='@{|/informationBoard/view/${informationBoard.id}|}'|">
+
+                    <td class="td_underline" th:text="${loop.index + 1}"></td>
+                    <td>
+                        <span th:text="${informationBoard.subject}" class="col-subject" style="text-align: left;"></span>
+                            <!--게시글 제목 옆 댓글수 표시-->
+                            <span class="text-danger small ms-2"
+                                  th:if="${#lists.size(informationBoard.commentList) > 0}"
+                                  th:text="|[${#lists.size(informationBoard.commentList)}]|">
+                            </span>
+                    </td>
+                    <td class="td_underline" th:text="${informationBoard.cnt}"></td>
+                    <td class="td_underline" th:text="${informationBoard.member.username}"></td>
+                    <td class="td_underline text-center" th:switch="${informationBoard.member.grade.name()}">
                         <span th:case="'USER'">일반🥉</span>
                         <span th:case="'REGULAR'">성실🥈</span>
                         <span th:case="'BEST'">우수🥇</span>
-                        <span th:case="'SPECIAL'">최우수🏆</span></td>
+                        <span th:case="'SPECIAL'">최우수🏆</span>
+                    </td>
                     <td th:text="${#dates.format(informationBoard.createDate, 'yyyy-MM-dd')}"></td>
                 </tr>
                 </tbody>
             </table>
 
-            <!-- 페이지네이션 -->
-            <div class="cafe-pagination" th:if="${!informationBoardList.isEmpty()}">
+                <!-- 게시글 페이징 -->
+                <div class="cafe-pagination" th:if="${!informationBoardList.isEmpty()}">
 
-                <span class="page-btn disabled"
-                      th:if="${informationBoardList.first}">이전</span>
-
-                <a class="page-btn"
-                   th:if="${!informationBoardList.first}"
-                   th:href="@{|?page=${informationBoardList.number-1}|}">
-                    이전
-                </a>
-
-                <span th:each="page : ${#numbers.sequence(0, informationBoardList.totalPages-1)}"
-                      th:text="${page + 1}"
-                      class="page-btn"
-                      th:classappend="${page == informationBoardList.number} ? ' active'"
-                      th:if="${page == informationBoardList.number}">
-                </span>
-
-                <a th:each="page : ${#numbers.sequence(0, informationBoardList.totalPages-1)}"
-                   th:if="${page != informationBoardList.number}"
-                   th:text="${page + 1}"
-                   class="page-btn"
-                   th:href="@{|?page=${page}|}">
-                </a>
-
-                <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
-                <th:block th:with="
-                            startPage=${operationBoardList.number - 2 > 0 ? operationBoardList.number - 2 : 0},
-                            endPage=${operationBoardList.number + 2 < operationBoardList.totalPages - 1 ? operationBoardList.number + 2 : operationBoardList.totalPages - 1}">
-
+                    <!-- 이전 버튼 -->
                     <a class="page-btn"
-                       th:each="page : ${#numbers.sequence(startPage, endPage)}"
-                       th:text="${page + 1}"
-                       th:classappend="${page == operationBoardList.number} ? ' active'"
-                       th:href="@{|/operationBoard/list?page=${page}|}"></a>
-                </th:block>
+                       th:classappend="${informationBoardList.first} ? ' disabled'"
+                       th:href="@{|/informationBoard/list?page=${informationBoardList.number - 1}|}">이전</a>
 
+                    <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
+                    <th:block th:with="
+                            startPage=${informationBoardList.number - 2 > 0 ? informationBoardList.number - 2 : 0},
+                            endPage=${informationBoardList.number + 2 < informationBoardList.totalPages - 1 ? informationBoardList.number + 2 : informationBoardList.totalPages - 1}">
 
-                <span class="page-btn disabled"
-                      th:if="${informationBoardList.last}">다음</span>
+                        <a class="page-btn"
+                           th:each="page : ${#numbers.sequence(startPage, endPage)}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == informationBoardList.number} ? ' active'"
+                           th:href="@{|/informationBoard/list?page=${page}|}"></a>
+                    </th:block>
 
-                <a class="page-btn"
-                   th:if="${!informationBoardList.last}"
-                   th:href="@{|?page=${informationBoardList.number+1}|}">
-                    다음
-                </a>
+                    <!-- 다음 버튼 -->
+                    <a class="page-btn"
+                       th:classappend="${informationBoardList.last} ? ' disabled'"
+                       th:href="@{|/informationBoard/list?page=${informationBoardList.number + 1}|}">다음</a>
+                </div>
             </div>
         </div>
     </div>

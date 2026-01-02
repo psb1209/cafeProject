@@ -179,7 +179,7 @@
                 </tbody>
             </table>
 
-                <!-- 댓글 페이징 -->
+                <!-- 게시글 페이징 -->
                 <div class="cafe-pagination" th:if="${!operationBoardList.isEmpty()}">
 
                     <!-- 이전 버튼 -->
@@ -205,7 +205,6 @@
                        th:href="@{|/operationBoard/list?page=${operationBoardList.number + 1}|}">다음</a>
                 </div>
             </div>
-
         </div>
     </div>
 </div>

@@ -47,7 +47,7 @@ public class OperationBoardController {
     public String list(
             Model model,
             @RequestParam(required = false) String keyword,
-            @PageableDefault(size=2, sort="id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size=5, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<OperationBoard> operationBoardList = operationBoardService.list(pageable, keyword);
         model.addAttribute("operationBoardList", operationBoardList);
