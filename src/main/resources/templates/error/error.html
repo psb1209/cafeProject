@@ -1,30 +1,53 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorate="~{_layout/layout}"
-      th:with="headerImage=@{/assets/img/main.jpg},
-               headerPosition='center center'">
+      layout:decorate="~{main_layout/layout}"
+      th:with="showHeader=false,
+               showSidebar=false">
+
 <body>
-<h1 layout:fragment="pageTitle">My Cafe</h1>
-<span layout:fragment="pageSubTitle">first page</span>
+
+<h1 layout:fragment="pageTitle"
+    onclick="location.href='/healthCafe'"
+    style="cursor: pointer;">
+    헬 사 모
+</h1>
+<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
 
 <div layout:fragment="content">
-    <!-- 본문 내용 시작 -->
 
-    <h2>에러페이지</h2>
-    <div class="mb-3 mt-3">
-        <label for="errCode">에러코드:</label>
-        <span class="form-control" id="errCode" th:text="${errCode}"></span>
+    <link th:href="@{/css/board.css}" rel="stylesheet"/>
+
+    <!-- ================= 에러 카드 ================= -->
+    <div class="write-page narrow">
+        <div class="write-card narrow">
+
+            <div class="write-header">
+                ⚠ 에러가 발생했습니다
+            </div>
+
+            <div class="write-group">
+                <label class="write-label">에러 코드</label>
+                <span class="member-view-box" th:text="${errCode}"></span>
+            </div>
+
+            <div class="write-group">
+                <label class="write-label">에러 메시지</label>
+                <span class="member-view-box" th:text="${errMsg}"></span>
+            </div>
+
+            <div class="write-action-bar">
+                <button type="button"
+                        class="write-btn primary"
+                        onclick="location.href='/healthCafe'">
+                    홈으로
+                </button>
+            </div>
+
+        </div>
     </div>
-    <div class="mb-3 mt-3">
-        <label for="errMsg">에러메시지:</label>
-        <span class="form-control" id="errMsg" th:text="${errMsg}"></span>
-    </div>
+    <!-- ================= 에러 카드 끝 ================= -->
 
-    <button type="button" class="btn btn-primary" onclick="location.href='/healthCafe';">홈으로</button>
-
-    <!-- 본문 내용 종료 -->
 </div>
-
 </body>
 </html>

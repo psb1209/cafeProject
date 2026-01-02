@@ -6,6 +6,7 @@ import com.example.cafeProject.informationBoard.InformationBoard;
 import com.example.cafeProject.informationBoard.InformationBoardService;
 import com.example.cafeProject.noticeBoard.NoticeBoard;
 import com.example.cafeProject.noticeBoard.NoticeBoardService;
+import com.example.cafeProject.validation.ManagementOnly;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,12 @@ public class IndexController {
     private final NoticeBoardService noticeBoardService;
     private final CommunityBoardService communityBoardService;
     private final InformationBoardService informationBoardService;
+
+    @ManagementOnly
+    @GetMapping("/admin")
+    public String list() {
+        return "redirect:member/list";
+    }
 
     @GetMapping({"healthCafe/", "healthCafe"})
     public String list(

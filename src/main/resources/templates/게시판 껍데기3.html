@@ -16,7 +16,17 @@
 
     <!-- ================= 본문 시작 ================= -->
 
+    <h2>에러페이지</h2>
+    <div class="mb-3 mt-3">
+        <label for="errCode">에러코드:</label>
+        <span class="form-control" id="errCode" th:text="${errCode}"></span>
+    </div>
+    <div class="mb-3 mt-3">
+        <label for="errMsg">에러메시지:</label>
+        <span class="form-control" id="errMsg" th:text="${errMsg}"></span>
+    </div>
 
+    <button type="button" class="btn btn-primary" onclick="location.href='/healthCafe';">홈으로</button>
 
     <!-- ================= 본문 종료 ================= -->
 

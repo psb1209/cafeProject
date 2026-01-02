@@ -62,6 +62,7 @@ public class MemberController {
             Authentication authentication
     ) {
         log.debug("관리자용 view 호출됨. 호출자 : {}", safeName(authentication));
+        model.addAttribute("sidebarKey", true);
         return loadPathOrRedirect(id, model, basePath+"/view");
     }
 

@@ -266,4 +266,9 @@ public class OperationBoardController {
     //********************************************************************************************
 
 
+    @GetMapping("/error")
+    public String error() {
+        return "error/error";
+    }
+
 }
