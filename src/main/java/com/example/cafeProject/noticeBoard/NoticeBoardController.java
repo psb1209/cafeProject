@@ -49,10 +49,12 @@ public class NoticeBoardController {
     public String list(
             Model model,
             @RequestParam(required = false) String keyword,
-            @PageableDefault(size=2, sort="id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size=2, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
+            Authentication authentication
     ) {
         Page<NoticeBoard> noticeBoardList = noticeBoardService.list(pageable, keyword);
         model.addAttribute("noticeBoardList", noticeBoardList);
+        model.addAttribute("authentication", authentication);
         model.addAttribute("activeMenu", "noticeBoard");
         model.addAttribute("keyword", keyword);
 

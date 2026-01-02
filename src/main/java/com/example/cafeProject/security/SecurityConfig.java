@@ -23,35 +23,48 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .httpBasic(AbstractHttpConfigurer::disable);
+                .httpBasic(AbstractHttpConfigurer::disable)
 
-        http
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/logout")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                );
+                )
 
-        http
-                .authorizeHttpRequests((authorize) -> authorize
+                .authorizeHttpRequests(auth -> auth
+                        // 정적 리소스
+                        .requestMatchers(
+                                "/",
+                                "/css/**", "/js/**", "/assets/**",
+                                "/attach/summernote/**", "/favicon.ico",
+                                "/noLogin/login",
+                                "/member/login", "/member/login/error"
+                        ).permitAll()
 
-                                .requestMatchers("/").permitAll()
-                                .requestMatchers("/css/**", "/js/**", "/assets/**", "/attach/summernote/**", "/favicon.ico").permitAll()
-                                .requestMatchers("/noLogin/login", "/member/login", "/member/login/error").permitAll()
-                                //.requestMatchers("/admin/**").hasRole("ADMIN")
-                                //.anyRequest().authenticated() // 인증이 필요함
-                                .anyRequest().permitAll()
-                );
+                        // ✅ ADMIN만 접근 가능
+                        .requestMatchers("/operationBoard/**").hasAnyRole("ADMIN", "MANAGER")
 
-        http
+                        // ✅ 로그인한 사용자만
+                        .requestMatchers("/operationBoard/**").authenticated()
+
+                        // 나머지는 전부 허용
+                        .anyRequest().permitAll()
+                )
+
+                .exceptionHandling(e -> e
+                        // 🔥 USER가 접근하면 메인으로
+                        .accessDeniedHandler((request, response, ex) -> {
+                            response.sendRedirect("/healthCafe");
+                        })
+                )
+
                 .formLogin(form -> form
                         .loginPage("/member/login")
                         .loginProcessingUrl("/member/login")
                         .defaultSuccessUrl("/", true)
                         .failureUrl("/member/login/error")
                         .permitAll()
-                );
+                )
 
-        http
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
@@ -62,6 +75,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     //    //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 //    //import org.springframework.security.crypto.password.PasswordEncoder;

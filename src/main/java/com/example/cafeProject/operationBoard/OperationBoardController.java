@@ -14,8 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -45,31 +47,24 @@ public class OperationBoardController {
 
     String dirName = "operationBoard";
 
-
     @GetMapping("/list")
     public String list(
             Model model,
             @RequestParam(required = false) String keyword,
-            @PageableDefault(size=5, sort="id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 2, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<OperationBoard> operationBoardList = operationBoardService.list(pageable, keyword);
+        Page<OperationBoard> operationBoardList =
+                operationBoardService.list(pageable, keyword);
+
         model.addAttribute("operationBoardList", operationBoardList);
         model.addAttribute("activeMenu", "operationBoard");
         model.addAttribute("keyword", keyword);
 
-        // ======================
-        // ✅ 조회수 Map 생성
-        // ======================
-        Map<Integer, Integer> viewCntMap = new HashMap<>(); // 한 게시글에 여러명의 id값이 있기에 Map으로 값을 여러개 받는다
-
+        Map<Integer, Integer> viewCntMap = new HashMap<>();
         for (OperationBoard board : operationBoardList.getContent()) {
-            int viewCnt = board_viewService.board_viewCnt(
-                    "operation",
-                    board.getId()
-            );
+            int viewCnt = board_viewService.board_viewCnt("operation", board.getId());
             viewCntMap.put(board.getId(), viewCnt);
         }
-
         model.addAttribute("viewCntMap", viewCntMap);
 
         return dirName + "/list";

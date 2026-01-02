@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center',
@@ -41,7 +42,8 @@
                         <option value="20" th:selected="${noticeBoardList.size == 20}" class="cafe-action-btn write">20개씩 보기</option>
                     </select>
 
-                    <a th:href="@{/noticeBoard/create}"
+                    <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')"
+                       th:href="@{/noticeBoard/create}"
                        class="cafe-action-btn write">
                         ✏️ 게시글 작성
                     </a>
@@ -72,17 +74,18 @@
                 </tr>
                 </thead>
 
-                <tbody>
+                <tbody th:if="${!noticeBoardList.isEmpty()}">
                 <tr th:each="noticeBoard, loop : ${noticeBoardList}"
                     th:onclick="|location.href='@{|/noticeBoard/view/${noticeBoard.id}|}'|">
 
-                    <td class="td_underline" th:text="${loop.index + 1}"></td>
+                    <td class="td_underline"
+                        th:text="${noticeBoardList.number * noticeBoardList.size + loop.index + 1}"></td>
                     <td>
                         <span th:text="${noticeBoard.subject}" class="col-subject" style="text-align: left;"></span>
-                            <!--게시글 제목 옆 댓글수 표시-->
-                            <span class="text-danger small ms-2"
-                                  th:if="${#lists.size(noticeBoard.commentList) > 0}"
-                                  th:text="|[${#lists.size(noticeBoard.commentList)}]|">
+                        <!--게시글 제목 옆 댓글수 표시-->
+                        <span class="text-danger small ms-2"
+                              th:if="${#lists.size(noticeBoard.commentList) > 0}"
+                              th:text="|[${#lists.size(noticeBoard.commentList)}]|">
                             </span>
                     </td>
                     <td class="td_underline" th:text="${viewCntMap[noticeBoard.id]}"></td>
@@ -95,6 +98,12 @@
                     </td>
                     <td class="td_underline text-center"
                         th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd')}"></td>
+                </tr>
+                </tbody>
+
+                <tbody th:if="${noticeBoardList.isEmpty()}">
+                <tr>
+                    <td colspan="6" class="text-center">등록된 게시글이 없습니다.</td>
                 </tr>
                 </tbody>
             </table>

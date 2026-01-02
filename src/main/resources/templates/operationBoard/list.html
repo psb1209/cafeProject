@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center',
@@ -41,7 +42,8 @@
                         <option value="20" th:selected="${operationBoardList.size == 20}" class="cafe-action-btn write">20개씩 보기</option>
                     </select>
 
-                    <a th:href="@{/operationBoard/create}"
+                    <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')"
+                       th:href="@{/operationBoard/create}"
                        class="cafe-action-btn write">
                         ✏️ 게시글 작성
                     </a>
@@ -72,7 +74,7 @@
                 </tr>
                 </thead>
 
-                <tbody>
+                <tbody th:if="${!operationBoardList.isEmpty()}">
                 <tr th:each="operationBoard, loop : ${operationBoardList}"
                     th:onclick="|location.href='@{|/operationBoard/view/${operationBoard.id}|}'|">
 
@@ -97,6 +99,12 @@
                     <td class="td_underline text-center"
                         th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>
                 </tr>
+                </tbody>
+
+                <tbody th:if="${operationBoardList.isEmpty()}">
+                    <tr>
+                        <td colspan="6" class="text-center">등록된 게시글이 없습니다.</td>
+                    </tr>
                 </tbody>
             </table>
 
