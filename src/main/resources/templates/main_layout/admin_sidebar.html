@@ -13,11 +13,11 @@
         </a>
 
         <!-- 공지 -->
-        <a class="nav-link"
+<!--        <a class="nav-link"
            th:classappend="${activeMenu == 'noticeBoard'} ? ' active'"
            th:href="@{/noticeBoard/list}">
             <span class="nav-emoji">📢</span>공지사항
-        </a>
+        </a>-->
 
         <div class="sidenav-section-title">관리자 기능</div>
 
@@ -32,15 +32,16 @@
         <a class="nav-link"
            th:classappend="${activeMenu == 'boardManagement'} ? ' active'"
            th:href="@{/boardManagement/list}">
-            <span class="nav-emoji">📋</span>게시판 관리
+            <span class="nav-emoji">🗂️</span>게시판 관리
         </a>
 
         <!-- 게시판 추가 -->
         <a class="nav-link"
            th:classappend="${activeMenu == 'boardCreate'} ? ' active'"
            th:href="@{/boardManagement/create}">
-            <span class="nav-emoji">📋</span>게시판 추가
+            <span class="nav-emoji">➕</span>게시판 추가
         </a>
+
 
         <!-- 삭제된 게시글 관리 -->
         <a class="nav-link"

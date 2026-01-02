@@ -73,7 +73,48 @@
                     <th class="col-date">작성일</th>
                 </tr>
                 </thead>
+                <!--====================================================== 공지글!! =======================================================-->
+                <!-- 📢 공지글 영역 -->
+                <tbody th:if="${subNoticeList != null and !subNoticeList.isEmpty() and operationBoardList.number == 0}">
+                <tr th:each="subNotice : ${subNoticeList}" class="notice-row"
+                    th:onclick="|location.href='@{|/operationBoard/view/${subNotice.id}|}'|">
 
+                    <!-- 순번 대신 공지 -->
+                    <td class="text-danger fw-bold text-center">공지</td>
+
+                    <td>
+                        📢 <span th:text="${subNotice.subject}"></span>
+
+                        <!-- 공지 해제 버튼 (관리자/매니저만) -->
+<!--                        <sec:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')">
+                            <form th:action="@{/operationBoard/toggleNotice/{id}(id=${subNotice.id})}" method="post" style="display:inline;">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <button type="submit" class="notice-btn">공지해제</button>
+                            </form>-->
+                        </sec:authorize>
+
+                        <form th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
+                              th:action="@{/operationBoard/toggleNotice/{id}(id=${subNotice.id})}" method="post" style="display:inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="notice-btn">공지해제</button>
+                        </form>
+                    </td>
+
+                    <!-- 조회수 -->
+                    <td class="td_underline" th:text="${viewCntMap[subNotice.id]}"></td>
+
+                    <!-- 작성자 -->
+                    <td class="td_underline" th:text="${subNotice.member.username}"></td>
+
+                    <!-- 등급 -->
+                    <td class="td_underline text-center">운영진</td>
+
+                    <!-- 날짜 -->
+                    <td class="td_underline text-center"
+                        th:text="${#dates.format(subNotice.createDate, 'yyyy-MM-dd')}"></td>
+                </tr>
+                </tbody>
+                <!--====================================================== 공지글!! =======================================================-->
                 <tbody th:if="${!operationBoardList.isEmpty()}">
                 <tr th:each="operationBoard, loop : ${operationBoardList}"
                     th:onclick="|location.href='@{|/operationBoard/view/${operationBoard.id}|}'|">
@@ -87,6 +128,14 @@
                                   th:if="${#lists.size(operationBoard.commentList) > 0}"
                                   th:text="|[${#lists.size(operationBoard.commentList)}]|">
                             </span>
+                        <!--====================================================== 공지글!! =======================================================-->
+                        <!-- 관리자/매니저만 -->
+                        <form th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
+                              th:action="@{/operationBoard/toggleNotice/{id}(id=${operationBoard.id})}" method="post" style="display:inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="notice-btn">공지등록</button>
+                        </form>
+                        <!--====================================================== 공지글!! =======================================================-->
                     </td>
                     <td class="td_underline" th:text="${viewCntMap[operationBoard.id]}"></td>
                     <td class="td_underline" th:text="${operationBoard.member.username}"></td>
@@ -101,7 +150,7 @@
                 </tr>
                 </tbody>
 
-                <tbody th:if="${operationBoardList.isEmpty()}">
+                <tbody th:if="${operationBoardList.isEmpty() && subNoticeList.isEmpty()}">
                     <tr>
                         <td colspan="6" class="text-center">등록된 게시글이 없습니다.</td>
                     </tr>

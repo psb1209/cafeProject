@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center',
@@ -30,6 +30,14 @@
                 <div class="write-group">
                     <label class="write-label">제목</label>
                     <input type="text" name="subject" class="write-title-input" placeholder="제목을 입력하세요">
+                </div>
+
+                <!-- 공지글 여부 (관리자만) -->
+                <div class="write-group" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')">
+                    <label class="write-label">
+                        <input type="checkbox" name="subNotice" value="true">
+                        공지글로 등록
+                    </label>
                 </div>
 
                 <!-- 내용 -->

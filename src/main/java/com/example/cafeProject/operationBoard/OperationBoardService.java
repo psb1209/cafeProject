@@ -1,6 +1,5 @@
 package com.example.cafeProject.operationBoard;
 
-
 import com.example.cafeProject.member.Grade;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberRepository;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +22,6 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -36,12 +33,24 @@ public class OperationBoardService {
 
     private final MemberService memberService;
 
+    /*=============================== 각 게시판 공지글 ===================================*/
+    @Transactional
+    public void toggleNotice(int id) {
+        OperationBoard operationBoard = operationBoardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+        operationBoard.setSubNotice(!operationBoard.isSubNotice());
+    }
+
+    public List<OperationBoard> getSubNoticeList() {
+        return operationBoardRepository.findBySubNoticeTrueOrderByCreateDateDesc();
+    }
+
     public Page<OperationBoard> list(Pageable pageable, String keyword) {
         if (keyword == null || keyword.isBlank()) // 검색을 안 했을 경우
-            return operationBoardRepository.findAll(pageable);
-
+            return operationBoardRepository.findBySubNoticeFalse(pageable);
         return operationBoardRepository.searchBySubject(keyword.trim(), pageable);
     }
+    /*====================================================================================*/
 
     @Transactional(readOnly = true)
     public OperationBoard getSelectOneById(OperationBoardDTO paramDTO) {

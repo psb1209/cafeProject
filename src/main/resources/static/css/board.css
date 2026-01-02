@@ -663,6 +663,60 @@
 }
 
 /* ==============================
+   게시판 더보기 버튼
+   ============================== */
+.cafe-more-btn {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-sub);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+/* 👉 텍스트만 밑줄 */
+.cafe-more-btn:hover .more-text {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.cafe-more-btn:hover {
+    color: var(--blue-main);
+}
+
+.cafe-more-btn .arrow {
+    margin-left: 2px;
+    font-size: 14px;
+}
+
+/* 공지글 배경 & hover */
+tr.notice-row {
+    background-color: #ffe5e5 !important;
+    font-weight: bold;
+}
+
+tr.notice-row:hover {
+    background-color: #ffc2c2 !important;
+}
+
+.notice-btn {
+    margin-left: 8px;
+    padding: 2px 6px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 1px solid #f5c243;
+    background: #fffbea;
+    cursor: pointer;
+}
+
+.notice-btn:hover {
+    background: #f5c243;
+    color: #fff;
+}
+/* ==============================
    카드 + 배경 폭 제한
    ============================== */
 /*

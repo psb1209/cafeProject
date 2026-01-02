@@ -24,4 +24,6 @@ public class NoticeBoardDTO {
     private int noticeBoardCommentId;
 
     private String noticeBoardCommentContent;
+
+    private boolean subNotice;
 }

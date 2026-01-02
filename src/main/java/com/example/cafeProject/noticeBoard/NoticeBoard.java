@@ -35,6 +35,9 @@ public class NoticeBoard {
 
     private int cnt;
 
+    @Column(nullable = false)
+    private boolean subNotice = false;
+    
     @CreationTimestamp
     private Timestamp createDate;
 
@@ -53,6 +56,7 @@ public class NoticeBoard {
         noticeBoard.setContent(noticeBoardDTO.getContent());
         noticeBoard.setCnt(0);
         noticeBoard.setMember(member);
+        noticeBoard.setSubNotice(noticeBoardDTO.isSubNotice());
         return noticeBoard;
     }
 }

@@ -8,9 +8,11 @@ import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardCommentService;
+import jakarta.persistence.Column;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -29,10 +31,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/operationBoard")
@@ -47,28 +46,73 @@ public class OperationBoardController {
 
     String dirName = "operationBoard";
 
+    /*=============================== 각 게시판 공지글 ===================================*/
+
+    @PostMapping("/toggleNotice/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
+    public String toggleNotice(
+            @PathVariable Integer id,
+            RedirectAttributes redirectAttributes
+    ) {
+        operationBoardService.toggleNotice(id);
+        redirectAttributes.addFlashAttribute("msg", "공지 상태가 변경되었습니다.");
+        return "redirect:/" + dirName + "/list";
+    }
+
+
     @GetMapping("/list")
     public String list(
             Model model,
             @RequestParam(required = false) String keyword,
             @PageableDefault(size = 2, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<OperationBoard> operationBoardList =
-                operationBoardService.list(pageable, keyword);
+        /*====================================================== 공지글!! =======================================================*/
+        List<OperationBoard> subNoticeList = operationBoardService.getSubNoticeList();
 
+        // 2️⃣ 공지 → 일반글 순 + 최신순 정렬
+        Sort sort = Sort.by(
+                Sort.Order.desc("subNotice"),
+                Sort.Order.desc("createDate")
+        );
+
+        // 정렬값 다시 받기
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                sort
+        );
+
+        Page<OperationBoard> operationBoardList =
+                operationBoardService.list(sortedPageable, keyword);
+
+        model.addAttribute("subNoticeList", subNoticeList);
+        /*====================================================== 공지글!! =======================================================*/
         model.addAttribute("operationBoardList", operationBoardList);
         model.addAttribute("activeMenu", "operationBoard");
         model.addAttribute("keyword", keyword);
 
-        Map<Integer, Integer> viewCntMap = new HashMap<>();
+        // ======================
+        // ✅ 조회수 Map 생성
+        // ======================
+        Map<Integer, Integer> viewCntMap = new HashMap<>(); // 한 게시글에 여러명의 id값이 있기에 Map으로 값을 여러개 받는다
+
+        // 일반 글
         for (OperationBoard board : operationBoardList.getContent()) {
             int viewCnt = board_viewService.board_viewCnt("operation", board.getId());
             viewCntMap.put(board.getId(), viewCnt);
         }
+        /*====================================================== 공지글!! =======================================================*/
+        // 공지글
+        for (OperationBoard board : subNoticeList) {
+            int viewCnt = board_viewService.board_viewCnt("operation", board.getId());
+            viewCntMap.put(board.getId(), viewCnt);
+        }
+        /*====================================================== 공지글!! =======================================================*/
         model.addAttribute("viewCntMap", viewCntMap);
 
         return dirName + "/list";
     }
+    /*=====================================================================================*/
 
     @GetMapping("/view/{id}")
     public String view(
@@ -264,11 +308,4 @@ public class OperationBoardController {
         return response;
     }
     //********************************************************************************************
-
-
-    @GetMapping("/error")
-    public String error() {
-        return "error/error";
-    }
-
 }

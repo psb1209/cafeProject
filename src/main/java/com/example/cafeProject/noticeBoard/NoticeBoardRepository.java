@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface NoticeBoardRepository extends JpaRepository<NoticeBoard, Integer> {
     /** 게시글 검색 */
     @Query("""
@@ -14,4 +16,8 @@ public interface NoticeBoardRepository extends JpaRepository<NoticeBoard, Intege
             where lower(b.subject) like lower(concat('%', :keyword, '%'))
     """)
     Page<NoticeBoard> searchBySubject(@Param("keyword") String keyword, Pageable pageable);
+
+    List<NoticeBoard> findBySubNoticeTrueOrderByCreateDateDesc();
+
+    Page<NoticeBoard> findBySubNoticeFalse(Pageable pageable);
 }

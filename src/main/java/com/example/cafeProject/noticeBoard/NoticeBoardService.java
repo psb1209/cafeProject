@@ -34,10 +34,20 @@ public class NoticeBoardService {
 
     private final MemberService memberService;
 
+    @Transactional
+    public void toggleNotice(int id) {
+        NoticeBoard noticeBoard = noticeBoardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+        noticeBoard.setSubNotice(!noticeBoard.isSubNotice());
+    }
+
+    public List<NoticeBoard> getSubNoticeList() {
+        return noticeBoardRepository.findBySubNoticeTrueOrderByCreateDateDesc();
+    }
+
     public Page<NoticeBoard> list(Pageable pageable, String keyword) {
         if (keyword == null || keyword.isBlank()) // 검색을 안 했을 경우
-            return noticeBoardRepository.findAll(pageable);
-
+            return noticeBoardRepository.findBySubNoticeFalse(pageable);
         return noticeBoardRepository.searchBySubject(keyword.trim(), pageable);
     }
 

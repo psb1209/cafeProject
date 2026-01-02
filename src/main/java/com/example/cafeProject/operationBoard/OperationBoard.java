@@ -35,7 +35,10 @@ public class OperationBoard {
     private String content;
 
     private int cnt;
-
+/*=============================== 각 게시판 공지글 ===================================*/
+    @Column(nullable = false)
+    private boolean subNotice = false;
+/*=====================================================================================*/
     @CreationTimestamp
     private Timestamp createDate;
 
@@ -54,6 +57,11 @@ public class OperationBoard {
         operationBoard.setContent(operationBoardDTO.getContent());
         operationBoard.setCnt(0);
         operationBoard.setMember(member);
+
+        /*=============================== 각 게시판 공지글 ===================================*/
+        operationBoard.setSubNotice(operationBoardDTO.isSubNotice());
+        /*=====================================================================================*/
+
         return operationBoard;
     }
 }
