@@ -20,33 +20,33 @@ public class Board_viewService {
     // 조회 기록 저장 (1계정 1조회)
     // ======================
     @Transactional
-    public void createProc(Board_viewDTO dto) {
+    public void createProc(Board_viewDTO paramDTO) {
 
         Optional<Board_view> optional = Optional.empty();
 
-        if (dto.getOperationBoardNumber() != null) {
+        if (paramDTO.getOperationBoardNumber() != null) {
             optional = board_viewRepository
                     .findByOperationBoardNumberAndUserId(
-                            dto.getOperationBoardNumber(),
-                            dto.getUserId()
+                            paramDTO.getOperationBoardNumber(),
+                            paramDTO.getUserId()
                     );
-        } else if (dto.getCommunityBoardNumber() != null) {
+        } else if (paramDTO.getCommunityBoardNumber() != null) {
             optional = board_viewRepository
                     .findByCommunityBoardNumberAndUserId(
-                            dto.getCommunityBoardNumber(),
-                            dto.getUserId()
+                            paramDTO.getCommunityBoardNumber(),
+                            paramDTO.getUserId()
                     );
-        } else if (dto.getNoticeBoardNumber() != null) {
+        } else if (paramDTO.getNoticeBoardNumber() != null) {
             optional = board_viewRepository
                     .findByNoticeBoardNumberAndUserId(
-                            dto.getNoticeBoardNumber(),
-                            dto.getUserId()
+                            paramDTO.getNoticeBoardNumber(),
+                            paramDTO.getUserId()
                     );
-        } else if (dto.getInformationBoardNumber() != null) {
+        } else if (paramDTO.getInformationBoardNumber() != null) {
             optional = board_viewRepository
                     .findByInformationBoardNumberAndUserId(
-                            dto.getInformationBoardNumber(),
-                            dto.getUserId()
+                            paramDTO.getInformationBoardNumber(),
+                            paramDTO.getUserId()
                     );
         }
 
@@ -55,11 +55,11 @@ public class Board_viewService {
 
         // ✅ 최초 조회만 insert
         Board_view view = Board_view.builder()
-                .userId(dto.getUserId())
-                .operationBoardNumber(dto.getOperationBoardNumber())
-                .communityBoardNumber(dto.getCommunityBoardNumber())
-                .noticeBoardNumber(dto.getNoticeBoardNumber())
-                .informationBoardNumber(dto.getInformationBoardNumber())
+                .userId(paramDTO.getUserId())
+                .operationBoardNumber(paramDTO.getOperationBoardNumber())
+                .communityBoardNumber(paramDTO.getCommunityBoardNumber())
+                .noticeBoardNumber(paramDTO.getNoticeBoardNumber())
+                .informationBoardNumber(paramDTO.getInformationBoardNumber())
                 .build();
 
         board_viewRepository.save(view);
