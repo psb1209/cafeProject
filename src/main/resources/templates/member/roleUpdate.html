@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       layout:decorate="~{main_layout/layout}"
-      th:with="showHeader=false, showSidebar=false">
+      th:with="showHeader=false,
+               sidebarKey='admin'">
 <body>
 
 <h1 layout:fragment="pageTitle"

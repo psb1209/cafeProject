@@ -21,6 +21,11 @@
                 <th:block th:replace="~{main_layout/cafe_sidebar :: cafe_sidebar}"></th:block>
             </th:block>
 
+            <!-- 어드민 전용 -->
+            <th:block th:case="'admin'">
+                <th:block th:replace="~{main_layout/admin_sidebar :: admin_sidebar}"></th:block>
+            </th:block>
+
             <!-- 기본 -->
             <th:block th:case="*">
                 <th:block th:replace="~{main_layout/inc_sidebar :: inc_sidebar}"></th:block>
