@@ -26,6 +26,22 @@
   --text-section-title: #888;
   --text-cafe-title: #1a1a1a;
   --text-cafe-desc: #555;
+
+  /* 색상 단계 */
+    --blue-main-light: #5fa0ff;
+
+    /* border 세분화 */
+    --blue-border-strong: #c0d8ff;
+    --blue-border-input: #cfe1ff;
+
+    /* danger 상태 */
+    --danger-bg: #ffeaea;
+    --danger-border: #f5c2c2;
+    --danger-text: #d9534f;
+
+    /* hover / table */
+    --gray-hover: #f0f0f0;
+    --table-border-light: #e6efff;
 }
 
 /*=======================================================*/

@@ -31,6 +31,12 @@
 
     --gray-hover: #f0f0f0;
     --table-border-light: #fbe8a6;
+
+    --text-sub-light: #aaa;
+    --border-light: #dcdcdc;
+    --blue-active-border: #f5c243; /* 또는 어울리는 강조색 */
+    --text-section-title: #888;
+    --text-cafe-desc: #555;
 }
 
 
