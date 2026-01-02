@@ -63,28 +63,24 @@
 
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <input type="hidden" name="id" th:value="${informationBoard.id}">
-
                     <button type="button"
-                            th:onclick="${#authentication.name == informationBoard.member.username} ? 'confirmDelete();' : 'adminConfirmDelete();'"
+                            th:onclick="confirmDelete([[${#authentication.name != informationBoard.member.username}]]);"
                             class="cafe-action-btn danger">삭제</button>
                 </form>
             </div>
 
             <script>
-                // 작성자용
-                function confirmDelete() {
-                    if (confirm('삭제된 글은 복구할 수 없습니다. 삭제하시겠습니까?')) {
-                        document.informationBoardDelete.action = "/informationBoard/deleteProc";
-                        document.informationBoardDelete.method = "post";
-                        document.informationBoardDelete.submit();
-                    }
-                }
-                 // 관리자용
-                 function adminConfirmDelete() {
-                    if (confirm('관리자 전용_삭제된 글은 복구할 수 없습니다. 삭제하시겠습니까?')) {
-                        document.informationBoardDeleteAdmin.action = "/informationBoard/deleteProc";
-                        document.informationBoardDeleteAdmin.method = "post";
-                        document.informationBoardDeleteAdmin.submit();
+                function confirmDelete(isAdmin) {
+                    // isAdmin이 true면 관리자용 문구, false면 일반 문구 선택
+                    const message = isAdmin
+                        ? '관리자 권한으로 삭제하시겠습니까?'
+                        : '삭제된 글은 복구할 수 없습니다. 삭제하시겠습니까?';
+
+                    if (confirm(message)) {
+                        const form = document.informationBoardDelete;
+                        form.action = "/informationBoard/deleteProc";
+                        form.method = "post";
+                        form.submit();
                     }
                 }
             </script>
