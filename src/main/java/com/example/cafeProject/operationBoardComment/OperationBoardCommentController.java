@@ -1,5 +1,6 @@
 package com.example.cafeProject.operationBoardComment;
 
+import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardCommentDTO;
 import com.example.cafeProject.member.Member;
@@ -26,6 +27,7 @@ public class OperationBoardCommentController {
 
     private final OperationBoardService operationBoardService;
     private final OperationBoardCommentService operationBoardCommentService;
+    private final MemberService memberService;
 
 
     String dirName = "operationBoard";
@@ -38,11 +40,8 @@ public class OperationBoardCommentController {
             RedirectAttributes redirectAttributes,
             @AuthenticationPrincipal User user
     ) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        String loginId = userDetails.getUsername(); // 로그인했을 때 아이디
         try {
-            Member member = operationBoardService.getSelectOneByUsername(authentication);
+            Member member = memberService.viewCurrentMember(authentication);
             operationBoardCommentDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1110");

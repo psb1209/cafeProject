@@ -119,7 +119,6 @@ public class NoticeBoardController {
             Page<NoticeBoardComment> commentList = noticeBoardCommentService.getCommentListPage(noticeBoardDTO.getId(), pageable);
             model.addAttribute("commentList", commentList);
             model.addAttribute("activeMenu", "noticeBoard");
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
             boolean isLike = false;
 
@@ -202,15 +201,10 @@ public class NoticeBoardController {
             Model model,
             NoticeBoardDTO noticeBoardDTO,
             RedirectAttributes redirectAttributes,
-            Authentication authentication,
-            @AuthenticationPrincipal User user
+            Authentication authentication
     ) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        String loginId = userDetails.getUsername(); // 로그인했을 때 아이디
-
         try {
-            Member member = noticeBoardService.getSelectOneByUsername(authentication);
+            Member member = memberService.viewCurrentMember(authentication);
             noticeBoardDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1111");

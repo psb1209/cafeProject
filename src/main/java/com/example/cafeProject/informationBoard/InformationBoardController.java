@@ -2,9 +2,6 @@ package com.example.cafeProject.informationBoard;
 
 import com.example.cafeProject.informationBoardComment.InformationBoardComment;
 import com.example.cafeProject.informationBoardComment.InformationBoardCommentService;
-import com.example.cafeProject.member.Member;
-import com.example.cafeProject.member.RoleType;
-import com.example.cafeProject.operationBoard.OperationBoard;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

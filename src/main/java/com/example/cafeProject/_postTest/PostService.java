@@ -125,7 +125,7 @@ public class PostService extends BaseImageService<Post, PostDTO> {
     public void softDelete(PostDTO dto) {
         Post post = viewDetail(dto.getId());
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = memberService.getCurrentMember();
         RoleType[] roles = memberService.getEffectiveRoles(authentication);
         if (roles.length == 0) throw new PermissionDeniedException("Banned 사용자입니다.");
 
@@ -149,7 +149,7 @@ public class PostService extends BaseImageService<Post, PostDTO> {
         dto.setCnt(0);
         dto.setDeleted(false);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = memberService.getCurrentMember();
         RoleType[] roles = memberService.getEffectiveRoles(authentication);
         if (roles.length == 0) throw new PermissionDeniedException("Banned 사용자입니다.");
         if (dto.getBoardId() == null) throw new IllegalArgumentException("현재 게시판 정보가 존재하지 않습니다.");
@@ -168,7 +168,7 @@ public class PostService extends BaseImageService<Post, PostDTO> {
 
     @Override
     protected void beforeUpdate(PostDTO dto, Post entity) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = memberService.getCurrentMember();
         RoleType[] roles = memberService.getEffectiveRoles(authentication);
         if (roles.length == 0) throw new PermissionDeniedException("Banned 사용자입니다.");
 

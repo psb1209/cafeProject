@@ -89,7 +89,6 @@ public class CommunityBoardController {
             Page<CommunityBoardComment> commentList = communityBoardCommentService.getCommentListPage(communityBoardDTO.getId(), pageable);
             model.addAttribute("commentList", commentList);
             model.addAttribute("activeMenu", "communityBoard");
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
             boolean isLike = false;
 
@@ -172,15 +171,10 @@ public class CommunityBoardController {
             Model model,
             CommunityBoardDTO communityBoardDTO,
             RedirectAttributes redirectAttributes,
-            Authentication authentication,
-            @AuthenticationPrincipal User user
+            Authentication authentication
     ) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        String loginId = userDetails.getUsername(); // 로그인했을 때 아이디
-
         try {
-            Member member = communityBoardService.getSelectOneByUsername(authentication);
+            Member member = memberService.viewCurrentMember(authentication);
             communityBoardDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1111");

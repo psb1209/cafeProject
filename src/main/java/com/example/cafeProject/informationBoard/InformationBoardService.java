@@ -1,13 +1,7 @@
 package com.example.cafeProject.informationBoard;
 
-import com.example.cafeProject.member.Grade;
-import com.example.cafeProject.member.Member;
-import com.example.cafeProject.member.MemberRepository;
-import com.example.cafeProject.member.RoleType;
-import com.example.cafeProject.operationBoard.OperationBoard;
+import com.example.cafeProject.member.*;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,7 +17,7 @@ import java.util.Collection;
 public class InformationBoardService {
 
     private final InformationBoardRepository informationBoardRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
 
     //기본키로 정보게시글 레코드 한줄 찾기
@@ -31,20 +25,6 @@ public class InformationBoardService {
     public InformationBoard getSelectOneById(int id) {
         return informationBoardRepository.findById(id)
                 .orElseThrow(()-> new IllegalArgumentException("해당 게시글 없음"));
-    }
-
-    //아이디로 맴버 레코드 한줄 찾기
-    @Transactional(readOnly = true)
-    public Member getSelectOneById_member(String username) {
-        return memberRepository.findByUsername(username)
-                .orElseThrow(()-> new IllegalArgumentException("해당 맴버 없음"));
-    }
-
-    //기본키로 맴버 레코드 한줄 찾기 --> 메서드 오버라이딩
-    @Transactional(readOnly = true)
-    public Member getSelectOneById_member(int id) {
-        return memberRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException("해당 맴버 없음"));
     }
 
     //목록 페이징 기능 + 키워드 검색 기능
@@ -74,7 +54,7 @@ public class InformationBoardService {
     //카페 회원만 게시글 작성
     @Transactional
     public boolean setInsert(InformationBoardDTO informationBoardDTO, User user) {
-       Member member = getSelectOneById_member(user.getUsername());
+       Member member = memberService.viewCurrentMember(user);
        Grade oldGrade = member.getGrade(); //예전 등급
 
        InformationBoard informationBoard = InformationBoard.dtoToEntity(informationBoardDTO, member);
@@ -111,7 +91,6 @@ public class InformationBoardService {
     @Transactional
     public void setDelete(InformationBoardDTO informationBoardDTO, User user) {
 
-        Member member_principal = getSelectOneById_member(user.getUsername());
         InformationBoard informationBoard = getSelectOneById(informationBoardDTO.getId());
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
 

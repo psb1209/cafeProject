@@ -4,6 +4,7 @@ import com.example.cafeProject.communityBoard.CommunityBoardDTO;
 import com.example.cafeProject.communityBoard.CommunityBoardService;
 import com.example.cafeProject.member.Member;
 
+import com.example.cafeProject.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,6 +23,7 @@ public class CommunityBoardCommentController {
 
     private final CommunityBoardService communityBoardService;
     private final CommunityBoardCommentService communityBoardCommentService;
+    private final MemberService memberService;
 
 
     String dirName = "communityBoard";
@@ -34,11 +36,8 @@ public class CommunityBoardCommentController {
             RedirectAttributes redirectAttributes,
             @AuthenticationPrincipal User user
     ) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        String loginId = userDetails.getUsername(); // 로그인했을 때 아이디
         try {
-            Member member = communityBoardService.getSelectOneByUsername(authentication);
+            Member member = memberService.viewCurrentMember(authentication);
             communityBoardCommentDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1110");

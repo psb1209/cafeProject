@@ -57,12 +57,6 @@ public class NoticeBoardService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
     }
 
-    @Transactional(readOnly = true)
-    public Member getSelectOneByUsername(Authentication authentication) {
-        return memberRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
-    }
-
     @Transactional
     public void setInsert(NoticeBoardDTO paramDTO) {
         NoticeBoard noticeBoard = new NoticeBoard();
@@ -122,7 +116,7 @@ public class NoticeBoardService {
     //카페 회원만 게시글 작성
     @Transactional
     public boolean setInsert(NoticeBoardDTO noticeBoardDTO, Authentication authentication) {
-        Member member = getSelectOneByUsername(authentication);
+        Member member = memberService.viewCurrentMember(authentication);
         Grade oldGrade = member.getGrade(); //예전 등급
 
         NoticeBoard noticeBoard = NoticeBoard.dtoToEntity(noticeBoardDTO, member);

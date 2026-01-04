@@ -1,18 +1,16 @@
 package com.example.cafeProject.informationBoardComment;
 
-import com.example.cafeProject.operationBoard.OperationBoardDTO;
-import com.example.cafeProject.operationBoardComment.OperationBoardComment;
-import com.example.cafeProject.operationBoardComment.OperationBoardCommentDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+@Slf4j
 @RequestMapping("/informationBoardComment")
 @RequiredArgsConstructor
 @Controller
@@ -46,7 +44,7 @@ public class InformationBoardCommentController {
             informationBoardCommentService.setDelete(informationBoardCommentDTO, user);
             return "redirect:/informationBoard/view/" + informationBoardCommentDTO.getInformationBoardId();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             model.addAttribute("errCode", "error404");
             model.addAttribute("errMsg", "요청하신 댓글을 찾을 수 없습니다.");
             return "error/error";

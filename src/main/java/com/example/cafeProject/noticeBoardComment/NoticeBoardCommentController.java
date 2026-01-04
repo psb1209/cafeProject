@@ -1,6 +1,7 @@
 package com.example.cafeProject.noticeBoardComment;
 
 import com.example.cafeProject.member.Member;
+import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoard.NoticeBoardDTO;
 import com.example.cafeProject.noticeBoard.NoticeBoardService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class NoticeBoardCommentController {
 
     private final NoticeBoardService noticeBoardService;
     private final NoticeBoardCommentService noticeBoardCommentService;
+    private final MemberService memberService;
 
 
     String dirName = "noticeBoard";
@@ -33,11 +35,8 @@ public class NoticeBoardCommentController {
             RedirectAttributes redirectAttributes,
             @AuthenticationPrincipal User user
     ) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        String loginId = userDetails.getUsername(); // 로그인했을 때 아이디
         try {
-            Member member = noticeBoardService.getSelectOneByUsername(authentication);
+            Member member = memberService.viewCurrentMember(authentication);
             noticeBoardCommentDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1110");

@@ -2,13 +2,12 @@ package com.example.cafeProject.operationBoard;
 
 import com.example.cafeProject.board_view.Board_viewDTO;
 import com.example.cafeProject.board_view.Board_viewService;
-import com.example.cafeProject.like.LikeDTO;
 import com.example.cafeProject.like.LikeService;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardCommentService;
-import jakarta.persistence.Column;
+import com.example.cafeProject.validation.ManagementOnly;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -16,12 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -48,8 +42,8 @@ public class OperationBoardController {
 
     /*=============================== 각 게시판 공지글 ===================================*/
 
+    @ManagementOnly
     @PostMapping("/toggleNotice/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
     public String toggleNotice(
             @PathVariable Integer id,
             RedirectAttributes redirectAttributes
@@ -127,7 +121,6 @@ public class OperationBoardController {
             Page<OperationBoardComment> commentList = operationBoardCommentService.getCommentListPage(operationBoardDTO.getId(), pageable);
             model.addAttribute("commentList", commentList);
             model.addAttribute("activeMenu", "operationBoard");
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
             boolean isLike = false;
 
@@ -210,15 +203,10 @@ public class OperationBoardController {
             Model model,
             OperationBoardDTO operationBoardDTO,
             RedirectAttributes redirectAttributes,
-            Authentication authentication,
-            @AuthenticationPrincipal User user
+            Authentication authentication
     ) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        String loginId = userDetails.getUsername(); // 로그인했을 때 아이디
-
         try {
-            Member member = operationBoardService.getSelectOneByUsername(authentication);
+            Member member = memberService.viewCurrentMember(authentication);
             operationBoardDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1111");

@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -72,7 +75,22 @@ public class MemberService {
     }
 
     /**
-     * Optional 버전 view 메서드 (id 기준)
+     * 회원 상세 메서드 (username 기준)
+     * - username이 null/blank면 잘못된 호출로 간주하여 IllegalArgumentException
+     * - 존재하지 않으면 EntityNotFoundException 발생
+     */
+    public Member viewByUsername(String username) throws EntityNotFoundException {
+        if (username == null || username.isBlank())
+            throw new IllegalArgumentException("username is null");
+        log.debug("[{}] Username 조회 시도, name={}", memberServiceClass.getSimpleName(), username);
+        Member entity = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 username=" + username));
+        log.debug("[{}] Username 조회 성공, name={}", memberServiceClass.getSimpleName(), entity.getUsername());
+        return entity;
+    }
+
+    /**
+     * Optional 버전 view 메서드
      * - 예외를 던지지 않고 Optional로 감싸서 반환.
      * - 호출 측에서 isPresent()/orElse() 등으로 유연하게 처리하고 싶을 때 사용.
      */
@@ -83,23 +101,38 @@ public class MemberService {
                 memberServiceClass.getSimpleName(), id, result.isPresent());
         return result;
     }
+    public Optional<Member> viewOptional(String username) {
+        log.debug("[{}] Optional 조회 시도, username={}", memberServiceClass.getSimpleName(), username);
+        Optional<Member> result = memberRepository.findByUsername(username);
+        log.debug("[{}] Optional 조회 결과, username={}, present={}",
+                memberServiceClass.getSimpleName(), username, result.isPresent());
+        return result;
+    }
+
+    /**
+     * 현재 SecurityContext에 저장된 인증 정보(Authentication)를 가져온다.
+     * - 로그인 여부와 관계없이 "현재 컨텍스트에 들어있는 Authentication"을 그대로 반환한다.
+     */
+    public Authentication getCurrentMember() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
 
     /**
      * 현재 로그인한 사용자의 Member 엔티티 조회.
-     * - Authentication을 기반으로 username을 가져와 DB에서 조회
+     * - Authentication 또는 UserDetails을 기반으로 username을 가져와 DB에서 조회
      * - 인증 정보가 없거나 익명이면 AccessDeniedException 발생
-     * - username으로 조회 결과가 없으면 EntityNotFoundException 발생
      */
     public Member viewCurrentMember(Authentication authentication) {
         // 인증 정보가 없거나 익명 사용자라면 접근 불가
-        if (isNotLogin(authentication)) {
+        if (isNotLogin(authentication))
             throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
-        }
-        log.debug("[{}] currentMember 조회 시도, name={}", memberServiceClass.getSimpleName(), authentication.getName());
-        Member entity = memberRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 username=" + authentication.getName()));
-        log.debug("[{}] currentMember 조회 성공, name={}", memberServiceClass.getSimpleName(), authentication.getName());
-        return entity;
+        return viewByUsername(authentication.getName());
+    }
+    public Member viewCurrentMember(UserDetails user) {
+        // 인증 정보가 없거나 익명 사용자라면 접근 불가
+        if (user == null)
+            throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
+        return viewByUsername(user.getUsername());
     }
 
     /**
@@ -187,7 +220,6 @@ public class MemberService {
             e.setPassword(passwordEncoder.encode(d.getNewPassword()));
         }
     }
-
 
 
     private void beforeCreate(MemberDTO dto) {

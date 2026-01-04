@@ -88,7 +88,7 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
 
     @Override
     protected Board toEntity(BoardDTO dto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = memberService.getCurrentMember();
         if (memberService.isNotLogin(authentication)) throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
         Board board = super.toEntity(dto);
         board.setMember(memberService.viewCurrentMember(authentication));

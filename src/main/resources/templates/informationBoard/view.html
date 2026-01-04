@@ -28,12 +28,13 @@
                     th:text="${informationBoard.subject}"></h1>
 
                 <div class="cafe-article-meta">
-                    <span th:text="${informationBoard.member.username}"></span>
-                    <span th:switch="${informationBoard.member.grade.name()}">
+                    <span th:text="${informationBoard.member?.username ?: '-'}"></span>
+                    <span th:switch="${informationBoard.member?.grade?.name() ?: 'UNKNOWN'}">
                         <span th:case="'USER'">일반🥉</span>
                         <span th:case="'REGULAR'">성실🥈</span>
                         <span th:case="'BEST'">우수🥇</span>
-                        <span th:case="'SPECIAL'">최우수🏆</span></span>
+                        <span th:case="'SPECIAL'">최우수🏆</span>
+                        <span th:case="'UNKNOWN'">알 수 없음</span></span>
                     <span th:text="${#dates.format(informationBoard.createDate,'yyyy.MM.dd')}"></span>
                     <span>조회 <b th:text="${informationBoard.cnt}"></b></span>
 
@@ -131,12 +132,13 @@
                          th:each="comment : ${commentList}">
                         <div class="comment-header">
                             <span>
-                                <span class="comment-writer" th:text="${comment.member.username}"></span>
-                                <span th:switch="${informationBoard.member.grade.name()}">
+                                <span class="comment-writer" th:text="${comment.member?.username ?: '-'}"></span>
+                                <span th:switch="${informationBoard.member?.grade?.name() ?: 'UNKNOWN'}">
                                     <span th:case="'USER'">일반🥉</span>
                                     <span th:case="'REGULAR'">성실🥈</span>
                                     <span th:case="'BEST'">우수🥇</span>
                                     <span th:case="'SPECIAL'">최우수🏆</span>
+                                    <span th:case="'UNKNOWN'">알 수 없음</span>
                                 </span>
                             </span>
 

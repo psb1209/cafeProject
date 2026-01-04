@@ -3,10 +3,7 @@ package com.example.cafeProject.informationBoardComment;
 import com.example.cafeProject.informationBoard.InformationBoard;
 import com.example.cafeProject.informationBoard.InformationBoardDTO;
 import com.example.cafeProject.informationBoard.InformationBoardRepository;
-import com.example.cafeProject.member.Grade;
-import com.example.cafeProject.member.Member;
-import com.example.cafeProject.member.MemberRepository;
-import com.example.cafeProject.member.RoleType;
+import com.example.cafeProject.member.*;
 import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardCommentDTO;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +23,7 @@ public class InformationBoardCommentService {
 
     private final InformationBoardCommentRepository informationBoardCommentRepository;
     private final InformationBoardRepository informationBoardRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
 
     //댓글 기본키로 댓글 레코드 한줄 찾기
@@ -39,12 +36,6 @@ public class InformationBoardCommentService {
     @Transactional(readOnly = true)
     public InformationBoard getSelectOneById_informationBoard(int id) {
         return informationBoardRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("해당 게시글 없음"));
-    }
-
-    //아이디로 맴버 레코드 한줄 찾기
-    @Transactional(readOnly = true)
-    public Member getSelectOneById_member(String username) {
-        return memberRepository.findByUsername(username).orElseThrow(()-> new IllegalArgumentException("해당 맴버 없음"));
     }
 
     //댓글 페이징
@@ -71,7 +62,7 @@ public class InformationBoardCommentService {
     @Transactional
     public boolean setInsert(InformationBoardCommentDTO informationBoardCommentDTO, User user) {
         InformationBoard informationBoard = getSelectOneById_informationBoard(informationBoardCommentDTO.getInformationBoardId()); //카페 게시글 정보 확인
-        Member member = getSelectOneById_member(user.getUsername()); //로그인한 사용자가 카페회원이 맞는지 (인증:아이디,비번확인 + 인가:권한확인)
+        Member member = memberService.viewCurrentMember(user); //로그인한 사용자가 카페회원이 맞는지 (인증:아이디,비번확인 + 인가:권한확인)
 
         Grade oldGrade = member.getGrade(); //로그인한 사용자의 예전 등급
 

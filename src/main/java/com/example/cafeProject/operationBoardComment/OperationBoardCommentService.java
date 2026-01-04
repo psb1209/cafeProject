@@ -27,12 +27,11 @@ public class OperationBoardCommentService {
     private final OperationBoardCommentRepository operationBoardCommentRepository;
     private final OperationBoardRepository operationBoardRepository;
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
 
     @Transactional
     public boolean setInsert(OperationBoardCommentDTO operationBoardCommentDTO, User user) {
         OperationBoard operationBoard = getSelectOneById_operationBoard(operationBoardCommentDTO.getOperationBoardId()); //카페 게시글 정보 확인
-        Member member = getSelectOneById_member(user.getUsername()); //로그인한 사용자가 카페회원이 맞는지 (인증:아이디,비번확인 + 인가:권한확인)
+        Member member = memberService.viewCurrentMember(user); //로그인한 사용자가 카페회원이 맞는지 (인증:아이디,비번확인 + 인가:권한확인)
 
         Grade oldGrade = member.getGrade(); //로그인한 사용자의 예전 등급
 
@@ -49,12 +48,6 @@ public class OperationBoardCommentService {
     @Transactional(readOnly = true)
     public OperationBoard getSelectOneById_operationBoard(int id) {
         return operationBoardRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("해당 게시글 없음"));
-    }
-
-    //아이디로 맴버 레코드 한줄 찾기
-    @Transactional(readOnly = true)
-    public Member getSelectOneById_member(String username) {
-        return memberRepository.findByUsername(username).orElseThrow(()-> new IllegalArgumentException("해당 맴버 없음"));
     }
     
     @Transactional
@@ -100,7 +93,7 @@ public class OperationBoardCommentService {
         OperationBoardComment operationBoardComment_ = operationBoardCommentRepository.findById(paramDTO.getOperationBoardCommentId())
                 .orElseThrow(() -> new IllegalArgumentException("부모 댓글 없음"));
 
-        Member member = memberRepository.findByUsername(userDetails.getUsername())
+        Member member = memberService.viewOptional(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("해당 회원 없음"));
 
         operationBoardCommentRepository.updateRelevel(

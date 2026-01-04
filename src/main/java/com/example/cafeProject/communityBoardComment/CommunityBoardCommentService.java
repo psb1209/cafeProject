@@ -34,7 +34,7 @@ public class CommunityBoardCommentService {
     @Transactional
     public boolean setInsert(CommunityBoardCommentDTO communityBoardCommentDTO, User user) {
         CommunityBoard communityBoard = getSelectOneById_communityBoard(communityBoardCommentDTO.getCommunityBoardId()); //카페 게시글 정보 확인
-        Member member = getSelectOneById_member(user.getUsername()); //로그인한 사용자가 카페회원이 맞는지 (인증:아이디,비번확인 + 인가:권한확인)
+        Member member = memberService.viewCurrentMember(user); //로그인한 사용자가 카페회원이 맞는지 (인증:아이디,비번확인 + 인가:권한확인)
 
         Grade oldGrade = member.getGrade(); //로그인한 사용자의 예전 등급
 
@@ -51,12 +51,6 @@ public class CommunityBoardCommentService {
     @Transactional(readOnly = true)
     public CommunityBoard getSelectOneById_communityBoard(int id) {
         return communityBoardRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("해당 게시글 없음"));
-    }
-
-    //아이디로 맴버 레코드 한줄 찾기
-    @Transactional(readOnly = true)
-    public Member getSelectOneById_member(String username) {
-        return memberRepository.findByUsername(username).orElseThrow(()-> new IllegalArgumentException("해당 맴버 없음"));
     }
     
     @Transactional

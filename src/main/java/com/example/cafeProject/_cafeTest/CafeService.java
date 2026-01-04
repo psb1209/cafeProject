@@ -89,7 +89,7 @@ public class CafeService extends BaseImageService<Cafe, CafeDTO> {
 
     @Override
     protected Cafe toEntity(CafeDTO dto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = memberService.getCurrentMember();
         if (memberService.isNotLogin(authentication)) throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
         Cafe cafe = super.toEntity(dto);
         cafe.setMember(memberService.viewCurrentMember(authentication));
