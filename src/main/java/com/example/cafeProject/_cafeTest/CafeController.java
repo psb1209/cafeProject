@@ -1,10 +1,10 @@
 package com.example.cafeProject._cafeTest;
 
 import com.example.base.BaseImageController;
+import com.example.cafeProject._boardTest.BoardDTO;
 import com.example.cafeProject.communityBoard.CommunityBoardService;
 import com.example.cafeProject.informationBoard.InformationBoardService;
 import com.example.cafeProject.member.MemberService;
-import com.example.cafeProject.member.RoleType;
 import com.example.cafeProject.noticeBoard.NoticeBoardService;
 import com.example.cafeProject.validation.ValidationGroups;
 import com.example.exception.DuplicateValueException;
@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -44,6 +45,20 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
         this.noticeBoardService = noticeBoardService;
         this.communityBoardService = communityBoardService;
         this.informationBoardService = informationBoardService;
+    }
+
+    /**
+     * 모든 핸들러 메서드 실행 전에 모델에 "cafe"를 자동 주입
+     * - 요청 파라미터 c(=cafe code)가 있으면 해당 게시판 DTO를 조회해서 모델에 담음
+     * - c 없이 들어오는 요청(예: /post/view/1 같이 c를 안 붙인 경우)은 null 반환
+     * 뷰에서 `${cafe}`를 바로 참조할 수 있게 만들기 위한 전역 모델 세팅용 훅
+     */
+    @ModelAttribute("cafe")
+    public CafeDTO board(
+            @RequestParam(name = "c", required = false) String c
+    ) {
+        if (c == null || c.isBlank()) return null; // c 없이 들어오는 페이지는 일단 null
+        return cafeService.viewDTOByCode(c);
     }
 
     @Override
@@ -87,6 +102,15 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
         return super.basePath + "/main"; // ex) "memo/list"
     }
 
+    /** 메타데이터 */
+    @GetMapping("/meta/{id}")
+    public String meta(
+            Model model,
+            @PathVariable int id
+    ) {
+        return loadPathOrRedirect(id, model, basePath+"/meta");
+    }
+
     @Override
     public String createProc(
             @Validated(ValidationGroups.OnCreate.class) @ModelAttribute("data") CafeDTO dto,
@@ -103,6 +127,8 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("readRole", "invalid", e.getMessage());
             return super.basePath + "/create";
+        } catch (AccessDeniedException e) {
+            return "redirect:/member/login";
         } catch (Exception e) {
             log.error("[createProc] 예상하지 못 한 오류 : {}", e.getMessage(), e);
             return "redirect:/error/runtimeErrorPage";

@@ -3,14 +3,16 @@
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{main_layout/layout}"
-      th:with="headerImage=@{/assets/img/main.jpg},
+      th:with="headerImage=${#strings.isEmpty(cafe?.imgName)}
+                         ? @{/assets/img/post-sample-image.jpg}
+                         : @{|${imageUrlPrefix}${cafe.imgName}|},
                headerPosition='center center',
                sidebarKey='cafe'">
 
 <body>
 
-<h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
-<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
+<h1 layout:fragment="pageTitle" th:text="${cafe?.name} ?: 'My Cafe'" onclick="location.href='/'" style="cursor: pointer;">카페 이름</h1>
+<span layout:fragment="pageSubTitle" th:text="${cafe?.description} ?: 'description'">카페 설명</span>
 
 <div layout:fragment="content">
 

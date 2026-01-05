@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{main_layout/layout}"
+      th:with="showHeader=false,
+               sidebarKey='admin'">
+<body>
+
+<div layout:fragment="content" class="container mt-4">
+
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+
+    <!-- 상단: 이름 + 활성/비활성 -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <div class="d-flex align-items-center gap-2">
+            <h2 class="mb-0" th:text="${data.name}">게시판 이름</h2>
+
+            <span class="badge text-bg-success"
+                  th:if="${data.enabled}">ACTIVE</span>
+            <span class="badge text-bg-secondary"
+                  th:unless="${data.enabled}">INACTIVE</span>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary"
+               th:href="@{/cafe/cafeList}">
+                목록
+            </a>
+            <a class="btn btn-primary"
+               th:href="@{|/cafe/update/${data.id}|}">
+                수정
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- 왼쪽 -->
+        <div class="col-12 col-lg-8">
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header fw-semibold">기본 정보</div>
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <div class="small text-muted mb-1">게시판 코드</div>
+
+                        <div class="input-group">
+                            <input id="cafeCode" type="text" class="form-control"
+                                   th:value="${data.code}" readonly>
+                            <button class="btn btn-outline-secondary" type="button"
+                                    onclick="copyFromId('cafeCode')">
+                                복사
+                            </button>
+                        </div>
+
+                        <div class="mt-2">
+                            <a class="small"
+                               th:href="@{|/cafe/${data.code}|}"
+                               target="_blank" rel="noopener">
+                                공개 링크로 열기 (/cafe/<span th:text="${data.code}">code</span>)
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="small text-muted mb-1">게시판 설명</div>
+                        <pre class="form-control mb-0"
+                             style="white-space: pre-wrap; min-height: 180px;"
+                             th:text="${data.description}">설명</pre>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header fw-semibold">상태</div>
+                <div class="card-body">
+                    <div class="small text-muted mb-1">활성화(enabled)</div>
+                    <div th:text="${data.enabled} ? '활성' : '비활성'">활성</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 오른쪽 -->
+        <div class="col-12 col-lg-4">
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header fw-semibold">대표 이미지</div>
+                <div class="card-body">
+                    <div th:if="${data.imgName != null && !#strings.isEmpty(data.imgName)}">
+                        <img class="img-fluid rounded border"
+                             th:src="@{|${imageUrlPrefix}${data.imgName}|}"
+                             th:alt="${data.name}"
+                             loading="lazy">
+                        <div class="small text-muted mt-2">
+                            파일명: <span th:text="${data.imgName}">img.jpg</span>
+                        </div>
+                    </div>
+
+                    <div th:unless="${data.imgName != null && !#strings.isEmpty(data.imgName)}"
+                         class="text-muted">
+                        등록된 대표 이미지가 없습니다.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header fw-semibold">메타 정보</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                        <tr>
+                            <th class="ps-3" style="width: 40%;">ID</th>
+                            <td th:text="${data.id}">1</td>
+                        </tr>
+                        <tr>
+                            <th class="ps-3">생성일</th>
+                            <td th:text="${data.createDate != null} ? ${#dates.format(data.createDate, 'yyyy-MM-dd HH:mm:ss')} : '-'">
+                                2025-12-18 09:18:07
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="ps-3">작성자</th>
+                            <td th:text="${data.username != null} ? ${data.username} : '-'">admin</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 페이지 전용 스크립트 -->
+<script layout:fragment="script">
+    function copyFromId(inputId) {
+        const el = document.getElementById(inputId);
+        if (!el) return;
+
+        el.select();
+        el.setSelectionRange(0, 99999);
+
+        // 최신 브라우저 우선
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(el.value);
+        } else {
+            // fallback
+            document.execCommand("copy");
+        }
+    }
+</script>
+
+</body>
+</html>

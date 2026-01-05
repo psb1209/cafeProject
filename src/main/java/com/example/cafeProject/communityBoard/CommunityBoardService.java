@@ -6,6 +6,7 @@ import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberRepository;
 import com.example.cafeProject.member.MemberService;
 
+import com.example.cafeProject.operationBoard.OperationBoard;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -35,12 +36,25 @@ public class CommunityBoardService {
 
     private final MemberService memberService;
 
+    /*=============================== 각 게시판 공지글 ===================================*/
+    @Transactional
+    public void toggleNotice(int id) {
+        CommunityBoard communityBoard = communityBoardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+        communityBoard.setSubNotice(!communityBoard.isSubNotice());
+    }
+
+    public List<CommunityBoard> getSubNoticeList() {
+        return communityBoardRepository.findBySubNoticeTrueOrderByCreateDateDesc();
+    }
+
     public Page<CommunityBoard> list(Pageable pageable, String keyword) {
         if (keyword == null || keyword.isBlank()) // 검색을 안 했을 경우
-            return communityBoardRepository.findAll(pageable);
-
+            return communityBoardRepository.findBySubNoticeFalse(pageable);
         return communityBoardRepository.searchBySubject(keyword.trim(), pageable);
     }
+    /*====================================================================================*/
+
 
     @Transactional(readOnly = true)
     public CommunityBoard getSelectOneById(CommunityBoardDTO paramDTO) {

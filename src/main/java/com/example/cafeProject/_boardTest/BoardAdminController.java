@@ -5,6 +5,7 @@ import com.example.cafeProject.member.RoleType;
 import com.example.cafeProject.validation.AdminOnly;
 import com.example.cafeProject.validation.ValidationGroups;
 import com.example.exception.DuplicateValueException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -52,6 +53,8 @@ public class BoardAdminController extends BaseImageController<Board, BoardDTO> {
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("readRole", "invalid", e.getMessage());
             return basePath + "/create";
+        } catch (AccessDeniedException e) {
+            return "redirect:/member/login";
         } catch (Exception e) {
             log.error("[createProc] 예상하지 못 한 오류 : {}", e.getMessage(), e);
             return "redirect:/error/runtimeErrorPage";

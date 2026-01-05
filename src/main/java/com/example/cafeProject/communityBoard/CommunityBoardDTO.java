@@ -24,4 +24,8 @@ public class CommunityBoardDTO {
     private int operationBoardCommentId;
 
     private String operationBoardCommentContent;
+
+    /*=============================== 각 게시판 공지글 ===================================*/
+    private boolean subNotice;
+    /*====================================================================================*/
 }
