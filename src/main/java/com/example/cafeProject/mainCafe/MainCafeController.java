@@ -1,6 +1,6 @@
 package com.example.cafeProject.mainCafe;
 
-import com.example.cafeProject._boardTest.BoardService;
+import com.example.cafeProject._cafeTest.CafeService;
 import com.example.cafeProject.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,13 +13,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
 public class MainCafeController {
 
-    private final BoardService boardService;
+    private final CafeService cafeService;
     private final MemberService memberService;
 
     @Value("${app.image.url-prefix}")
@@ -40,7 +39,7 @@ public class MainCafeController {
     ) {
         model.addAttribute("activeMenu", "main");       // 네비(사이드바/상단메뉴)용
         model.addAttribute("activeTab", "my");      // 카페탭 기본 선택
-        model.addAttribute("list", boardService.listVisibleDTO(pageable, memberService.getEffectiveRoles(authentication)));
+        model.addAttribute("list", cafeService.listVisibleDTO(pageable, memberService.getEffectiveRoles(authentication)));
         return "index/mainIndex";
     }
 
@@ -66,7 +65,7 @@ public class MainCafeController {
     ) {
         model.addAttribute("activeMenu", "main");
         model.addAttribute("activeTab", "my");
-        model.addAttribute("list", boardService.listVisibleDTO(pageable, memberService.getEffectiveRoles(authentication)));
+        model.addAttribute("list", cafeService.listVisibleDTO(pageable, memberService.getEffectiveRoles(authentication)));
         return "explore_cafes/my :: cafeList"; // explore_cafes/my의 cafeList 조각만 로딩
     }
 

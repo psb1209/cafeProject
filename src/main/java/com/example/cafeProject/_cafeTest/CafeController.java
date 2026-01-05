@@ -102,6 +102,15 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
         return super.basePath + "/main"; // ex) "memo/list"
     }
 
+    /** 메타데이터 */
+    @GetMapping("/meta/{id}")
+    public String meta(
+            Model model,
+            @PathVariable int id
+    ) {
+        return loadPathOrRedirect(id, model, basePath+"/meta");
+    }
+
     @Override
     public String createProc(
             @Validated(ValidationGroups.OnCreate.class) @ModelAttribute("data") CafeDTO dto,

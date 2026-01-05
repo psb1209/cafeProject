@@ -1,9 +1,11 @@
 package com.example.cafeProject.index;
 
+import com.example.cafeProject._cafeTest.CafeService;
 import com.example.cafeProject.communityBoard.CommunityBoard;
 import com.example.cafeProject.communityBoard.CommunityBoardService;
 import com.example.cafeProject.informationBoard.InformationBoard;
 import com.example.cafeProject.informationBoard.InformationBoardService;
+import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoard.NoticeBoard;
 import com.example.cafeProject.noticeBoard.NoticeBoardService;
 import com.example.cafeProject.validation.ManagementOnly;
@@ -15,18 +17,25 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
 @Controller
 public class IndexController {
+    private final CafeService cafeService;
+    private final MemberService memberService;
     private final NoticeBoardService noticeBoardService;
     private final CommunityBoardService communityBoardService;
     private final InformationBoardService informationBoardService;
 
     @ManagementOnly
     @GetMapping("/admin")
-    public String list() {
-        return "redirect:member/list";
+    public String admin(
+            @RequestParam(name = "c", required = false) String code
+    ) {
+        if (code == null || code.isBlank()) return "redirect:/member/list";
+
+        return "redirect:/cafe/meta/"+cafeService.viewDTOByCode(code).getId();
     }
 
     @GetMapping({"healthCafe/", "healthCafe"})
