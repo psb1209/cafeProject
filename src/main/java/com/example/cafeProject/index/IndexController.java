@@ -55,4 +55,9 @@ public class IndexController {
         model.addAttribute("activeMenu", "about");
         return "healthCafe/healthCafeIntroduction";
     }
+
+    @GetMapping("/error/runtimeErrorPage")
+    private String runtimeErrorPage() {
+        return "error/runtimeErrorPage";
+    }
 }

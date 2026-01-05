@@ -4,7 +4,6 @@ import com.example.base.BaseImageController;
 import com.example.cafeProject.communityBoard.CommunityBoardService;
 import com.example.cafeProject.informationBoard.InformationBoardService;
 import com.example.cafeProject.member.MemberService;
-import com.example.cafeProject.member.RoleType;
 import com.example.cafeProject.noticeBoard.NoticeBoardService;
 import com.example.cafeProject.validation.ValidationGroups;
 import com.example.exception.DuplicateValueException;
@@ -13,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -103,6 +103,8 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("readRole", "invalid", e.getMessage());
             return super.basePath + "/create";
+        } catch (AccessDeniedException e) {
+            return "redirect:/member/login";
         } catch (Exception e) {
             log.error("[createProc] 예상하지 못 한 오류 : {}", e.getMessage(), e);
             return "redirect:/error/runtimeErrorPage";
