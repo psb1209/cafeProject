@@ -1,73 +1,89 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorate="~{_layout/layout}"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
-               headerPosition='center center'">
+               headerPosition='center center',
+               sidebarKey='cafe'">
 <body>
-<h1 layout:fragment="pageTitle">헬 사 모</h1>
+
+<h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
 <span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
 
 <div layout:fragment="content">
-    <!-- 본문 내용 시작 -->
-    <h1>게시판 목록</h1>
 
-    <table class="table table-hover">
-        <thead>
-        <tr>
-            <th>번호</th>
-            <th>제목</th>
-            <th>설명</th>
-            <th>만든이</th>
-            <th>작성권한</th>
-            <th>개설일</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="data, loop : ${list}"
-            th:onclick="|location.href='@{|/boardManagement/view/${data.id}|}'|"
-            style="cursor: pointer;">
-            <td th:text="${loop.index+1}"></td>
-            <td th:text="${data.name}"></td>
-            <td class="td-ellipsis" th:text="${data.description}"></td>
-            <td th:text="${data.username}"></td>
-            <td th:text="${data.writeRole}"></td>
-            <td th:text="${#dates.format(data.createDate, 'yyyy-MM-dd')}"></td>
-        </tr>
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
 
-        </tbody>
-    </table>
+    <div class="cafe-board-wrap">
 
-    <a href="/boardManagement/create" class="btn btn-secondary">등록</a>
+        <!-- 헤더 -->
+        <div class="cafe-board-header">
+            <h2 class="cafe-board-title">게시판 목록</h2>
 
-    <div style="margin-top: 25px;" th:if="${list.totalPages > 0}">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${list.first} ? 'disabled'">
-                <a class="page-link"
-                   th:href="${list.first} ? '#' : @{|?page=${list.number-1}|}">
-                    Prev
+            <div class="cafe-article-actions">
+                <a href="/boardManagement/create"
+                   class="cafe-action-btn write">
+                    게시판 등록
                 </a>
-            </li>
+            </div>
+        </div>
 
-            <li class="page-item"
-                th:each="page: ${#numbers.sequence(0, list.totalPages-1)}"
-                th:classappend="${page == list.number} ? 'active'">
-                <a class="page-link"
+        <!-- 테이블 -->
+        <table class="cafe-board-table">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>설명</th>
+                <th>만든이</th>
+                <th>작성권한</th>
+                <th>개설일</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="data, loop : ${list}"
+                th:onclick="|location.href='@{|/boardManagement/view/${data.id}|}'|">
+                <td class="td_underline" th:text="${loop.index + 1}"></td>
+                <td class="td_underline col-subject text-center" th:text="${data.name}"></td>
+                <td class="td_underline" th:text="${data.description}"></td>
+                <td class="td_underline" th:text="${data.username}"></td>
+                <td class="td_underline" th:text="${data.writeRole}"></td>
+                <td class="td_underline col-date"
+                    th:text="${#dates.format(data.createDate, 'yyyy-MM-dd')}">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- 페이지네이션 -->
+        <div class="cafe-pagination" th:if="${!list.isEmpty()}">
+
+            <!-- 이전 버튼 -->
+            <a class="page-btn"
+               th:classappend="${list.first} ? ' disabled'"
+               th:href="@{|/operationBoard/list?page=${list.number - 1}|}">이전</a>
+
+            <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
+            <th:block th:with="
+                            startPage=${list.number - 2 > 0 ? list.number - 2 : 0},
+                            endPage=${list.number + 2 < list.totalPages - 1 ? list.number + 2 : list.totalPages - 1}">
+
+                <a class="page-btn"
+                   th:each="page : ${#numbers.sequence(startPage, endPage)}"
                    th:text="${page + 1}"
-                   th:href="@{|?page=${page}|}">
-                </a>
-            </li>
+                   th:classappend="${page == list.number} ? ' active'"
+                   th:href="@{|/operationBoard/list?page=${page}|}"></a>
+            </th:block>
 
-            <li class="page-item" th:classappend="${list.last} ? 'disabled'">
-                <a class="page-link"
-                   th:href="${list.last} ? '#' : @{|?page=${list.number+1}|}">
-                    Next
-                </a>
-            </li>
-        </ul>
+            <!-- 다음 버튼 -->
+            <a class="page-btn"
+               th:classappend="${list.last} ? ' disabled'"
+               th:href="@{|/operationBoard/list?page=${list.number + 1}|}">다음</a>
+        </div>
+
     </div>
-    
-    <!-- 본문 내용 종료 -->
 </div>
 
 </body>

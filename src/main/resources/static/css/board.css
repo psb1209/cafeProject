@@ -733,3 +733,74 @@ tr.notice-row:hover {
 
 }
 */
+
+
+/* ==============================
+   게시판 상세 페이지 정리용 (추가)
+   ============================== */
+
+/* 상단 제목 영역 정리 */
+.board-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.board-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 상태 뱃지 – input 느낌 제거 */
+.board-status {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.board-status.active {
+    background: #e6f0ff;
+    color: var(--blue-main);
+}
+
+.board-status.inactive {
+    background: #f2f2f2;
+    color: var(--text-sub);
+}
+
+/* 메인 / 서브 카드 구분 */
+.write-card.main {
+    border-top: 4px solid var(--blue-main);
+}
+
+.write-card.sub {
+    border-top: 1px solid var(--blue-border);
+}
+
+/* 설명 전용 박스 (입력창 느낌 제거) */
+.board-desc {
+    background: #f9fbff;
+    border: 1px solid var(--table-border-light);
+    border-radius: 8px;
+    padding: 16px;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+/* 오른쪽 영역 톤 다운 */
+.write-side {
+    width: 320px;
+}
+
+.write-side .write-header {
+    font-size: 16px;
+    color: var(--text-sub);
+}
+
+/* 카드 간 여백 통일 */
+.write-card {
+    margin-bottom: 32px;
+}

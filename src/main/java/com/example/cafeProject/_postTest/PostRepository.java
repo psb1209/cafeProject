@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
@@ -28,6 +30,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
         join p.board b
         where b.code = :code
           and p.deleted = false
+          and p.notice = false
     """)
     Page<Post> findByBoard_Code(@Param("code") String code, Pageable pageable);
 
@@ -60,6 +63,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
         join p.board b
         where b.code = :code
           and p.deleted = false
+          and p.notice = false
           and lower(p.title) like lower(concat('%', :keyword, '%'))
     """)
     Page<Post> searchByTitle(@Param("code") String code, @Param("keyword") String keyword, Pageable pageable);
@@ -72,10 +76,22 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
         join p.board b
         where b.code = :code
           and p.deleted = false
+          and p.notice = false
           and (
                p.titleKey like concat('%', :key, '%')
             or p.title like concat('%', :raw, '%')
           )
     """)
     Page<Post> searchByChosungTitle(@Param("code") String code, @Param("key") String key, @Param("raw") String raw, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"board", "member"})
+    @Query("""
+        select p
+        from Post p
+        join p.board b
+        where b.code = :code
+          and p.deleted = false
+          and p.notice = true
+    """)
+    List<Post> findByNotice(@Param("code") String code);
 }

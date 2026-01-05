@@ -62,8 +62,9 @@
                 </form>
             </div>
 
-            <table class="cafe-board-table">
-                <thead>
+            <table class="cafe-board-table"
+                   th:if="${(subNoticeList != null and !subNoticeList.isEmpty()) or (operationBoardList != null and !operationBoardList.isEmpty())}">
+            <thead>
                 <tr>
                     <th class="col-no">순번</th>
                     <th class="col-subject">제목</th>
@@ -85,13 +86,6 @@
                     <td>
                         📢 <span th:text="${subNotice.subject}"></span>
 
-                        <!-- 공지 해제 버튼 (관리자/매니저만) -->
-<!--                        <sec:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')">
-                            <form th:action="@{/operationBoard/toggleNotice/{id}(id=${subNotice.id})}" method="post" style="display:inline;">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                <button type="submit" class="notice-btn">공지해제</button>
-                            </form>-->
-                        </sec:authorize>
 
                         <form th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
                               th:action="@{/operationBoard/toggleNotice/{id}(id=${subNotice.id})}" method="post" style="display:inline;">
@@ -115,7 +109,7 @@
                 </tr>
                 </tbody>
                 <!--====================================================== 공지글!! =======================================================-->
-                <tbody th:if="${!operationBoardList.isEmpty()}">
+                <tbody>
                 <tr th:each="operationBoard, loop : ${operationBoardList}"
                     th:onclick="|location.href='@{|/operationBoard/view/${operationBoard.id}|}'|">
 
@@ -149,20 +143,19 @@
                         th:text="${#dates.format(operationBoard.createDate, 'yyyy-MM-dd')}"></td>
                 </tr>
                 </tbody>
-
-                <tbody th:if="${operationBoardList.isEmpty() && subNoticeList.isEmpty()}">
-                    <tr>
-                        <td colspan="6" class="text-center">등록된 게시글이 없습니다.</td>
-                    </tr>
-                </tbody>
             </table>
 
+            <div th:if="${(operationBoardList == null or operationBoardList.isEmpty()) and (subNoticeList == null or subNoticeList.isEmpty())}"
+                 class="text-center" style="padding:40px; color:#888;">
+                등록된 게시글이 없습니다.
+            </div>
+
                 <!-- 게시글 페이징 -->
-                <div class="cafe-pagination" th:if="${!operationBoardList.isEmpty()}">
+                <div class="cafe-pagination" th:if="${operationBoardList != null and !operationBoardList.isEmpty()}">
 
                     <!-- 이전 버튼 -->
                     <a class="page-btn"
-                       th:classappend="${operationBoardList.first} ? ' disabled'"
+                       th:classappend="${operationBoardList != null and operationBoardList.first} ? ' disabled'"
                        th:href="@{|/operationBoard/list?page=${operationBoardList.number - 1}|}">이전</a>
 
                     <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
@@ -187,7 +180,7 @@
     </div>
 </div>
 
-<script th:if="${operationBoardList.isEmpty()}">
+<script th:if="${operationBoardList != null and operationBoardList.isEmpty()}">
     alert([[${errMsg}]]);
 </script>
 

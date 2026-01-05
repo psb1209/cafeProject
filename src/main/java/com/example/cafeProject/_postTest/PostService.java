@@ -4,8 +4,11 @@ import com.example.base.BaseImageService;
 import com.example.base.BaseUtility;
 import com.example.cafeProject._boardTest.Board;
 import com.example.cafeProject._boardTest.BoardService;
+import com.example.cafeProject.member.Grade;
+import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.member.RoleType;
+import com.example.cafeProject.operationBoard.OperationBoard;
 import com.example.exception.EntityNotFoundException;
 import com.example.exception.PermissionDeniedException;
 import org.modelmapper.ModelMapper;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.Arrays;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Service
 public class PostService extends BaseImageService<Post, PostDTO> {
@@ -109,6 +113,7 @@ public class PostService extends BaseImageService<Post, PostDTO> {
         if (post.getMember() != null) {
             dto.setMemberId(post.getMember().getId());
             dto.setUsername(post.getMember().getUsername());
+            dto.setGrade(post.getMember().getGrade());
         }
         return dto;
     }
@@ -208,4 +213,40 @@ public class PostService extends BaseImageService<Post, PostDTO> {
         Post post = viewDetail(postId);
         return canEdit(post, authentication, roles);
     }
+
+    public List<PostDTO> noticeListByBoardCodeDTO(String code) {
+        return postRepository
+                .findByNotice(code)
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    @Transactional
+    public void toggleNotice(int id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+        post.setNotice(!post.isNotice());
+    }
+
+    public boolean gradeUpdateCheck(PostDTO dto) {
+        Member member = memberService.viewCurrentMember(memberService.getCurrentMember());
+        Grade oldGrade = member.getGrade();
+        updateGrade(member);
+        Grade newGrade = memberService.view(member.getId()).getGrade();
+        return oldGrade != newGrade;
+    }
+
+    @Transactional
+    public void updateGrade(Member member) {
+        member.increasePostCount(); //게시글 작성 +1
+        int posts = member.getPostCount();
+        int replies = member.getReplyCount();
+
+        if (posts >= 7 && replies >= 12) member.setGrade(Grade.SPECIAL);
+        else if (posts >= 5 && replies >= 10) member.setGrade(Grade.BEST);
+        else if (posts >= 3 && replies >= 5) member.setGrade(Grade.REGULAR);
+        else member.setGrade(Grade.USER);
+    }
+
 }

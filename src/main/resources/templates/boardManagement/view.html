@@ -1,152 +1,163 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorate="~{_layout/layout}"
+      layout:decorate="~{main_layout/layout}"
       th:with="showHeader=false">
 <body>
 
-<div layout:fragment="content" class="container mt-4">
+<div layout:fragment="content">
 
-    <!-- 상단: 이름 + 활성/비활성 -->
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-        <div class="d-flex align-items-center gap-2">
-            <h2 class="mb-0" th:text="${data.name}">게시판 이름</h2>
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
 
-            <span class="badge text-bg-success"
+    <!-- ================= 상단 헤더 ================= -->
+    <div class="board-detail-header">
+        <div class="board-title-wrap">
+            <h2 th:text="${data.name}">게시판 이름</h2>
+
+            <span class="board-status active"
                   th:if="${data.enabled}">ACTIVE</span>
-            <span class="badge text-bg-secondary"
+            <span class="board-status inactive"
                   th:unless="${data.enabled}">INACTIVE</span>
         </div>
 
-        <div class="d-flex gap-2">
-            <!-- 필요하면 수정/목록 버튼 링크만 맞춰서 사용 -->
-            <a class="btn btn-outline-secondary"
-               th:href="@{/boardManagement/list}">
-                목록
-            </a>
-            <a class="btn btn-primary"
-               th:href="@{|/boardManagement/update/${data.id}|}">
-                수정
-            </a>
+        <div class="cafe-article-actions">
+            <a th:href="@{/boardManagement/list}" class="cafe-action-btn">목록</a>
+            <a th:href="@{|/boardManagement/update/${data.id}|}"
+               class="cafe-action-btn">수정</a>
         </div>
     </div>
 
-    <div class="row g-3">
-        <!-- 왼쪽: 기본 정보 -->
-        <div class="col-12 col-lg-8">
-            <!-- 코드 + 바로가기 + 복사 -->
-            <div class="card shadow-sm mb-3">
-                <div class="card-header fw-semibold">기본 정보</div>
-                <div class="card-body">
+    <!-- ================= 본문 ================= -->
+    <div class="write-page">
 
-                    <div class="mb-3">
-                        <div class="small text-muted mb-1">게시판 코드</div>
+        <!-- ===== 왼쪽 영역 ===== -->
+        <div style="flex:1; min-width:300px;">
 
-                        <div class="input-group">
-                            <input id="boardCode" type="text" class="form-control"
-                                   th:value="${data.code}" readonly>
-                            <button class="btn btn-outline-secondary" type="button"
-                                    onclick="copyText('boardCode')">
-                                복사
-                            </button>
-                        </div>
+            <!-- 기본 정보 -->
+            <div class="write-card main">
+                <div class="write-header">기본 정보</div>
 
-                        <div class="mt-2">
-                            <a class="small"
-                               th:href="@{|/board/${data.code}|}"
-                               target="_blank" rel="noopener">
-                                공개 링크로 열기 (/board/<span th:text="${data.code}">code</span>)
-                            </a>
-                        </div>
+                <div class="write-group">
+                    <span class="member-view-label">게시판 코드</span>
+
+                    <div style="display:flex; gap:8px;">
+                        <input id="boardCode"
+                               class="member-view-box"
+                               th:value="${data.code}"
+                               readonly>
+
+                        <button class="write-btn"
+                                type="button"
+                                onclick="copyText('boardCode')">
+                            복사
+                        </button>
                     </div>
 
-                    <div class="mb-3">
-                        <div class="small text-muted mb-1">게시판 설명</div>
+                    <a class="cafe-more-btn"
+                       style="margin-top:8px; display:inline-block;"
+                       th:href="@{|/board/${data.code}|}"
+                       target="_blank">
+                    <span class="more-text">
+                        공개 링크로 열기 (/board/<span th:text="${data.code}"></span>)
+                    </span>
+                        <span class="arrow">→</span>
+                    </a>
+                </div>
 
-                        <!-- 설명은 줄바꿈 유지가 중요해서 pre 사용 -->
-                        <pre class="form-control mb-0"
-                             style="white-space: pre-wrap; min-height: 180px;"
-                             th:text="${data.description}">설명</pre>
-                    </div>
+                <div class="write-group">
+                    <span class="member-view-label">게시판 설명</span>
 
+                    <pre class="board-desc"
+                         th:text="${data.description}">
+설명
+                </pre>
                 </div>
             </div>
 
-            <!-- 권한/상태 -->
-            <div class="card shadow-sm">
-                <div class="card-header fw-semibold">권한 / 상태</div>
-                <div class="card-body">
+            <!-- 권한 / 상태 -->
+            <div class="write-card sub">
+                <div class="write-header">권한 / 상태</div>
 
-                    <div class="row g-3">
-                        <div class="col-12 col-md-6">
-                            <div class="small text-muted mb-1">보기 권한(readRole)</div>
-                            <div class="fw-semibold" th:text="${data.readRole}">USER</div>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <div class="small text-muted mb-1">작성 권한(writeRole)</div>
-                            <div class="fw-semibold" th:text="${data.writeRole}">USER</div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="small text-muted mb-1">활성화(enabled)</div>
-                            <div th:text="${data.enabled} ? '활성' : '비활성'">활성</div>
-                        </div>
+                <div class="member-view-group">
+                    <span class="member-view-label">보기 권한</span>
+                    <div class="member-view-box"
+                         th:text="${data.readRole}">
+                        USER
                     </div>
+                </div>
 
+                <div class="member-view-group">
+                    <span class="member-view-label">작성 권한</span>
+                    <div class="member-view-box"
+                         th:text="${data.writeRole}">
+                        USER
+                    </div>
+                </div>
+
+                <div class="member-view-group">
+                    <span class="member-view-label">활성 상태</span>
+                    <div class="member-view-box"
+                         th:text="${data.enabled} ? '활성' : '비활성'">
+                        활성
+                    </div>
                 </div>
             </div>
-
         </div>
 
-        <!-- 오른쪽: 이미지 + 메타 -->
-        <div class="col-12 col-lg-4">
+        <!-- ===== 오른쪽 영역 ===== -->
+        <div class="write-side">
 
             <!-- 대표 이미지 -->
-            <div class="card shadow-sm mb-3">
-                <div class="card-header fw-semibold">대표 이미지</div>
-                <div class="card-body">
+            <div class="write-card sub">
+                <div class="write-header">대표 이미지</div>
 
-                    <div th:if="${data.imgName != null && !#strings.isEmpty(data.imgName)}">
-                        <img class="img-fluid rounded border"
-                             th:src="@{|${imageUrlPrefix}${data.imgName}|}"
-                             th:alt="${data.name}"
-                             loading="lazy">
-                        <div class="small text-muted mt-2">
-                            파일명: <span th:text="${data.imgName}">img.jpg</span>
-                        </div>
+                <div th:if="${data.imgName != null && !#strings.isEmpty(data.imgName)}">
+                    <img class="member-view-box"
+                         style="padding:0;"
+                         th:src="@{|${imageUrlPrefix}${data.imgName}|}"
+                         th:alt="${data.name}"
+                         loading="lazy">
+
+                    <div class="member-view-label" style="margin-top:8px;">
+                        파일명:
+                        <span th:text="${data.imgName}">img.jpg</span>
                     </div>
+                </div>
 
-                    <div th:unless="${data.imgName != null && !#strings.isEmpty(data.imgName)}"
-                         class="text-muted">
-                        등록된 대표 이미지가 없습니다.
-                    </div>
-
+                <div th:unless="${data.imgName != null && !#strings.isEmpty(data.imgName)}"
+                     class="member-view-box">
+                    등록된 대표 이미지가 없습니다.
                 </div>
             </div>
 
             <!-- 메타 정보 -->
-            <div class="card shadow-sm">
-                <div class="card-header fw-semibold">메타 정보</div>
-                <div class="card-body p-0">
-                    <table class="table table-sm mb-0">
-                        <tbody>
-                        <tr>
-                            <th class="ps-3" style="width: 40%;">ID</th>
-                            <td th:text="${data.id}">1</td>
-                        </tr>
-                        <tr>
-                            <th class="ps-3">생성일</th>
-                            <td th:text="${data.createDate != null} ? ${#dates.format(data.createDate, 'yyyy-MM-dd HH:mm:ss')} : '-'">
-                                2025-12-18 09:18:07
-                            </td>
-                        </tr>
-                        <tr>
-                            <th class="ps-3">작성자</th>
-                            <td th:text="${data.username != null} ? ${data.username} : '-'">admin</td>
-                        </tr>
-                        </tbody>
-                    </table>
+            <div class="write-card sub">
+                <div class="write-header">메타 정보</div>
+
+                <div class="member-view-group">
+                    <span class="member-view-label">ID</span>
+                    <div class="member-view-box"
+                         th:text="${data.id}">
+                        1
+                    </div>
+                </div>
+
+                <div class="member-view-group">
+                    <span class="member-view-label">생성일</span>
+                    <div class="member-view-box"
+                         th:text="${data.createDate != null}
+                     ? ${#dates.format(data.createDate, 'yyyy-MM-dd HH:mm:ss')}
+                     : '-'">
+                        날짜
+                    </div>
+                </div>
+
+                <div class="member-view-group">
+                    <span class="member-view-label">작성자</span>
+                    <div class="member-view-box"
+                         th:text="${data.username != null ? data.username : '-'}">
+                        admin
+                    </div>
                 </div>
             </div>
 

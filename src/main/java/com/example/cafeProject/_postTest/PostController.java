@@ -29,10 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @RequestMapping("/post")
@@ -85,6 +82,17 @@ public class PostController {
         binder.setDisallowedFields(disallowedFields());
     }
 
+    @ManagementOnly
+    @PostMapping("/toggleNotice/{id}")
+    public String toggleNotice(
+            @PathVariable Integer id,
+            RedirectAttributes redirectAttributes
+    ) {
+        postService.toggleNotice(id);
+        redirectAttributes.addFlashAttribute("msg", "공지 상태가 변경되었습니다.");
+        return "redirect:/post/list?b=" + postService.viewDTO(id).getBoardCode();
+    }
+
     @GetMapping("/list")
     public String list(
             @RequestParam(name = "b") String code,
@@ -92,9 +100,23 @@ public class PostController {
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             Model model
     ) {
-        Page<PostDTO> dto = postService.listByBoardCodeDTO(code, keyword, pageable);
-        model.addAttribute("list", dto);
+        // 1️⃣ 공지글
+        List<PostDTO> noticeList =
+                postService.noticeListByBoardCodeDTO(code);
+        log.debug("====================================");
+        for (PostDTO postDTO : noticeList) {
+            log.debug(postDTO.getTitle());
+        }
+        log.debug("====================================");
+
+        // 2️⃣ 일반글 (페이징)
+        Page<PostDTO> list =
+                postService.listByBoardCodeDTO(code, keyword, pageable);
+
+        model.addAttribute("noticeList", noticeList);
+        model.addAttribute("list", list);
         model.addAttribute("keyword", keyword);
+
         return "post/list";
     }
 
@@ -170,11 +192,16 @@ public class PostController {
     @PostMapping("/createProc")
     public String createProc(
             @Validated(ValidationGroups.OnCreate.class) @ModelAttribute("data") PostDTO dto,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes,
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) return "post/create";
         try {
             postService.setInsert(dto);
+            boolean isUpgraded = postService.gradeUpdateCheck(dto);
+            if(isUpgraded)  //등급 상승시 "msg" 데이터를 같이 리다이렉트 시킴
+                redirectAttributes.addFlashAttribute("msg","축하합니다! 등급이 올랐습니다!🎉");
             return "redirect:/post/list?b=" + dto.getBoardCode();
         } catch (AccessDeniedException | PermissionDeniedException e) {
             bindingResult.reject("permissionDenied", e.getMessage());

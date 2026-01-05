@@ -1,6 +1,7 @@
 package com.example.cafeProject._postTest;
 
 import com.example.base.BaseDTO;
+import com.example.cafeProject.member.Grade;
 import com.example.cafeProject.validation.ValidationGroups;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -50,4 +51,6 @@ public class PostDTO extends BaseDTO {
     private String boardName;
 
     private String boardCode;
+
+    private Grade grade;
 }
