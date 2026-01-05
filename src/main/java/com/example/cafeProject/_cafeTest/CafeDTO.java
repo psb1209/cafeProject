@@ -57,18 +57,6 @@ public class CafeDTO extends BaseDTO {
 
     private boolean enabled; // 활성화 여부
 
-    @NotNull(
-            message = "작성 권한은 필수입니다.",
-            groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class}
-    )
-    private RoleType writeRole; // 작성 권한
-
-    @NotNull(
-            message = "보기 권한은 필수입니다.",
-            groups = {ValidationGroups.OnCreate.class, ValidationGroups.OnUpdate.class}
-    )
-    private RoleType readRole; // 보기 권한
-
     public void normalize() {
         if (name != null) name = name.trim();
         if (code != null) code = code.trim().toLowerCase(Locale.ROOT);
