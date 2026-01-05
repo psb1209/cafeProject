@@ -45,16 +45,30 @@ public class CommunityBoard {
     @JoinColumn(name = "userId")
     private Member member;
 
+    /*=============================== 각 게시판 공지글 ===================================*/
+    @Column(nullable = false)
+    private boolean subNotice = false;
+    /*=====================================================================================*/
+
     @OneToMany(mappedBy = "communityBoard", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @OrderBy("id desc")
     private List<CommunityBoardComment> commentList;
 
-    public static CommunityBoard dtoToEntity(CommunityBoardDTO commentBoardDTO, Member member) {
-        CommunityBoard commentBoard = new CommunityBoard();
-        commentBoard.setSubject(commentBoardDTO.getSubject());
-        commentBoard.setContent(commentBoardDTO.getContent());
-        commentBoard.setCnt(0);
-        commentBoard.setMember(member);
-        return commentBoard;
+    public static CommunityBoard dtoToEntity(CommunityBoardDTO communityBoardDTO, Member member) {
+        CommunityBoard communityBoard = new CommunityBoard();
+        communityBoard.setSubject(communityBoardDTO.getSubject());
+        communityBoard.setContent(communityBoardDTO.getContent());
+        communityBoard.setCnt(0);
+        communityBoard.setMember(member);
+
+        /*=============================== 각 게시판 공지글 ===================================*/
+        communityBoard.setSubNotice(communityBoardDTO.isSubNotice());
+        /*=====================================================================================*/
+
+
+        return communityBoard;
     }
+
+
+
 }

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center',
@@ -41,7 +42,8 @@
                         <option value="20" th:selected="${communityBoardList.size == 20}" class="cafe-action-btn write">20개씩 보기</option>
                     </select>
 
-                    <a th:href="@{/communityBoard/create}"
+                    <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')"
+                       th:href="@{/communityBoard/create}"
                        class="cafe-action-btn write">
                         ✏️ 게시글 작성
                     </a>
@@ -71,19 +73,69 @@
                     <th class="col-date">작성일</th>
                 </tr>
                 </thead>
+                <!--====================================================== 공지글!! =======================================================-->
+                <!-- 📢 공지글 영역 -->
+                <tbody th:if="${subNoticeList != null and !subNoticeList.isEmpty() and communityBoardList.number == 0}">
+                <tr th:each="subNotice : ${subNoticeList}" class="notice-row"
+                    th:onclick="|location.href='@{|/communityBoard/view/${subNotice.id}|}'|">
 
-                <tbody>
+                    <!-- 순번 대신 공지 -->
+                    <td class="text-danger fw-bold text-center">공지</td>
+
+                    <td>
+                        📢 <span th:text="${subNotice.subject}"></span>
+
+                        <!-- 공지 해제 버튼 (관리자/매니저만) -->
+                        <!--                        <sec:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')">
+                                                    <form th:action="@{/communityBoard/toggleNotice/{id}(id=${subNotice.id})}" method="post" style="display:inline;">
+                                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                                        <button type="submit" class="notice-btn">공지해제</button>
+                                                    </form>-->
+                        </sec:authorize>
+
+                        <form th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
+                              th:action="@{/communityBoard/toggleNotice/{id}(id=${subNotice.id})}" method="post" style="display:inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="notice-btn">공지해제</button>
+                        </form>
+                    </td>
+
+                    <!-- 조회수 -->
+                    <td class="td_underline" th:text="${viewCntMap[subNotice.id]}"></td>
+
+                    <!-- 작성자 -->
+                    <td class="td_underline" th:text="${subNotice.member.username}"></td>
+
+                    <!-- 등급 -->
+                    <td class="td_underline text-center">운영진</td>
+
+                    <!-- 날짜 -->
+                    <td class="td_underline text-center"
+                        th:text="${#dates.format(subNotice.createDate, 'yyyy-MM-dd')}"></td>
+                </tr>
+                </tbody>
+                <!--====================================================== 공지글!! =======================================================-->
+                <tbody th:if="${!communityBoardList.isEmpty()}">
                 <tr th:each="communityBoard, loop : ${communityBoardList}"
                     th:onclick="|location.href='@{|/communityBoard/view/${communityBoard.id}|}'|">
 
-                    <td class="td_underline" th:text="${loop.index + 1}"></td>
+                    <td class="td_underline"
+                        th:text="${communityBoardList.number * communityBoardList.size + loop.index + 1}"></td>
                     <td>
                         <span th:text="${communityBoard.subject}" class="col-subject" style="text-align: left;"></span>
-                            <!--게시글 제목 옆 댓글수 표시-->
-                            <span class="text-danger small ms-2"
-                                  th:if="${#lists.size(communityBoard.commentList) > 0}"
-                                  th:text="|[${#lists.size(communityBoard.commentList)}]|">
+                        <!--게시글 제목 옆 댓글수 표시-->
+                        <span class="text-danger small ms-2"
+                              th:if="${#lists.size(communityBoard.commentList) > 0}"
+                              th:text="|[${#lists.size(communityBoard.commentList)}]|">
                             </span>
+                        <!--====================================================== 공지글!! =======================================================-->
+                        <!-- 관리자/매니저만 -->
+                        <form th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
+                              th:action="@{/communityBoard/toggleNotice/{id}(id=${communityBoard.id})}" method="post" style="display:inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="notice-btn">공지등록</button>
+                        </form>
+                        <!--====================================================== 공지글!! =======================================================-->
                     </td>
                     <td class="td_underline" th:text="${viewCntMap[communityBoard.id]}"></td>
                     <td class="td_underline" th:text="${communityBoard.member.username}"></td>
@@ -93,46 +145,46 @@
                         <span th:case="'BEST'">우수🥇</span>
                         <span th:case="'SPECIAL'">최우수🏆</span>
                     </td>
-
                     <td class="td_underline text-center"
-                        th:unless="${communityBoard.member != null}">
-                        탈퇴회원
-                    </td>
+                        th:text="${#dates.format(communityBoard.createDate, 'yyyy-MM-dd')}"></td>
+                </tr>
+                </tbody>
 
-                    <td th:text="${#dates.format(communityBoard.createDate, 'yyyy-MM-dd')}"></td>
+                <tbody th:if="${communityBoardList.isEmpty() && subNoticeList.isEmpty()}">
+                <tr>
+                    <td colspan="6" class="text-center">등록된 게시글이 없습니다.</td>
                 </tr>
                 </tbody>
             </table>
 
-                <!-- 댓글 페이징 -->
-                <div class="cafe-pagination" th:if="${!communityBoardList.isEmpty()}">
+            <!-- 게시글 페이징 -->
+            <div class="cafe-pagination" th:if="${!communityBoardList.isEmpty()}">
 
-                    <!-- 이전 버튼 -->
-                    <a class="page-btn"
-                       th:classappend="${communityBoardList.first} ? ' disabled'"
-                       th:href="@{|/communityBoard/list?page=${communityBoardList.number - 1}|}">이전</a>
+                <!-- 이전 버튼 -->
+                <a class="page-btn"
+                   th:classappend="${communityBoardList.first} ? ' disabled'"
+                   th:href="@{|/communityBoard/list?page=${communityBoardList.number - 1}|}">이전</a>
 
-                    <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
-                    <th:block th:with="
+                <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
+                <th:block th:with="
                             startPage=${communityBoardList.number - 2 > 0 ? communityBoardList.number - 2 : 0},
                             endPage=${communityBoardList.number + 2 < communityBoardList.totalPages - 1 ? communityBoardList.number + 2 : communityBoardList.totalPages - 1}">
 
-                        <a class="page-btn"
-                           th:each="page : ${#numbers.sequence(startPage, endPage)}"
-                           th:text="${page + 1}"
-                           th:classappend="${page == communityBoardList.number} ? ' active'"
-                           th:href="@{|/communityBoard/list?page=${page}|}"></a>
-                    </th:block>
-
-                    <!-- 다음 버튼 -->
                     <a class="page-btn"
-                       th:classappend="${communityBoardList.last} ? ' disabled'"
-                       th:href="@{|/communityBoard/list?page=${communityBoardList.number + 1}|}">다음</a>
-                </div>
-            </div>
+                       th:each="page : ${#numbers.sequence(startPage, endPage)}"
+                       th:text="${page + 1}"
+                       th:classappend="${page == communityBoardList.number} ? ' active'"
+                       th:href="@{|/communityBoard/list?page=${page}|}"></a>
+                </th:block>
 
+                <!-- 다음 버튼 -->
+                <a class="page-btn"
+                   th:classappend="${communityBoardList.last} ? ' disabled'"
+                   th:href="@{|/communityBoard/list?page=${communityBoardList.number + 1}|}">다음</a>
+            </div>
         </div>
     </div>
+</div>
 </div>
 
 <script th:if="${communityBoardList.isEmpty()}">
