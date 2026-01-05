@@ -4,7 +4,6 @@ import com.example.base.BaseImageController;
 import com.example.cafeProject.communityBoard.CommunityBoardService;
 import com.example.cafeProject.informationBoard.InformationBoardService;
 import com.example.cafeProject.member.MemberService;
-import com.example.cafeProject.member.RoleType;
 import com.example.cafeProject.noticeBoard.NoticeBoardService;
 import com.example.cafeProject.validation.ValidationGroups;
 import com.example.exception.DuplicateValueException;
@@ -13,15 +12,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @Controller
@@ -49,16 +46,6 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
         this.informationBoardService = informationBoardService;
     }
 
-    @ModelAttribute("writeRoles")
-    public RoleType[] writeRoles() {
-        return new RoleType[]{RoleType.USER, RoleType.MANAGER, RoleType.ADMIN};
-    }
-
-    @ModelAttribute("readRoles")
-    public RoleType[] readRoles() {
-        return new RoleType[]{RoleType.GUEST, RoleType.USER, RoleType.MANAGER, RoleType.ADMIN};
-    }
-
     @Override
     public String list(
             Model model,
@@ -74,15 +61,21 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
             Authentication authentication,
             Model model
     ) {
-        Page<CafeDTO> list = cafeService.listVisibleDTO(pageable, memberService.getEffectiveRoles(authentication), keyword);
+        Page<CafeDTO> list = cafeService.listVisibleDTO(pageable, keyword);
         model.addAttribute("list", list);
         model.addAttribute("keyword", keyword);
         return super.basePath + "/list"; // ex) "memo/list"
     }
 
+    // "/cafe/{code} 형식으로 오는 링크를 mainPage로 떠넘김
+    @GetMapping("/{code}")
+    public String enter(@PathVariable String code) {
+        return "redirect:/cafe/main?c=" + code;
+    }
+
     @GetMapping("/main")
     public String mainPage(
-            @PageableDefault(size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
+            @PageableDefault(size=5, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false) String code,
             Model model
     ) {
@@ -103,13 +96,15 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
 
         try {
             cafeService.setInsert(dto);
-            return "redirect:/" + super.basePath + "/list";
+            return "redirect:/" + super.basePath + "/cafeList";
         } catch (DuplicateValueException e) {
             bindingResult.rejectValue(e.getField(), "duplicate", e.getMessage());
             return super.basePath + "/create";
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("readRole", "invalid", e.getMessage());
             return super.basePath + "/create";
+        } catch (AccessDeniedException e) {
+            return "redirect:/member/login";
         } catch (Exception e) {
             log.error("[createProc] 예상하지 못 한 오류 : {}", e.getMessage(), e);
             return "redirect:/error/runtimeErrorPage";

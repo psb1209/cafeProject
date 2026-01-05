@@ -36,12 +36,4 @@ public class Cafe extends BaseEntity {
 
     @Column(nullable = false)
     private boolean enabled; // 활성화 여부
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private RoleType writeRole; // 작성 권한
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private RoleType readRole; // 보기 권한
 }

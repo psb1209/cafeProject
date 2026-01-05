@@ -320,6 +320,15 @@ public class MemberService {
     }
 
     /**
+     * 인증 객체가 매니저 또는 어드민인지 판별.
+     * 사용처 예:
+     * - 어드민만 접근 가능한 서비스/컨트롤러에서 방어 로직
+     */
+    public boolean isManagement(Authentication authentication) {
+        return authentication.getAuthorities().toString().contains("ROLE_ADMIN") || authentication.getAuthorities().toString().contains("ROLE_MANAGER");
+    }
+
+    /**
      * 현재 사용자의 "실효 권한 목록(Effective Roles)"을 반환.
      * - 게시판 조회/목록 등에서 Board.readRole IN (:roles) 같은 형태로 사용하기 위해,
      *   "내가 볼 수 있는 권한 범위"를 RoleType 배열로 만들어 준다.

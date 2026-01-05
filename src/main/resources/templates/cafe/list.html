@@ -2,13 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       layout:decorate="~{main_layout/layout}"
-      th:with="headerImage=@{/assets/img/about-bg.jpg},
+      th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center'">
-
 <body>
+
+<h1 layout:fragment="pageTitle" onclick="location.href='/'" style="cursor: pointer;">카페 목록</h1>
+<span layout:fragment="pageSubTitle">　</span>
+
 <div layout:fragment="content">
 
-    <link th:href="@{/css/theme.css}" rel="stylesheet" />
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+
+    <!-- ================= 본문 시작 ================= -->
 
     <div class="page-container">
 
@@ -17,37 +22,7 @@
             <!-- 중앙 카페 리스트 -->
             <div class="cafe-list-wrap" id="cafeList" th:fragment="cafeList">
 
-                <h4>카페 홈</h4>
-
-                <div class="cafe-topbar">
-                    <div class="cafe-tabs">
-                        <button class="tab" type="button"
-                                onclick="loadMyCafe()"
-                                th:classappend="${activeTab == 'my'} ? ' active'">내 카페</button>
-
-                        <button class="tab" type="button"
-                                onclick="loadFavoriteCafe()"
-                                th:classappend="${activeTab == 'favorite'} ? ' active'">즐겨찾는 카페</button>
-                    </div>
-                    <div class="cafe-manage">
-                        <a href="#">⚙ 내 카페 관리</a>
-                    </div>
-                </div>
-
-                <div class="cafe-list">
-                    <div class="cafe-item">
-                        <div class="cafe-thumb">
-                            <img src="/assets/img/main.jpg" alt="헬사모">
-                        </div>
-                        <div class="cafe-content" th:onclick="|location.href='@{/healthCafe}'|">
-                            <div class="cafe-title">헬사모</div>
-                            <div class="cafe-desc">헬스를 사랑하는 사람들의 모임</div>
-                            <div class="cafe-meta">
-                                <span>주제 | 건강/다이어트</span>
-                                <span>👤 5,325</span>
-                            </div>
-                        </div>
-                    </div>
+                <h4>카페 목록</h4>
 
                     <!-- 반복 -->
                     <div class="cafe-item" th:each="data : ${list.content}">
@@ -58,7 +33,7 @@
                                  alt=""
                                  loading="lazy">
                         </div>
-                        <div class="cafe-content" th:onclick="|location.href='@{|/board/${data.code}|}'|">
+                        <div class="cafe-content" th:onclick="|location.href='@{|/cafe/${data.code}|}'|">
                             <div class="cafe-title" th:text="${data.name}">카페 이름</div>
                             <div class="cafe-desc" th:text="${data.description}">카페 설명</div>
                             <div class="cafe-meta">
@@ -115,7 +90,7 @@
                     </div>
                 </div>
                 <div class="side-card">
-                    <button class="create-btn" onclick="location.href='/cafe/create'">카페 만들기</button>
+                    <button class="create-btn" onclick="location.href='/boardManagement/create'">카페 만들기</button>
                 </div>
             </aside>
 
@@ -130,27 +105,8 @@
         }
     </script>
 
-    <script>
-        function loadFavoriteCafe() {
-          $.get("/explore_cafes/favorite", function (html) {
-            $("#cafeList").replaceWith(html);
-          });
-        }
-
-        function loadMyCafe() {
-          $.get("/explore_cafes/my", function (html) {
-            $("#cafeList").replaceWith(html);
-          });
-        }
-
-        function setActive(btn) {
-            $(".tab").removeClass("active");
-            $(btn).addClass("active");
-        }
-    </script>
-
+    <!-- ================= 본문 종료 ================= -->
 
 </div>
-
 </body>
 </html>

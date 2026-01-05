@@ -92,7 +92,6 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         if (memberService.isNotLogin(authentication)) throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
         Board board = super.toEntity(dto);
         board.setMember(memberService.viewCurrentMember(authentication));
-        board.setEnabled(true);
         return board;
     }
 

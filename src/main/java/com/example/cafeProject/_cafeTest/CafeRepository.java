@@ -23,21 +23,17 @@ public interface CafeRepository extends JpaRepository<Cafe, Integer> {
         select c
         from Cafe c
         where c.enabled = true
-          and c.readRole in :roles
     """)
-    Page<Cafe> findVisible(@Param("roles") Collection<RoleType> roles,
-                           Pageable pageable);
+    Page<Cafe> findVisible(Pageable pageable);
 
     /** 카페 검색 */
     @Query("""
         select c
         from Cafe c
         where c.enabled = true
-          and c.readRole in :roles
           and lower(c.name) like lower(concat('%', :keyword, '%'))
     """)
-    Page<Cafe> searchVisible(@Param("roles") Collection<RoleType> roles,
-                             @Param("keyword") String keyword,
+    Page<Cafe> searchVisible(@Param("keyword") String keyword,
                              Pageable pageable);
 
     /** 카페 초성 검색 */
@@ -45,11 +41,9 @@ public interface CafeRepository extends JpaRepository<Cafe, Integer> {
         select c
         from Cafe c
         where c.enabled = true
-          and c.readRole in :roles
           and c.nameKey like concat('%', :keyword, '%')
     """)
-    Page<Cafe> searchVisibleByChosung(@Param("roles") Collection<RoleType> roles,
-                                      @Param("keyword") String keyword,
+    Page<Cafe> searchVisibleByChosung(@Param("keyword") String keyword,
                                       Pageable pageable);
 
     boolean existsByCode(String code);
