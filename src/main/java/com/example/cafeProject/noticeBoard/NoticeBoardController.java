@@ -63,7 +63,7 @@ public class NoticeBoardController {
         /*====================================================== 공지글!! =======================================================*/
         List<NoticeBoard> subNoticeList = noticeBoardService.getSubNoticeList();
 
-        // 2️⃣ 공지 → 일반글 순 + 최신순 정렬
+        // 2️⃣ 공지 → 일반 게시글 순 + 최신순 정렬
         Sort sort = Sort.by(
                 Sort.Order.desc("subNotice"),
                 Sort.Order.desc("createDate")
@@ -90,12 +90,12 @@ public class NoticeBoardController {
         // ======================
         Map<Integer, Integer> viewCntMap = new HashMap<>(); // 한 게시글에 여러명의 id값이 있기에 Map으로 값을 여러개 받는다
 
-        // 일반 글
+        // 일반 게시글
         for (NoticeBoard board : noticeBoardList.getContent()) {
             int viewCnt = board_viewService.board_viewCnt("notice", board.getId());
             viewCntMap.put(board.getId(), viewCnt);
         }
-        // 공지글
+        // 공지 게시글
         for (NoticeBoard board : subNoticeList) {
             int viewCnt = board_viewService.board_viewCnt("notice", board.getId());
             viewCntMap.put(board.getId(), viewCnt);

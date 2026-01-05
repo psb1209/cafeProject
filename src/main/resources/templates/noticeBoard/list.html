@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center',
@@ -19,7 +19,7 @@
 
         <div class="cafe-board-wrap">
             <div class="cafe-board-header">
-                <div class="cafe-board-title"> 공지사항</div>
+                <div class="cafe-board-title">운영 게시판</div>
 
                 <div th:if="${msg}">
                     <span th:text="${msg}">메시지내용</span>
@@ -62,7 +62,8 @@
                 </form>
             </div>
 
-            <table class="cafe-board-table">
+            <table class="cafe-board-table"
+                   th:if="${(subNoticeList != null and !subNoticeList.isEmpty()) or (noticeBoardList != null and !noticeBoardList.isEmpty())}">
                 <thead>
                 <tr>
                     <th class="col-no">순번</th>
@@ -73,7 +74,7 @@
                     <th class="col-date">작성일</th>
                 </tr>
                 </thead>
-
+                <!--====================================================== 공지글!! =======================================================-->
                 <!-- 📢 공지글 영역 -->
                 <tbody th:if="${subNoticeList != null and !subNoticeList.isEmpty() and noticeBoardList.number == 0}">
                 <tr th:each="subNotice : ${subNoticeList}" class="notice-row"
@@ -84,20 +85,17 @@
 
                     <td>
                         📢 <span th:text="${subNotice.subject}"></span>
+                        <!--고정 공지 게시글 제목 옆 댓글수 표시-->
+                        <span class="text-danger small ms-2"
+                              th:if="${#lists.size(subNotice.commentList) > 0}"
+                              th:text="|[${#lists.size(subNotice.commentList)}]|">
+                            </span>
 
-                        <!-- 공지 해제 버튼 (관리자/매니저만) -->
-<!--                        <sec:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')">
-                            <form th:action="@{/noticeBoard/toggleNotice/{id}(id=${subNotice.id})}" method="post" style="display:inline;">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                <button type="submit" class="notice-btn">공지해제</button>
-                            </form>
-                        </sec:authorize>-->
                         <form th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
                               th:action="@{/noticeBoard/toggleNotice/{id}(id=${subNotice.id})}" method="post" style="display:inline;">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <button type="submit" class="notice-btn">공지해제</button>
                         </form>
-
                     </td>
 
                     <!-- 조회수 -->
@@ -114,8 +112,8 @@
                         th:text="${#dates.format(subNotice.createDate, 'yyyy-MM-dd')}"></td>
                 </tr>
                 </tbody>
-
-                <tbody th:if="${!noticeBoardList.isEmpty()}">
+                <!--====================================================== 공지글!! =======================================================-->
+                <tbody>
                 <tr th:each="noticeBoard, loop : ${noticeBoardList}"
                     th:onclick="|location.href='@{|/noticeBoard/view/${noticeBoard.id}|}'|">
 
@@ -128,13 +126,14 @@
                               th:if="${#lists.size(noticeBoard.commentList) > 0}"
                               th:text="|[${#lists.size(noticeBoard.commentList)}]|">
                             </span>
+                        <!--====================================================== 공지글!! =======================================================-->
                         <!-- 관리자/매니저만 -->
                         <form th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
                               th:action="@{/noticeBoard/toggleNotice/{id}(id=${noticeBoard.id})}" method="post" style="display:inline;">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <button type="submit" class="notice-btn">공지등록</button>
                         </form>
-
+                        <!--====================================================== 공지글!! =======================================================-->
                     </td>
                     <td class="td_underline" th:text="${viewCntMap[noticeBoard.id]}"></td>
                     <td class="td_underline" th:text="${noticeBoard.member.username}"></td>
@@ -148,46 +147,44 @@
                         th:text="${#dates.format(noticeBoard.createDate, 'yyyy-MM-dd')}"></td>
                 </tr>
                 </tbody>
-
-                <tbody th:if="${noticeBoardList.isEmpty()}">
-                <tr>
-                    <td colspan="6" class="text-center">등록된 게시글이 없습니다.</td>
-                </tr>
-                </tbody>
             </table>
 
-                <!-- 댓글 페이징 -->
-                <div class="cafe-pagination" th:if="${!noticeBoardList.isEmpty()}">
+            <div th:if="${(noticeBoardList == null or noticeBoardList.isEmpty()) and (subNoticeList == null or subNoticeList.isEmpty())}"
+                 class="text-center" style="padding:40px; color:#888;">
+                등록된 게시글이 없습니다.
+            </div>
 
-                    <!-- 이전 버튼 -->
-                    <a class="page-btn"
-                       th:classappend="${noticeBoardList.first} ? ' disabled'"
-                       th:href="@{|/noticeBoard/list?page=${noticeBoardList.number - 1}|}">이전</a>
+            <!-- 게시글 페이징 -->
+            <div class="cafe-pagination" th:if="${noticeBoardList != null and !noticeBoardList.isEmpty()}">
 
-                    <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
-                    <th:block th:with="
+                <!-- 이전 버튼 -->
+                <a class="page-btn"
+                   th:classappend="${noticeBoardList != null and noticeBoardList.first} ? ' disabled'"
+                   th:href="@{|/noticeBoard/list?page=${noticeBoardList.number - 1}|}">이전</a>
+
+                <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
+                <th:block th:with="
                             startPage=${noticeBoardList.number - 2 > 0 ? noticeBoardList.number - 2 : 0},
                             endPage=${noticeBoardList.number + 2 < noticeBoardList.totalPages - 1 ? noticeBoardList.number + 2 : noticeBoardList.totalPages - 1}">
 
-                        <a class="page-btn"
-                           th:each="page : ${#numbers.sequence(startPage, endPage)}"
-                           th:text="${page + 1}"
-                           th:classappend="${page == noticeBoardList.number} ? ' active'"
-                           th:href="@{|/noticeBoard/list?page=${page}|}"></a>
-                    </th:block>
-
-                    <!-- 다음 버튼 -->
                     <a class="page-btn"
-                       th:classappend="${noticeBoardList.last} ? ' disabled'"
-                       th:href="@{|/noticeBoard/list?page=${noticeBoardList.number + 1}|}">다음</a>
-                </div>
-            </div>
+                       th:each="page : ${#numbers.sequence(startPage, endPage)}"
+                       th:text="${page + 1}"
+                       th:classappend="${page == noticeBoardList.number} ? ' active'"
+                       th:href="@{|/noticeBoard/list?page=${page}|}"></a>
+                </th:block>
 
+                <!-- 다음 버튼 -->
+                <a class="page-btn"
+                   th:classappend="${noticeBoardList.last} ? ' disabled'"
+                   th:href="@{|/noticeBoard/list?page=${noticeBoardList.number + 1}|}">다음</a>
+            </div>
         </div>
     </div>
 </div>
+</div>
 
-<script th:if="${noticeBoardList.isEmpty()}">
+<script th:if="${noticeBoardList != null and noticeBoardList.isEmpty()}">
     alert([[${errMsg}]]);
 </script>
 

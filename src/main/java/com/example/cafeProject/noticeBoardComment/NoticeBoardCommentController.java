@@ -170,7 +170,7 @@ public class NoticeBoardCommentController {
             Authentication authentication
     ){
         try {
-            UserDetails userDetails=(UserDetails)authentication.getPrincipal();
+            UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 
             noticeBoardCommentService.replysetInsert(noticeBoardCommentDTO, userDetails);
             return "redirect:/noticeBoard/view/" + noticeBoardCommentDTO.getNoticeBoardId();
