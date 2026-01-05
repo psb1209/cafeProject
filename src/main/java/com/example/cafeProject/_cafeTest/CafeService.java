@@ -32,7 +32,7 @@ public class CafeService extends BaseImageService<Cafe, CafeDTO> {
 
     public Cafe viewByCode(String code) {
         return cafeRepository.findByCode(code)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시판 code=" + code));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 카페 code=" + code));
     }
     public CafeDTO viewDTOByCode(String code) {
         return toDTO(viewByCode(code));

@@ -663,4 +663,156 @@ html, body {
     height: 12px;
 }
 
+/* ==============================
+   모던 로그인/회원 카드
+   ============================== */
+.card-modern-v2 {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 24px;
+    max-width: 100%;
+    width: 300px;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    box-shadow: 0 6px 18px var(--shadow-light);
+    font-family: 'Apple SD Gothic Neo', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 사이드바 안쪽에서는 부모 폭에 맞춤 */
+.cafe-side .card-modern-v2 {
+    width: 100%;
+    max-width: 100%;
+}
+
+.card-modern-v2:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px var(--shadow-hover);
+}
+
+/* 로그인 상태 */
+.card-modern-v2 .user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* ==============================
+   사용자 이름 영역
+   ============================== */
+.card-modern-v2 .user-name {
+    display: flex;
+    flex-direction: column;  /* 위/아래 줄 배치 */
+    gap: 4px;                /* 줄 간격 */
+    font-weight: 700;
+    color: var(--blue-main);
+}
+
+/* 위쪽 문구 "환영합니다! 🎆" */
+.card-modern-v2 .user-name .greeting {
+    font-size: 16px;
+}
+
+/* 사용자 이름 + 회원님 (클릭 가능) */
+.card-modern-v2 .user-name .username-link {
+    display: inline-block;       /* 클릭 영역 확보 */
+    text-decoration: none;
+    color: var(--text-main);
+    padding-left: 16px;          /* 살짝 들여쓰기 */
+    font-size: 18px;
+    transition: color 0.2s ease, transform 0.2s ease, text-decoration 0.2s ease;
+    cursor: pointer;
+    position: relative;          /* 밑줄 위치를 위해 relative */
+}
+
+/* 호버 시 밑줄 + 살짝 공중에 뜨는 느낌 */
+.card-modern-v2 .user-name .username-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;               /* 글자 아래 살짝 */
+    width: 0;
+    height: 2px;
+    background: var(--blue-main);
+    transition: width 0.2s ease;
+}
+
+.card-modern-v2 .user-name .username-link:hover::after {
+    width: 100%;                 /* 밑줄 전체 */
+}
+
+.card-modern-v2 .user-name .username-link:hover {
+    color: var(--blue-main-dark);
+    transform: translateY(-2px); /* 살짝 공중에 뜨는 느낌 */
+}
+
+/* ==============================
+   하단 프로필 링크
+   ============================== */
+.card-modern-v2 .profile-link {
+    font-size: 14px;
+    color: var(--text-sub);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.card-modern-v2 .profile-link:hover {
+    color: var(--blue-main-dark);
+    text-decoration: underline;
+}
+
+/* ==============================
+   버튼 스타일
+   ============================== */
+.card-modern-v2 .btn-logout,
+.card-modern-v2 .btn-login {
+    padding: 10px 0;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    color: var(--white);
+    background: var(--blue-icon-grad);
+    transition: filter 0.2s;
+}
+
+/* 로그아웃 버튼 아래로 여유 공간 추가 */
+.card-modern-v2 .btn-logout {
+    margin-top: 20px; /* ← 이 부분을 조정하면 버튼이 더 내려감 */
+}
+
+.card-modern-v2 .btn-logout:hover,
+.card-modern-v2 .btn-login:hover {
+    filter: brightness(0.95);
+}
+
+
+/* ==============================
+   로그인 하단 링크
+   ============================== */
+.card-modern-v2 .card-footer {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-sub);
+}
+
+.card-modern-v2 .card-footer a {
+    text-decoration: none;
+    color: var(--text-sub);
+    transition: all 0.2s;
+}
+
+.card-modern-v2 .card-footer a:hover {
+    color: var(--blue-main-dark);
+    text-decoration: underline;
+}
+
+.card-modern-v2 .card-footer span {
+    color: var(--border-light);
+}
 

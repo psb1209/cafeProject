@@ -37,6 +37,7 @@ public class MainCafeController {
             Authentication authentication,
             Model model
     ) {
+        model.addAttribute("authentication", authentication);
         model.addAttribute("activeMenu", "main");       // 네비(사이드바/상단메뉴)용
         model.addAttribute("activeTab", "my");      // 카페탭 기본 선택
         model.addAttribute("list", cafeService.listVisibleDTO(pageable, memberService.getEffectiveRoles(authentication)));

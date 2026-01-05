@@ -48,7 +48,7 @@
 
                         <button class="write-btn"
                                 type="button"
-                                onclick="copyText('boardCode')">
+                                onclick="copyFromId('boardCode')">
                             복사
                         </button>
                     </div>
@@ -69,8 +69,8 @@
 
                     <pre class="board-desc"
                          th:text="${data.description}">
-설명
-                </pre>
+                        설명
+                    </pre>
                 </div>
             </div>
 
@@ -113,7 +113,7 @@
 
                 <div th:if="${data.imgName != null && !#strings.isEmpty(data.imgName)}">
                     <img class="member-view-box"
-                         style="padding:0;"
+                         style="padding:0; max-width:100%; height:auto; display:block;"
                          th:src="@{|${imageUrlPrefix}${data.imgName}|}"
                          th:alt="${data.name}"
                          loading="lazy">
@@ -168,7 +168,7 @@
 
 <!-- 페이지 전용 스크립트 -->
 <script layout:fragment="script">
-    function copyText(inputId) {
+    function copyFromId(inputId) {
         const el = document.getElementById(inputId);
         if (!el) return;
 

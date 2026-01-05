@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/about-bg.jpg},
                headerPosition='center center'">
@@ -98,7 +98,7 @@
             <!-- 오른쪽 로그인/카페 만들기 -->
             <aside class="cafe-side">
                 <!-- 로그인 카드 -->
-                <div class="side-card">
+                <div class="side-card" sec:authorize="isAnonymous()">
                     <!--                    <div class="side-title">로그인</div>
                                         <input class="side-input" placeholder="아이디">
                                         <input class="side-input" type="password" placeholder="비밀번호">-->
@@ -114,9 +114,23 @@
                                                 <a href="/find-password">비밀번호 찾기</a>-->
                     </div>
                 </div>
-                <div class="side-card">
+
+                <!-- 로그인 상태 -->
+                <div class="card-modern-v2" sec:authorize="isAuthenticated()">
+                    <div class="user-info">
+                        <div class="user-name">
+                            <div class="greeting">환영합니다! 🎆</div>
+                            <a class="username-link" href="/member/view"
+                               th:utext="${#authorization.expression('hasRole(''ADMIN'')')} ? '관리자님' : ${#authentication.name} + ' 회원님'">
+                            </a>
+                        </div>
+                    </div>
+                    <button class="btn-logout" onclick="logout(); return false;">로그아웃</button>
+                </div>
+                <div class="side-card" sec:authorize="isAuthenticated()" style="margin-top: 20px">
                     <button class="create-btn" onclick="location.href='/cafe/create'">카페 만들기</button>
                 </div>
+
             </aside>
 
         </div>
