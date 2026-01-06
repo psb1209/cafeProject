@@ -5,6 +5,9 @@ import com.example.cafeProject.board_view.Board_viewService;
 import com.example.cafeProject.like.LikeService;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
+import com.example.cafeProject.operationBoard.OperationBoard;
+import com.example.cafeProject.operationBoard.OperationBoardDTO;
+import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardCommentService;
 import com.example.cafeProject.validation.ManagementOnly;
@@ -26,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RequestMapping("/operationBoard")
@@ -118,8 +122,12 @@ public class OperationBoardController {
         try {
             OperationBoard operationBoard = operationBoardService.getSelectOneById(operationBoardDTO);
             model.addAttribute("operationBoard", operationBoard);
+            
+            /*============================================== 대댓글 ===============================================*/
+            //
             Page<OperationBoardComment> commentList = operationBoardCommentService.getCommentListPage(operationBoardDTO.getId(), pageable);
             model.addAttribute("commentList", commentList);
+            /*============================================== 대댓글 ===============================================*/
             model.addAttribute("activeMenu", "operationBoard");
 
             boolean isLike = false;
@@ -142,10 +150,7 @@ public class OperationBoardController {
                 board_viewService.createProc(board_viewDTO);
             }
 
-            int viewCnt = board_viewService.board_viewCnt(
-                    "operation",
-                    operationBoard.getId()
-            );
+            int viewCnt = board_viewService.board_viewCnt("operation", operationBoard.getId());
             model.addAttribute("viewCnt", viewCnt);
 
             return dirName + "/view";
@@ -155,6 +160,8 @@ public class OperationBoardController {
             return "error/error";
         }
     }
+
+
 
     @GetMapping("/create")
     public String create(

@@ -21,10 +21,11 @@ public class OperationBoardCommentDTO {
 
     private int operationBoardCommentId;
 
+    /*============================================== 대댓글 ===============================================*/
     private int ref;
     private int step;
     private int level;
-
+    /*============================================== 대댓글 ===============================================*/
 
 
 

@@ -84,35 +84,36 @@ public class OperationBoardCommentService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 답변을 찾을 수 없습니다."));
     }
 
+    /*============================================== 대댓글 ===============================================*/
     //대댓글 추가
     @Transactional
     public void replysetInsert(
             OperationBoardCommentDTO paramDTO,
             UserDetails userDetails
     ){
+        // 부모글 유무 확인
         OperationBoardComment operationBoardComment_ = operationBoardCommentRepository.findById(paramDTO.getOperationBoardCommentId())
-                .orElseThrow(() -> new IllegalArgumentException("부모 댓글 없음"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
 
+        // 로그인 유무 확인
         Member member = memberService.viewOptional(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("해당 회원 없음"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
 
+        // 자식글 정렬
         operationBoardCommentRepository.updateRelevel(
                 operationBoardComment_.getRef(),
                 operationBoardComment_.getLevel()
         );
+        
+        int ref = operationBoardComment_.getRef();
+        int step = operationBoardComment_.getStep()+1;
+        int level = operationBoardComment_.getLevel()+1;
 
-        int ref=operationBoardComment_.getRef();
-        int step=operationBoardComment_.getStep()+1;
-        int level=operationBoardComment_.getLevel()+1;
+        // 게시글 유무 확인
+        OperationBoard operationBoard = operationBoardRepository.findById(paramDTO.getOperationBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")); 
 
-        OperationBoard operationBoard=null;
-        Optional<OperationBoard> operationBoardOptional=operationBoardRepository.findById(paramDTO.getOperationBoardId());
-        if(operationBoardOptional.isPresent()){
-            operationBoard=operationBoardOptional.get(); //부모글 존재유무판단
-        }
-
-
-        OperationBoardComment operationBoardComment=new OperationBoardComment();
+        OperationBoardComment operationBoardComment = new OperationBoardComment();
         operationBoardComment.setContent(paramDTO.getContent());
         operationBoardComment.setOperationBoard(operationBoard);
         operationBoardComment.setMember(member);
@@ -122,7 +123,8 @@ public class OperationBoardCommentService {
 
         operationBoardCommentRepository.save(operationBoardComment);
     }
-
+    /*============================================== 대댓글 ===============================================*/
+    
     //회원등업
     public Member updateGrade(Member member) {
         member.increaseReplyCount(); //댓글작성 +1

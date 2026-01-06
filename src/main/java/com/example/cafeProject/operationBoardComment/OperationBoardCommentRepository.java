@@ -16,14 +16,15 @@ public interface OperationBoardCommentRepository extends JpaRepository<Operation
 
     List<OperationBoardComment> findByOperationBoardId(int operationBoardId);
 
-    //ref최대값 찾는 메소드
+    /*============================================== 대댓글 ===============================================*/
+    //ref최대값 찾는 메소드 (부모글 정렬)
     @Query("SELECT COALESCE(MAX(c.ref),0) FROM OperationBoardComment c") int getMaxRef();
+    
 
-
-    //level순차 누적 메소드
+    //level순차 누적 메소드 (자식글 정렬)
     @Modifying
     @Query("UPDATE OperationBoardComment c SET c.level=c.level + 1 WHERE c.ref = :ref AND c.level >:level")
     int updateRelevel(@Param("ref") int ref, @Param("level") int level);
-
+    /*============================================== 대댓글 ===============================================*/
 
 }

@@ -62,6 +62,11 @@
                 </form>
             </div>
 
+            <div th:if="${(operationBoardList == null or operationBoardList.isEmpty()) and (subNoticeList == null or subNoticeList.isEmpty())}"
+                 class="text-center" style="padding:40px; color:#888;">
+                등록된 게시글이 없습니다.
+            </div>
+
             <table class="cafe-board-table"
                    th:if="${(subNoticeList != null and !subNoticeList.isEmpty()) or (operationBoardList != null and !operationBoardList.isEmpty())}">
             <thead>
@@ -85,7 +90,11 @@
 
                     <td>
                         📢 <span th:text="${subNotice.subject}"></span>
-
+                        <!--고정 공지 게시글 제목 옆 댓글수 표시-->
+                        <span class="text-danger small ms-2"
+                              th:if="${#lists.size(subNotice.commentList) > 0}"
+                              th:text="|[${#lists.size(subNotice.commentList)}]|">
+                            </span>
 
                         <form th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
                               th:action="@{/operationBoard/toggleNotice/{id}(id=${subNotice.id})}" method="post" style="display:inline;">
@@ -144,11 +153,6 @@
                 </tr>
                 </tbody>
             </table>
-
-            <div th:if="${(operationBoardList == null or operationBoardList.isEmpty()) and (subNoticeList == null or subNoticeList.isEmpty())}"
-                 class="text-center" style="padding:40px; color:#888;">
-                등록된 게시글이 없습니다.
-            </div>
 
                 <!-- 게시글 페이징 -->
                 <div class="cafe-pagination" th:if="${operationBoardList != null and !operationBoardList.isEmpty()}">

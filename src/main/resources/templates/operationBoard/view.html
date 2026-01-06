@@ -25,8 +25,6 @@
                 <h1 class="cafe-article-title"
                     th:text="${operationBoard.subject}"></h1>
 
-
-
                 <div class="cafe-article-meta">
                     <span th:text="${operationBoard.member?.username ?: '-'}"></span>
                     <span th:switch="${operationBoard.member?.grade?.name() ?: 'UNKNOWN'}">
@@ -165,37 +163,32 @@
 
                         </div>
 
-
+        <!--====================================================대댓글===========================================================-->
                         <!-- 🔽 대댓글 입력폼 (댓글 바로 아래) -->
-                        <div class="comment-reply-box"
-                             th:id="'reply-form-' + ${comment.id}"
-                             style="display:none;">
-                            <form th:action="@{/operationBoardComment/replyProc}" method="post"
-                                  class="comment-reply-form">
+                        <div class="comment-reply-box" th:id="'reply-form-' + ${comment.id}" style="display:none;">
+
+                            <form th:action="@{/operationBoardComment/replyProc}" method="post" class="comment-reply-form">
 
                                 <input type="hidden" name="_csrf" th:value="${_csrf.token}">
-                                <input type="hidden" name="operationBoardId"
-                                       th:value="${operationBoard.id}">
-                                <input type="hidden" name="operationBoardCommentId"
-                                       th:value="${comment.id}">
+                                <!--해당 게시글, 부모글 아이디값 넘기기-->
+                                <input type="hidden" name="operationBoardId" th:value="${operationBoard.id}">
+                                <input type="hidden" name="operationBoardCommentId" th:value="${comment.id}">
 
-                                <input type="text"
-                                       name="content"
-                                       class="comment-reply-input"
-                                       placeholder="답글을 입력하세요">
+                                <!--입력란-->
+                                <input type="text" name="content" class="comment-reply-input" placeholder="답글을 입력하세요">
 
-                                <button type="submit"
-                                        class="comment-reply-btn">
+                                <button type="submit" class="comment-reply-btn">
                                     답글 등록
                                 </button>
                             </form>
                         </div>
+        <!--====================================================대댓글===========================================================-->
 
                     </div>
                 </div>
 
                 <!-- 댓글 페이징 -->
-            <div class="cafe-pagination" th:if="${!commentList.isEmpty()}">
+                <div class="cafe-pagination" th:if="${!commentList.isEmpty()}">
 
                     <!-- 이전 버튼 -->
                     <a class="page-btn"
@@ -255,8 +248,10 @@
         }
     </script>
 
+    <!--====================================================대댓글===========================================================-->
     <script>
         function toggleReplyForm(commentId) {
+           
             const form = document.getElementById('reply-form-' + commentId);
 
             // 다른 대댓글 폼 닫기 (선택)
@@ -268,6 +263,7 @@
             form.style.display = (form.style.display === 'none') ? 'block' : 'none';
         }
     </script>
+    <!--====================================================대댓글===========================================================-->
 
 
     <script>

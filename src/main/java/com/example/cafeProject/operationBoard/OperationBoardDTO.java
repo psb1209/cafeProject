@@ -21,9 +21,12 @@ public class OperationBoardDTO {
 
     private int memberId;
 
+    /*============================================== 대댓글 ===============================================*/
     private int operationBoardCommentId;
 
     private String operationBoardCommentContent;
+    /*============================================== 대댓글 ===============================================*/
+
 
     /*=============================== 각 게시판 공지글 ===================================*/
     private boolean subNotice;

@@ -40,6 +40,7 @@ public class OperationBoardCommentController {
             RedirectAttributes redirectAttributes,
             @AuthenticationPrincipal User user
     ) {
+        //회원값 찾기
         try {
             Member member = memberService.viewCurrentMember(authentication);
             operationBoardCommentDTO.setMemberId(member.getId());
@@ -49,6 +50,7 @@ public class OperationBoardCommentController {
             return "error/error";
         }
 
+        //해당 부모글 찾기
         try {
             OperationBoardDTO operationBoardDTO = new OperationBoardDTO();
             operationBoardDTO.setId(operationBoardCommentDTO.getOperationBoardId());
@@ -151,22 +153,7 @@ public class OperationBoardCommentController {
         }
     }
 
-    //대댓글 추가
-/*
-    @GetMapping("/replyComment/{operationBoardCommentId}")
-    public String replyComment(
-            @PathVariable int operationBoardCommentId,
-            OperationBoardCommentDTO operationBoardCommentDTO,
-            Model model,
-            Authentication authentication
-    ) {
-        OperationBoardComment operationBoardComment = operationBoardCommentService.getOperationBoardCommentId(operationBoardCommentDTO);
-        model.addAttribute("operationBoardComment",operationBoardComment);
-        return "operationBoard/replyComment";
-    }
-*/
-
-
+    /*============================================== 대댓글 ===============================================*/
     //대댓글 추가처리
     @PostMapping("/replyProc")
     public String replyProc(
@@ -175,8 +162,8 @@ public class OperationBoardCommentController {
             Authentication authentication
     ){
         try {
-            UserDetails userDetails=(UserDetails)authentication.getPrincipal();
-
+            UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+            // 대댓글 등록
             operationBoardCommentService.replysetInsert(operationBoardCommentDTO, userDetails);
             return "redirect:/operationBoard/view/" + operationBoardCommentDTO.getOperationBoardId();
         } catch (IllegalArgumentException e) {
@@ -189,6 +176,6 @@ public class OperationBoardCommentController {
             return "error/error";
         }
     }
-
+    /*============================================== 대댓글 ===============================================*/
 
  }

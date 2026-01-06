@@ -47,10 +47,12 @@ public class OperationBoard {
     @JoinColumn(name = "userId")
     private Member member;
 
+    /*============================================== 대댓글 ===============================================*/
     @OneToMany(mappedBy = "operationBoard", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @OrderBy("id desc")
     private List<OperationBoardComment> commentList;
-    
+    /*============================================== 대댓글 ===============================================*/
+
     public static OperationBoard dtoToEntity(OperationBoardDTO operationBoardDTO, Member member) {
         OperationBoard operationBoard = new OperationBoard();
         operationBoard.setSubject(operationBoardDTO.getSubject());

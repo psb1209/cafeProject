@@ -41,13 +41,15 @@ public class OperationBoardComment {
     @JoinColumn(name = "operationBoardId")
     private OperationBoard operationBoard;
 
+    /*============================================== 대댓글 ===============================================*/
     private int ref;
     private int step;
     private int level;
+    /*============================================== 대댓글 ===============================================*/
 
-    public static OperationBoardComment dtoToEntity(OperationBoardCommentDTO operationBoardCommentDTO,
-                                                      Member member, OperationBoard operationBoard) {
-
+    public static OperationBoardComment dtoToEntity(
+            OperationBoardCommentDTO operationBoardCommentDTO, Member member, OperationBoard operationBoard
+    ) {
         OperationBoardComment operationBoardComment = new OperationBoardComment();
         operationBoardComment.setContent(operationBoardCommentDTO.getContent());
         operationBoardComment.setMember(member);
