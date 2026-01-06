@@ -111,7 +111,7 @@ public class NoticeBoardController {
             Model model,
             NoticeBoardDTO noticeBoardDTO,
             Authentication authentication,
-            @PageableDefault(size=3, sort="id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size=9, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         try {
             NoticeBoard noticeBoard = noticeBoardService.getSelectOneById(noticeBoardDTO);
@@ -165,8 +165,16 @@ public class NoticeBoardController {
     @GetMapping("/update/{id}")
     public String update(
             Model model,
-            NoticeBoardDTO noticeBoardDTO
+            NoticeBoardDTO noticeBoardDTO,
+            Authentication authentication
     ) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String loginId = userDetails.getUsername(); // 로그인한 아이디
+        if (!loginId.equals(noticeBoardService.getSelectOneById(noticeBoardDTO).getMember().getUsername())) {
+            model.addAttribute("errCode", "err0000");
+            model.addAttribute("errMsg", "끄지라 마!");
+            return "error/error";
+        }
         try {
             NoticeBoard noticeBoard = noticeBoardService.getSelectOneById(noticeBoardDTO);
             model.addAttribute("noticeBoard", noticeBoard);

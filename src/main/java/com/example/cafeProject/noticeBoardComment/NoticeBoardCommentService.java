@@ -35,6 +35,9 @@ public class NoticeBoardCommentService {
 
         Grade oldGrade = member.getGrade(); //로그인한 사용자의 예전 등급
 
+        noticeBoardCommentDTO.setRef(noticeBoardCommentRepository.getMaxRef() + 1);
+        noticeBoardCommentDTO.setStep(0);
+        noticeBoardCommentDTO.setLevel(0);
         NoticeBoardComment noticeBoardComment = NoticeBoardComment.dtoToEntity(noticeBoardCommentDTO, member, noticeBoard);
         noticeBoardCommentRepository.save(noticeBoardComment);
 

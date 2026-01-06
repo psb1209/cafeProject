@@ -48,11 +48,13 @@ public class NoticeBoardComment {
     public static NoticeBoardComment dtoToEntity(
             NoticeBoardCommentDTO noticeBoardCommentDTO,
             Member member, NoticeBoard noticeBoard) {
-
         NoticeBoardComment noticeBoardComment = new NoticeBoardComment();
         noticeBoardComment.setContent(noticeBoardCommentDTO.getContent());
         noticeBoardComment.setMember(member);
         noticeBoardComment.setNoticeBoard(noticeBoard);
+        noticeBoardComment.setRef(noticeBoardCommentDTO.getRef());
+        noticeBoardComment.setStep(noticeBoardCommentDTO.getStep());
+        noticeBoardComment.setLevel(noticeBoardCommentDTO.getLevel());
         return noticeBoardComment;
     }
 }
