@@ -47,6 +47,7 @@
             <div class="cafe-article-content"
                  th:utext="${noticeBoard.content}"></div>
 
+            <!--=================================== 변경사항 시작 ===================================-->
             <!-- 버튼 -->
             <div class="cafe-article-actions">
                 <a href="/noticeBoard/list" class="cafe-action-btn">목록</a>
@@ -79,6 +80,7 @@
                     <span class="like-text">좋아요</span>
                 </button>
             </div>
+            <!--=================================== 변경사항 끝 + <script> ===================================-->
 
 
             <!-- 댓글 -->
@@ -232,11 +234,13 @@
     </div>
 
     <!-- JS -->
+    <!--=================================== 변경사항 시작 ===================================-->
     <script>
         function noLoginLikeButton() {
-            alert('로그인 해라');
+            alert('로그인 후 이용 가능합니다.');
         }
     </script>
+    <!--=================================== 변경사항 끝 ===================================-->
     <script>
         function commentSave() {
             const form = document.commentForm;

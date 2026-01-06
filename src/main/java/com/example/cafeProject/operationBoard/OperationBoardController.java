@@ -183,7 +183,7 @@ public class OperationBoardController {
         String loginId = userDetails.getUsername(); // 로그인한 아이디
         if (!loginId.equals(operationBoardService.getSelectOneById(operationBoardDTO).getMember().getUsername())) {
             model.addAttribute("errCode", "err0000");
-            model.addAttribute("errMsg", "끄지라 마!");
+            model.addAttribute("errMsg", "로그인 후 이용 가능합니다.");
             return "error/error";
         }
         try {

@@ -172,13 +172,15 @@ public class NoticeBoardController {
             NoticeBoardDTO noticeBoardDTO,
             Authentication authentication
     ) {
+    /*<!--=================================== 변경사항 시작 ===================================-->*/
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String loginId = userDetails.getUsername(); // 로그인한 아이디
         if (!loginId.equals(noticeBoardService.getSelectOneById(noticeBoardDTO).getMember().getUsername())) {
             model.addAttribute("errCode", "err0000");
-            model.addAttribute("errMsg", "끄지라 마!");
+            model.addAttribute("errMsg", "로그인 후 이용 가능합니다.");
             return "error/error";
         }
+    /*<!--=================================== 변경사항 끝 ===================================-->*/
         try {
             NoticeBoard noticeBoard = noticeBoardService.getSelectOneById(noticeBoardDTO);
             model.addAttribute("noticeBoard", noticeBoard);
