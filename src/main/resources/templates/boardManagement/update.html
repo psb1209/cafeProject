@@ -5,7 +5,7 @@
       layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center',
-               sidebarKey='cafe'">
+               sidebarKey='admin'">
 <body>
 
 <h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
@@ -14,6 +14,7 @@
 <div layout:fragment="content">
 
     <link th:href="@{/css/board.css}" rel="stylesheet" />
+    <link th:href="@{/css/admin.css}" rel="stylesheet" />
 
         <div class="write-card medium">
             <div class="write-header">게시판 수정</div>

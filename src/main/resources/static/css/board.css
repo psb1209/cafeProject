@@ -15,23 +15,41 @@
     --blue-border-strong: #dbe7ff;
     --blue-border-input: #dfe5f1;
 
+    --blue-soft-btn: #e6f0ff;
+    --blue-soft-btn-hover: #d6e8ff;
+    --blue-soft-border: #9fc0f5;
+
     --blue-icon-grad: linear-gradient(135deg, #5fa0ff, #1e6fd9);
 
     --text-main: #1f2a44;
     --text-sub: #6b7a99;
 
     --white: #ffffff;
+    --white-20: rgba(255,255,255,0.2);
 
     --shadow-light: rgba(0,0,0,0.05);
     --shadow-hover: rgba(0,0,0,0.08);
     --shadow-focus: rgba(30,111,217,0.12);
+    --shadow-black-15: rgba(0,0,0,0.15);
 
     --danger-bg: #ffeaea;
+    --danger-bg-hover: #ffc8c8;
     --danger-border: #f5c2c2;
     --danger-text: #d9534f;
 
     --gray-hover: #f0f0f0;
+    --gray-bg-soft: #f9fbff;
+    --gray-bg-disabled: #f2f2f2;
+
     --table-border-light: #eef2f8;
+
+    --notice-bg: #ffe5e5;
+    --notice-bg-hover: #ffc2c2;
+    --notice-btn-bg: #fffbea;
+    --notice-btn-border: #f5c243;
+    --notice-btn-hover: #f5c243;
+
+    --like-hover-grad: linear-gradient(135deg, #4a90ff, var(--blue-main-dark));
 }
 
 /* ==============================
@@ -194,23 +212,23 @@
 }
 
 .cafe-action-btn.write {
-    background: #e6f0ff;
-    border-color: #9fc0f5;
+    background: var(--blue-soft-btn);
+    border-color: var(--blue-soft-border);
     color: var(--blue-main);
 }
 
 .cafe-action-btn.write:hover {
-    background: #d6e8ff;
+    background: var(--blue-soft-btn-hover);
 }
 
 .cafe-action-btn.danger {
-    background: #ffeaea;
-    border-color: #f5c2c2;
-    color: #d9534f;
+    background: var(--danger-bg);
+    border-color: var(--danger-border);
+    color: var(--danger-text);
 }
 
 .cafe-action-btn.danger:hover {
-    background: #ffc8c8;
+    background: var(--danger-bg-hover);
 }
 
 .cafe-board-search {
@@ -252,7 +270,7 @@
 
 .cafe-search-form:focus-within {
     border-color: var(--blue-main);
-    box-shadow: 0 0 0 2px rgba(30,111,217,0.15);
+    box-shadow: 0 0 0 2px var(--shadow-focus);
 }
 
 .cafe-board-table {
@@ -273,7 +291,7 @@
 
 .td_underline {
     padding: 14px 10px;
-    border-bottom: 1px solid #eef2f8;
+    border-bottom: 1px solid var(--table-border-light);
     color: var(--text-main);
     text-align: center;
 }
@@ -339,7 +357,7 @@
 
 .page-btn.disabled {
     color: var(--text-sub);
-    background: #f9fbff;
+    background: var(--gray-bg-soft);
     pointer-events: none;
 }
 
@@ -427,7 +445,7 @@
 }
 
 .like-btn.active .like-icon {
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    filter: drop-shadow(0 2px 4px var(--shadow-black-15));
 }
 
 .like-text {
@@ -435,12 +453,12 @@
 }
 
 .like-btn.active .like-count {
-    background: rgba(255,255,255,0.2);
+    background: var(--white-20);
     color: var(--white);
 }
 
 .like-btn.active:hover {
-    background: linear-gradient(135deg, #4a90ff, var(--blue-main-dark));
+    background: var(--like-hover-grad);
 }
 
 /* 댓글 */
@@ -494,7 +512,7 @@
 
 .cafe-comment-item {
     padding: 14px 0;
-    border-bottom: 1px solid #eef2f8;
+    border-bottom: 1px solid var(--table-border-light);
 }
 
 .cafe-comment-btn,
@@ -537,7 +555,7 @@
 }
 
 .comment-link-btn.danger {
-    color: #d9534f;
+    color: var(--danger-text);
 }
 
 .comment-content {
@@ -694,12 +712,12 @@
 
 /* 공지글 배경 & hover */
 tr.notice-row {
-    background-color: #ffe5e5 !important;
+    background-color: var(--notice-bg) !important;
     font-weight: bold;
 }
 
 tr.notice-row:hover {
-    background-color: #ffc2c2 !important;
+    background-color: var(--notice-bg-hover) !important;
 }
 
 .notice-btn {
@@ -707,14 +725,14 @@ tr.notice-row:hover {
     padding: 2px 6px;
     font-size: 12px;
     border-radius: 4px;
-    border: 1px solid #f5c243;
-    background: #fffbea;
+    border: 1px solid var(--notice-btn-border);
+    background: var(--notice-btn-bg);
     cursor: pointer;
 }
 
 .notice-btn:hover {
-    background: #f5c243;
-    color: #fff;
+    background: var(--notice-btn-hover);
+    color: var(--white);
 }
 /* ==============================
    카드 + 배경 폭 제한
@@ -767,7 +785,7 @@ tr.notice-row:hover {
 }
 
 .board-status.inactive {
-    background: #f2f2f2;
+    background: var(--gray-bg-disabled);
     color: var(--text-sub);
 }
 
@@ -782,7 +800,7 @@ tr.notice-row:hover {
 
 /* 설명 전용 박스 (입력창 느낌 제거) */
 .board-desc {
-    background: #f9fbff;
+    background: var(--gray-bg-soft);
     border: 1px solid var(--table-border-light);
     border-radius: 8px;
     padding: 16px;
@@ -807,14 +825,14 @@ tr.notice-row:hover {
 
 /* 붉은 위험 버튼 (disabled 상태 포함) */
 .write-btn.danger.cafe-action-btn:disabled {
-    background: #ffeaea;   /* 평상시 붉은 배경과 동일 */
-    border-color: #f5c2c2; /* 테두리 */
-    color: #d9534f;        /* 글자색 */
+   background: var(--danger-bg);
+   border-color: var(--danger-border);
+   color: var(--danger-text);
     cursor: not-allowed;   /* 마우스 커서 변경 */
     opacity: 0.6;          /* 약간 투명해서 disabled 느낌 추가 */
 }
 
 /* hover 효과는 disabled일 때 적용되지 않도록 안전하게 처리 */
 .write-btn.danger.cafe-action-btn:not(:disabled):hover {
-    background: #ffc8c8;
+    background: var(--danger-bg-hover);
 }

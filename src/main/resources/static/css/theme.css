@@ -37,6 +37,38 @@
     --blue-active-border: #f5c243; /* 또는 어울리는 강조색 */
     --text-section-title: #888;
     --text-cafe-desc: #555;
+
+    /* 누락된 white alpha */
+    --white-20: rgba(255,255,255,0.2);
+
+    /* 누락된 shadow */
+    --shadow-black-15: rgba(0,0,0,0.15);
+
+    /* danger hover */
+    --danger-bg-hover: #ffc8c8;
+
+    /* gray */
+    --gray-bg-soft: #f9fbff;
+    --gray-bg-disabled: #f2f2f2;
+
+    /* notice */
+    --notice-bg: #ffe5e5;
+    --notice-bg-hover: #ffc2c2;
+    --notice-btn-bg: #fffbea;
+    --notice-btn-border: #f5c243;
+    --notice-btn-hover: #f5c243;
+
+    /* soft button (연노랑/크림) */
+    --blue-soft-btn: #fff6c1;          /* 크림 옐로우 */
+    --blue-soft-btn-hover: #ffef9a;    /* 조금 진한 옐로우 */
+    --blue-soft-border: #f5c243;       /* 메인 옐로우와 통일 */
+
+    /* like hover gradient (옐로우 그라데이션) */
+    --like-hover-grad: linear-gradient(
+        135deg,
+        #ffe89a,                       /* 연노랑 */
+        var(--blue-main-dark)          /* #f5c243 */
+    );
 }
 
 

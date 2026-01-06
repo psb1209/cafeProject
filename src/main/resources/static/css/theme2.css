@@ -1,0 +1,72 @@
+:root {
+    --blue-main: #e85c5c;
+    --blue-main-dark: #d64545;
+    --blue-main-light: #f7a1a1;
+
+    --blue-bg-grad: linear-gradient(90deg, #fff5f5, #ffe1e1);
+    --blue-bg-soft: #fff1f1;
+    --blue-bg-light: #e85c5c;
+    --blue-hover-bg: #fff7f7;
+
+    --blue-border: #f3b3b3;
+    --blue-border-strong: #f3b3b3;
+    --blue-border-input: #f3b3b3;
+
+    --blue-icon-grad: linear-gradient(135deg, #e85c5c, #d64545);
+
+    --text-main: #5a2e2e;
+    --text-sub: #8b4a4a;
+    --text-dark: #b33636;
+    --text-cafe-title: #b33636;
+
+    --white: #ffffff;
+
+    --shadow-light: rgba(232,92,92,0.1);
+    --shadow-hover: rgba(232,92,92,0.15);
+    --shadow-focus: rgba(232,92,92,0.3);
+
+    --danger-bg: #ffeaea;
+    --danger-border: #f5c2c2;
+    --danger-text: #d9534f;
+
+    --gray-hover: #f0f0f0;
+    --table-border-light: #f3b3b3;
+
+    --text-sub-light: #aaa;
+    --border-light: #dcdcdc;
+    --blue-active-border: #d64545;
+    --text-section-title: #888;
+    --text-cafe-desc: #555;
+
+    /* white alpha */
+    --white-20: rgba(255,255,255,0.2);
+
+    /* shadow */
+    --shadow-black-15: rgba(0,0,0,0.15);
+
+    /* danger hover */
+    --danger-bg-hover: #ffc8c8;
+
+    /* gray */
+    --gray-bg-soft: #f9fbff;
+    --gray-bg-disabled: #f2f2f2;
+
+    /* notice */
+    --notice-bg: #ffe5e5;
+    --notice-bg-hover: #ffc2c2;
+    --notice-btn-bg: #fff1f1;
+    --notice-btn-border: #d64545;
+    --notice-btn-hover: #d64545;
+
+    /* soft button (연핑크/라이트 레드) */
+    --blue-soft-btn: #ffe1e1;
+    --blue-soft-btn-hover: #f7bcbc;
+    --blue-soft-border: #d64545;
+
+    /* like hover gradient (레드 그라데이션) */
+    --like-hover-grad: linear-gradient(
+        135deg,
+        #f7a1a1,
+        var(--blue-main-dark)
+    );
+}

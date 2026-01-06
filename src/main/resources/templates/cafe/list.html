@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{main_layout/layout}"
-      th:with="headerImage=@{/assets/img/main.jpg},
-               headerPosition='center center',
-               sidebarKey='cafe'">
+      th:with="headerImage=@{/assets/img/about-bg.jpg},
+               headerPosition='center center'">
+
 <body>
 
 <h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
@@ -14,17 +13,18 @@
 <div layout:fragment="content">
 
     <link th:href="@{/css/board.css}" rel="stylesheet" />
+    <link th:href="@{/css/theme.css}" rel="stylesheet" />
 
     <div class="cafe-board-wrap">
 
         <!-- 헤더 -->
         <div class="cafe-board-header">
-            <h2 class="cafe-board-title">게시판 목록</h2>
+            <h2 class="cafe-board-title">카페 목록</h2>
 
             <div class="cafe-article-actions">
                 <a href="/cafe/create"
                    class="cafe-action-btn write">
-                    게시판 등록
+                    카페 등록
                 </a>
             </div>
         </div>

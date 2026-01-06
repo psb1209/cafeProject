@@ -99,13 +99,10 @@
                         </div>
                     </div>
                     <div class="cafe-comment-write" th:if="${operationBoardCommentUpdate != null}">
-                        <textarea name="content"
-                                  class="cafe-comment-textarea"
+                        <textarea name="content" class="cafe-comment-textarea"
                                   th:text="${operationBoardCommentUpdate.content}"></textarea>
                         <div class="comment-btn-wrap">
-                            <button type="button"
-                                    class="cafe-comment-btn"
-                                    onclick="commentUpdate();">수정</button>
+                            <button type="button" class="cafe-comment-btn" onclick="commentUpdate();">수정</button>
                         </div>
                     </div>
                 </form>
