@@ -237,7 +237,7 @@ public class MemberService {
         }
         // email 중복 체크
         if (memberRepository.existsByEmail(dto.getEmail())) {
-            log.warn("회원가입 실패(이메일 중복): username={}", dto.getEmail());
+            log.warn("회원가입 실패(이메일 중복): email={}", dto.getEmail());
             throw new DuplicateValueException("이미 사용 중인 email", "email", dto.getEmail());
         }
 
