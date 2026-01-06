@@ -54,6 +54,9 @@ public class OperationBoardComment {
         operationBoardComment.setContent(operationBoardCommentDTO.getContent());
         operationBoardComment.setMember(member);
         operationBoardComment.setOperationBoard(operationBoard);
+        operationBoardComment.setRef(operationBoardCommentDTO.getRef());
+        operationBoardComment.setStep(operationBoardCommentDTO.getStep());
+        operationBoardComment.setLevel(operationBoardCommentDTO.getLevel());
         return operationBoardComment;
     }
 }

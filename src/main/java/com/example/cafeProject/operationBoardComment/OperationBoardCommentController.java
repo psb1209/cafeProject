@@ -164,7 +164,7 @@ public class OperationBoardCommentController {
         try {
             UserDetails userDetails = (UserDetails)authentication.getPrincipal();
             // 대댓글 등록
-            operationBoardCommentService.replysetInsert(operationBoardCommentDTO, userDetails);
+            operationBoardCommentService.replySetInsert(operationBoardCommentDTO, userDetails);
             return "redirect:/operationBoard/view/" + operationBoardCommentDTO.getOperationBoardId();
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "221213321");

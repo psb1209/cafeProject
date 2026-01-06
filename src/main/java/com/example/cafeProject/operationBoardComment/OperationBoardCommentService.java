@@ -35,6 +35,9 @@ public class OperationBoardCommentService {
 
         Grade oldGrade = member.getGrade(); //로그인한 사용자의 예전 등급
 
+        operationBoardCommentDTO.setRef(operationBoardCommentRepository.getMaxRef() + 1);
+        operationBoardCommentDTO.setStep(0);
+        operationBoardCommentDTO.setLevel(0);
         OperationBoardComment operationBoardComment = OperationBoardComment.dtoToEntity(operationBoardCommentDTO, member, operationBoard);
         operationBoardCommentRepository.save(operationBoardComment);
 
@@ -87,10 +90,14 @@ public class OperationBoardCommentService {
     /*============================================== 대댓글 ===============================================*/
     //대댓글 추가
     @Transactional
-    public void replysetInsert(
+    public void replySetInsert(
             OperationBoardCommentDTO paramDTO,
             UserDetails userDetails
     ){
+        // 게시글 유무 확인
+        OperationBoard operationBoard = operationBoardRepository.findById(paramDTO.getOperationBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+
         // 부모글 유무 확인
         OperationBoardComment operationBoardComment_ = operationBoardCommentRepository.findById(paramDTO.getOperationBoardCommentId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
@@ -106,12 +113,8 @@ public class OperationBoardCommentService {
         );
         
         int ref = operationBoardComment_.getRef();
-        int step = operationBoardComment_.getStep()+1;
-        int level = operationBoardComment_.getLevel()+1;
-
-        // 게시글 유무 확인
-        OperationBoard operationBoard = operationBoardRepository.findById(paramDTO.getOperationBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")); 
+        int step = operationBoardComment_.getStep() + 1;
+        int level = operationBoardComment_.getLevel() + 1;
 
         OperationBoardComment operationBoardComment = new OperationBoardComment();
         operationBoardComment.setContent(paramDTO.getContent());
