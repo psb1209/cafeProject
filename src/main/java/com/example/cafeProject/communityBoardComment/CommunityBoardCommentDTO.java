@@ -21,9 +21,11 @@ public class CommunityBoardCommentDTO {
 
     private int communityBoardCommentId;
 
+    /*============================================== 대댓글 ===============================================*/
     private int ref;
     private int step;
     private int level;
+    /*============================================== 대댓글 ===============================================*/
 
 
 

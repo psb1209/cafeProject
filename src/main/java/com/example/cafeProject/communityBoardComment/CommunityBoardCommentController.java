@@ -173,7 +173,7 @@ public class CommunityBoardCommentController {
         try {
             UserDetails userDetails=(UserDetails)authentication.getPrincipal();
 
-            communityBoardCommentService.replysetInsert(communityBoardCommentDTO, userDetails);
+            communityBoardCommentService.replySetInsert(communityBoardCommentDTO, userDetails);
             return "redirect:/communityBoard/view/" + communityBoardCommentDTO.getCommunityBoardId();
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "221213321");

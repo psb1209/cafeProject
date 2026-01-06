@@ -10,6 +10,11 @@ import com.example.cafeProject.communityBoard.CommunityBoardRepository;
 import com.example.cafeProject.communityBoardComment.CommunityBoardComment;
 import com.example.cafeProject.communityBoardComment.CommunityBoardCommentDTO;
 import com.example.cafeProject.communityBoardComment.CommunityBoardCommentRepository;
+
+import com.example.cafeProject.communityBoard.CommunityBoard;
+import com.example.cafeProject.communityBoardComment.CommunityBoardComment;
+import com.example.cafeProject.communityBoardComment.CommunityBoardCommentDTO;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +43,12 @@ public class CommunityBoardCommentService {
 
         Grade oldGrade = member.getGrade(); //로그인한 사용자의 예전 등급
 
+        /*============================================== 대댓글 추가사항===============================================*/
+        // ref, step, level값 DTO에 담기
+        communityBoardCommentDTO.setRef(communityBoardCommentRepository.getMaxRef() + 1);
+        communityBoardCommentDTO.setStep(0);
+        communityBoardCommentDTO.setLevel(0);
+        /*============================================== 대댓글 추가사항===============================================*/
         CommunityBoardComment communityBoardComment = CommunityBoardComment.dtoToEntity(communityBoardCommentDTO, member, communityBoard);
         communityBoardCommentRepository.save(communityBoardComment);
 
@@ -87,35 +98,36 @@ public class CommunityBoardCommentService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 답변을 찾을 수 없습니다."));
     }
 
+    /*============================================== 대댓글 ===============================================*/
     //대댓글 추가
     @Transactional
-    public void replysetInsert(
+    public void replySetInsert(
             CommunityBoardCommentDTO paramDTO,
             UserDetails userDetails
     ){
+        // 게시글 유무 확인
+        CommunityBoard communityBoard = communityBoardRepository.findById(paramDTO.getCommunityBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+
+        // 부모글 유무 확인
         CommunityBoardComment communityBoardComment_ = communityBoardCommentRepository.findById(paramDTO.getCommunityBoardCommentId())
-                .orElseThrow(() -> new IllegalArgumentException("부모 댓글 없음"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
 
-        Member member = memberRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("해당 회원 없음"));
+        // 로그인 유무 확인
+        Member member = memberService.viewOptional(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
 
+        // 자식글 정렬
         communityBoardCommentRepository.updateRelevel(
                 communityBoardComment_.getRef(),
                 communityBoardComment_.getLevel()
         );
 
-        int ref=communityBoardComment_.getRef();
-        int step=communityBoardComment_.getStep()+1;
-        int level=communityBoardComment_.getLevel()+1;
+        int ref = communityBoardComment_.getRef();
+        int step = communityBoardComment_.getStep() + 1;
+        int level = communityBoardComment_.getLevel() + 1;
 
-        CommunityBoard communityBoard=null;
-        Optional<CommunityBoard> communityBoardOptional=communityBoardRepository.findById(paramDTO.getCommunityBoardId());
-        if(communityBoardOptional.isPresent()){
-            communityBoard=communityBoardOptional.get(); //부모글 존재유무판단
-        }
-
-
-        CommunityBoardComment communityBoardComment=new CommunityBoardComment();
+        CommunityBoardComment communityBoardComment = new CommunityBoardComment();
         communityBoardComment.setContent(paramDTO.getContent());
         communityBoardComment.setCommunityBoard(communityBoard);
         communityBoardComment.setMember(member);
@@ -125,6 +137,7 @@ public class CommunityBoardCommentService {
 
         communityBoardCommentRepository.save(communityBoardComment);
     }
+    /*============================================== 대댓글 ===============================================*/
 
     //회원등업
     public Member updateGrade(Member member) {
