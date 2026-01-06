@@ -34,10 +34,13 @@ public class OperationBoardCommentService {
         Member member = memberService.viewCurrentMember(user); //로그인한 사용자가 카페회원이 맞는지 (인증:아이디,비번확인 + 인가:권한확인)
 
         Grade oldGrade = member.getGrade(); //로그인한 사용자의 예전 등급
-
+        
+        /*============================================== 대댓글 ===============================================*/
+        // ref, step, level값 DTO에 담기
         operationBoardCommentDTO.setRef(operationBoardCommentRepository.getMaxRef() + 1);
         operationBoardCommentDTO.setStep(0);
         operationBoardCommentDTO.setLevel(0);
+        /*============================================== 대댓글 ===============================================*/
         OperationBoardComment operationBoardComment = OperationBoardComment.dtoToEntity(operationBoardCommentDTO, member, operationBoard);
         operationBoardCommentRepository.save(operationBoardComment);
 
