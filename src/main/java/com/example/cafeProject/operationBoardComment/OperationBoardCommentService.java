@@ -35,12 +35,12 @@ public class OperationBoardCommentService {
 
         Grade oldGrade = member.getGrade(); //로그인한 사용자의 예전 등급
         
-        /*============================================== 대댓글 ===============================================*/
+        /*============================================== 대댓글 추가사항===============================================*/
         // ref, step, level값 DTO에 담기
         operationBoardCommentDTO.setRef(operationBoardCommentRepository.getMaxRef() + 1);
         operationBoardCommentDTO.setStep(0);
         operationBoardCommentDTO.setLevel(0);
-        /*============================================== 대댓글 ===============================================*/
+        /*============================================== 대댓글 추가사항===============================================*/
         OperationBoardComment operationBoardComment = OperationBoardComment.dtoToEntity(operationBoardCommentDTO, member, operationBoard);
         operationBoardCommentRepository.save(operationBoardComment);
 

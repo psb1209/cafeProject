@@ -54,12 +54,12 @@ public class OperationBoardComment {
         operationBoardComment.setContent(operationBoardCommentDTO.getContent());
         operationBoardComment.setMember(member);
         operationBoardComment.setOperationBoard(operationBoard);
-        /*============================================== 대댓글 ===============================================*/
+        /*============================================== 대댓글 추가사항 ===============================================*/
         // service에서 넘긴 값 받아오기
         operationBoardComment.setRef(operationBoardCommentDTO.getRef());
         operationBoardComment.setStep(operationBoardCommentDTO.getStep());
         operationBoardComment.setLevel(operationBoardCommentDTO.getLevel());
-        /*============================================== 대댓글 ===============================================*/
+        /*============================================== 대댓글 추가사항 ===============================================*/
         return operationBoardComment;
     }
 }
