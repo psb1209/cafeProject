@@ -42,7 +42,7 @@ public class LikeViewController {
             return "redirect:/";
         } catch (Exception e) {
             model.addAttribute("errCode", "err0001");
-            model.addAttribute("errMsg", e.getMessage());
+            model.addAttribute("errMsg", "로그인한 회원만 가능");
             return "error/error";
         }
     }

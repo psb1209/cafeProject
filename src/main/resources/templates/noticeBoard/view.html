@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center',
@@ -60,8 +60,9 @@
                 </form>
             </div>
 
+
             <!--========================= 좋아요 ============================-->
-            <form class="like-form" action="/like/createProc" method="post">
+            <form class="like-form" action="/like/createProc" method="post" sec:authorize="isAuthenticated()">
                 <input type="hidden" name="_csrf" th:value="${_csrf.token}">
                 <input type="hidden" name="noticeBoardNumber" th:value="${noticeBoard.id}">
 
@@ -71,6 +72,13 @@
                     <span class="like-text">좋아요</span>
                 </button>
             </form>
+
+            <div class="like-form" sec:authorize="isAnonymous()">
+                <button type="submit" onclick="noLoginLikeButton();" class="like-btn" th:classappend="${isLike} ? ' active' : ''">
+                    <span class="like-icon">🤍</span>
+                    <span class="like-text">좋아요</span>
+                </button>
+            </div>
 
 
             <!-- 댓글 -->
@@ -224,6 +232,11 @@
     </div>
 
     <!-- JS -->
+    <script>
+        function noLoginLikeButton() {
+            alert('로그인 해라');
+        }
+    </script>
     <script>
         function commentSave() {
             const form = document.commentForm;

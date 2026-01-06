@@ -44,8 +44,9 @@ public class SecurityConfig {
                         // .requestMatchers("/operationBoard/**").hasAnyRole("ADMIN", "MANAGER")
 
                         // ✅ 로그인한 사용자만
-                        .requestMatchers("/operationBoard/**").authenticated()
+//                        .requestMatchers("/operationBoard/**").authenticated()
                         .requestMatchers("/noticeBoard/update/**").authenticated()
+                        .requestMatchers("/noticeBoard/create/**").authenticated()
 
 
                         // 나머지는 전부 허용

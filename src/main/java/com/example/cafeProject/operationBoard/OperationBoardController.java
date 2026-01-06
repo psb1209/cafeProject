@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -175,8 +176,16 @@ public class OperationBoardController {
     @GetMapping("/update/{id}")
     public String update(
             Model model,
-            OperationBoardDTO operationBoardDTO
+            OperationBoardDTO operationBoardDTO,
+            Authentication authentication
     ) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String loginId = userDetails.getUsername(); // 로그인한 아이디
+        if (!loginId.equals(operationBoardService.getSelectOneById(operationBoardDTO).getMember().getUsername())) {
+            model.addAttribute("errCode", "err0000");
+            model.addAttribute("errMsg", "끄지라 마!");
+            return "error/error";
+        }
         try {
             OperationBoard operationBoard = operationBoardService.getSelectOneById(operationBoardDTO);
             model.addAttribute("operationBoard", operationBoard);

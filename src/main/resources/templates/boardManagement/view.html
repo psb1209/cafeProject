@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{main_layout/layout}"
-      th:with="showHeader=false">
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center',
+               sidebarKey='admin'">
 <body>
 
 <div layout:fragment="content">
 
     <link th:href="@{/css/board.css}" rel="stylesheet" />
+    <link th:href="@{/css/admin.css}" rel="stylesheet" />
 
     <!-- ================= 상단 헤더 ================= -->
     <div class="board-detail-header">

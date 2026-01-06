@@ -111,7 +111,7 @@ public class NoticeBoardController {
             Model model,
             NoticeBoardDTO noticeBoardDTO,
             Authentication authentication,
-            @PageableDefault(size=9, sort="id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size=2, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         try {
             NoticeBoard noticeBoard = noticeBoardService.getSelectOneById(noticeBoardDTO);
@@ -156,8 +156,12 @@ public class NoticeBoardController {
 
     @GetMapping("/create")
     public String create(
-            Model model
+            Model model,
+            Authentication authentication
     ) {
+        if (authentication == null) {
+            return "redirect:/member/login";
+        }
         model.addAttribute("activeMenu", "noticeBoard");
         return dirName + "/create";
     }
