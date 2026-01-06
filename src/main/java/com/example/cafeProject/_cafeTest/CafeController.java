@@ -6,6 +6,7 @@ import com.example.cafeProject.communityBoard.CommunityBoardService;
 import com.example.cafeProject.informationBoard.InformationBoardService;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoard.NoticeBoardService;
+import com.example.cafeProject.validation.ManagementOnly;
 import com.example.cafeProject.validation.ValidationGroups;
 import com.example.exception.DuplicateValueException;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @Controller
+@ManagementOnly
 @RequestMapping("/cafe")
 public class CafeController extends BaseImageController<Cafe, CafeDTO> {
 
@@ -54,7 +56,7 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
      * 뷰에서 `${cafe}`를 바로 참조할 수 있게 만들기 위한 전역 모델 세팅용 훅
      */
     @ModelAttribute("cafe")
-    public CafeDTO board(
+    public CafeDTO cafe(
             @RequestParam(name = "c", required = false) String c
     ) {
         if (c == null || c.isBlank()) return null; // c 없이 들어오는 페이지는 일단 null
@@ -108,6 +110,7 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
             Model model,
             @PathVariable int id
     ) {
+        model.addAttribute("cafe", cafeService.viewDTO(id));
         return loadPathOrRedirect(id, model, basePath+"/meta");
     }
 
@@ -143,7 +146,7 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
         if (bindingResult.hasErrors()) return logValidationErrors("수정", "update", bindingResult);
         try {
             cafeService.setUpdate(dto);
-            return "redirect:/" + super.basePath + "/view/" + cafeService.getIdFromDTO(dto);
+            return "redirect:/" + super.basePath + "/meta/" + cafeService.getIdFromDTO(dto);
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("readRole", "invalid", e.getMessage());
             return super.basePath + "/update";

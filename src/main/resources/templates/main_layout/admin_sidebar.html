@@ -30,15 +30,21 @@
 
         <!-- 게시판 관리 -->
         <a class="nav-link"
+           th:if="${cafe != null
+                and cafe.code != null
+                and !#strings.isEmpty(cafe.code)}"
            th:classappend="${activeMenu == 'boardManagement'} ? ' active'"
-           th:href="@{/boardManagement/list}">
+           th:href="@{|/boardManagement/list?c=${cafe.code}|}">
             <span class="nav-emoji">🗂️</span>게시판 관리
         </a>
 
         <!-- 게시판 추가 -->
         <a class="nav-link"
+           th:if="${cafe != null
+                and cafe.code != null
+                and !#strings.isEmpty(cafe.code)}"
            th:classappend="${activeMenu == 'boardCreate'} ? ' active'"
-           th:href="@{/boardManagement/create}">
+           th:href="@{|/boardManagement/create?c=${cafe.code}|}">
             <span class="nav-emoji">➕</span>게시판 추가
         </a>
 

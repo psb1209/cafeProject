@@ -37,7 +37,7 @@ public abstract class BaseCrudController<E, D> {
     }
 
     /** 목록 화면 */
-    @GetMapping("/list")
+    @GetMapping({"", "/", "/list"})
     public String list(
             Model model,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)

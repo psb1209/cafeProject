@@ -2,9 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       layout:decorate="~{_layout/layout}"
-      th:with="headerImage=${#strings.isEmpty(board?.imgName)}
+      th:with="headerImage=${#strings.isEmpty(cafe?.imgName)}
                          ? @{/assets/img/post-sample-image.jpg}
-                         : @{|${imageUrlPrefix}${board.imgName}|},
+                         : @{|${imageUrlPrefix}${cafe.imgName}|},
                headerPosition='center center'">
 
 <body>
@@ -15,7 +15,9 @@
 
     <h2 class="mb-3">글 수정</h2>
 
-    <form name="form" method="post" th:action="@{/post/updateProc}" th:object="${data}">
+    <form name="form" method="post"
+          th:action="@{/cafe/{cafeCode}/post/updateProc(cafeCode=${cafe?code}, b=${data.boardCode})}"
+          th:object="${data}">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <input type="hidden" th:field="*{id}"/>
         <input type="hidden" th:field="*{boardId}"/>
@@ -61,12 +63,12 @@
             <button type="submit" class="btn btn-primary">수정 완료</button>
 
             <a class="btn btn-outline-secondary"
-               th:href="@{|/post/view/${data.id}?b=${data.boardCode}|}">
+               th:href="@{|/cafe/${cafe?code}/post/view/${data.id}?b=${data.boardCode}|}">
                 취소
             </a>
 
             <a class="btn btn-outline-secondary"
-               th:href="@{/post/list(b=${data.boardCode})}">
+               th:href="@{/cafe/{cafeCode}/post/list(cafeCode=${cafe?code}, b=${data.boardCode})}">
                 목록으로
             </a>
         </div>
@@ -88,8 +90,7 @@
 
             $("#content").summernote({
                 height: 300,
-                // (선택적) Summernote 설정 보완
-                lang: 'ko-KR', // 언어 설정
+                lang: 'ko-KR',
                 placeholder: '내용을 입력하세요',
                 toolbar: [
                     ['style', ['style']],
@@ -110,14 +111,13 @@
             data.append("file", file);
 
             $.ajax({
-                url: "/post/uploadImage",   // 업로드 URL
+                url: "/post/uploadImage",
                 type: "POST",
-                enctype: 'multipart/form-data',  // 첨부파일 사용 시 필수
+                enctype: 'multipart/form-data',
                 data: data,
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                    // 업로드된 이미지 URL을 에디터에 삽입
                     $(editor).summernote('insertImage', response.url);
                 },
                 error: function() {

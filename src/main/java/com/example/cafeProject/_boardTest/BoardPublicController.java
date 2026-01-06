@@ -1,5 +1,7 @@
 package com.example.cafeProject._boardTest;
 
+import com.example.cafeProject._cafeTest.CafeDTO;
+import com.example.cafeProject._cafeTest.CafeService;
 import com.example.cafeProject.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,11 +14,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/board")
+@RequestMapping("/cafe/{cafeCode}/board")
 @RequiredArgsConstructor
 public class BoardPublicController {
 
     private final BoardService boardService;
+    private final CafeService cafeService;
     private final MemberService memberService;
 
     @Value("${app.image.url-prefix}")
@@ -29,21 +32,33 @@ public class BoardPublicController {
         return urlPrefix.endsWith("/") ? urlPrefix : urlPrefix + "/";
     }
 
-    @GetMapping("/list")
+    @ModelAttribute("cafe")
+    public CafeDTO cafeAttr(
+            @PathVariable String cafeCode
+    ) {
+        if (cafeCode == null || cafeCode.isBlank()) return null;
+        return cafeService.viewDTOByCode(cafeCode);
+    }
+
+    @GetMapping({"", "/", "/list"})
     public String list(
+            @PathVariable String cafeCode,
+            @RequestParam(name = "keyword", required = false) String keyword,
             @PageableDefault(size = 30, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestParam(required = false) String keyword,
             Authentication authentication,
             Model model
     ) {
-        model.addAttribute("list", boardService.listVisibleDTO(pageable, memberService.getEffectiveRoles(authentication), keyword));
+        model.addAttribute("list", boardService.listVisibleDTO(cafeCode, pageable, memberService.getEffectiveRoles(authentication), keyword));
         model.addAttribute("keyword", keyword);
         return "board/publicList";
     }
 
-    // "/board/{code} 형식으로 오는 링크를 post 컨트롤러에게 떠넘김
-    @GetMapping("/{code}")
-    public String enter(@PathVariable String code) {
-        return "redirect:/post/list?b=" + code;
+    // "/cafe/{cafeCode}/board/{boardCode}" 형식으로 오는 링크를 post 컨트롤러에게 떠넘김
+    @GetMapping("/{boardCode}")
+    public String enter(
+            @PathVariable String cafeCode,
+            @PathVariable String boardCode
+    ) {
+        return "redirect:/cafe/" + cafeCode + "/post/list?b=" + boardCode;
     }
 }

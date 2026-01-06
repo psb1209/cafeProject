@@ -25,8 +25,8 @@
         </div>
 
         <div class="cafe-article-actions">
-            <a th:href="@{/boardManagement/list}" class="cafe-action-btn">목록</a>
-            <a th:href="@{|/boardManagement/update/${data.id}|}"
+            <a th:href="@{/boardManagement/list(c=${cafeCode})}" class="cafe-action-btn">목록</a>
+            <a th:href="@{/boardManagement/update/{id}(id=${data.id}, c=${cafeCode})}"
                class="cafe-action-btn">수정</a>
         </div>
     </div>
@@ -59,10 +59,10 @@
 
                     <a class="cafe-more-btn"
                        style="margin-top:8px; display:inline-block;"
-                       th:href="@{|/board/${data.code}|}"
+                       th:href="@{/cafe/{cafeCode}/board/{code}(cafeCode=${cafeCode}, code=${data.code})}"
                        target="_blank">
                     <span class="more-text">
-                        공개 링크로 열기 (/board/<span th:text="${data.code}"></span>)
+                        공개 링크로 열기 (/cafe/<span th:text="${cafeCode}"></span>/board/<span th:text="${data.code}"></span>)
                     </span>
                         <span class="arrow">→</span>
                     </a>

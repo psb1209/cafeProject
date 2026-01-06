@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{main_layout/layout}"
+      th:with="headerImage=@{/assets/img/main.jpg},
+               headerPosition='center center',
+               sidebarKey='admin'">
+<body>
+
+<h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
+
+<div layout:fragment="content">
+
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+    <link th:href="@{/css/admin.css}" rel="stylesheet" />
+
+    <div class="write-card medium">
+        <div class="write-header">카페 수정</div>
+
+        <form id="form" th:action="@{/cafe/updateProc}" method="post" th:object="${data}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" name="imgName" id="imgName" th:value="*{imgName}">
+
+            <!-- 카페 이름 -->
+            <div class="write-group">
+                <label class="write-label">카페 이름</label>
+                <input type="text"
+                       class="write-title-input"
+                       th:value="*{name}"
+                       disabled>
+            </div>
+
+            <!-- 카페 코드 -->
+            <div class="write-group">
+                <label class="write-label">카페 코드</label>
+                <input type="text"
+                       class="write-title-input"
+                       th:value="*{code}"
+                       disabled>
+                <a class="cafe-more-btn"
+                   style="margin-top:8px; display:inline-block;"
+                   th:href="@{|/cafe/${data.code}|}"
+                   target="_blank">
+                    <span class="more-text">
+                        공개 링크로 열기 (/cafe/<span th:text="${data.code}"></span>)
+                    </span>
+                    <span class="arrow">→</span>
+                </a>
+            </div>
+
+            <!-- 카페 설명 -->
+            <div class="write-group">
+                <label class="write-label">카페 설명</label>
+                <textarea rows="8"
+                          class="cafe-comment-textarea"
+                          th:field="*{description}"
+                          placeholder="카페 설명을 입력해주세요."
+                          th:classappend="${#fields.hasErrors('description')} ? ' error'"
+                          required></textarea>
+                <div class="invalid-feedback d-block"
+                     th:if="${#fields.hasErrors('description')}"
+                     th:errors="*{description}"></div>
+            </div>
+
+            <hr>
+
+            <!-- 활성 상태 -->
+            <div class="write-group">
+                <label class="write-label">활성 상태</label>
+
+                <label>
+                    <input type="radio" th:field="*{enabled}" value="true"> 활성
+                </label>
+
+                <label>
+                    <input type="radio" th:field="*{enabled}" value="false"> 비활성
+                </label>
+            </div>
+
+            <!-- 대표 이미지 -->
+            <div class="write-group">
+                <label class="write-label">대표 이미지</label>
+                <input type="file" id="imgFile" accept="image/*">
+
+                <img id="imagePreview"
+                     class="mt-2 border rounded"
+                     style="max-width:200px; display:none;"
+                     alt="대표 이미지 미리보기">
+            </div>
+
+            <!-- 버튼 -->
+            <div class="write-action-bar">
+                <button type="button"
+                        id="btn-save"
+                        class="write-btn primary"
+                        onclick="save();">
+                    수정사항 저장
+                </button>
+
+                <a class="cafe-action-btn"
+                   th:href="@{/cafe/meta/{id}(id=*{id})}">
+                    취소
+                </a>
+
+                <a class="cafe-action-btn"
+                   th:href="@{/cafe/cafeList}">
+                    목록
+                </a>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        function save() {
+            if (confirm('수정하시겠습니까?')) {
+                document.getElementById('form').submit();
+            }
+        }
+    </script>
+
+    <script th:inline="javascript">
+        $(document).ready(function () {
+
+            // 기존 이미지가 있으면 초기 프리뷰 세팅
+            const existingImgName = $("#imgName").val();
+            if (existingImgName) {
+                const prefix = /*[[${imageUrlPrefix}]]*/ "";
+                $("#imagePreview").attr("src", prefix + existingImgName).show();
+            }
+
+            // CSRF (layout/head에 meta가 있어야 함)
+            const header = $("meta[name='_csrf_header']").attr("content");
+            const token  = $("meta[name='_csrf']").attr("content");
+
+            const $btnSave = $("#btn-save");
+
+            $("#imgFile").on("change", function () {
+                const file = this.files && this.files[0];
+                if (!file) return;
+
+                if (!file.type.startsWith("image/")) {
+                    alert("이미지 파일만 업로드할 수 있습니다.");
+                    this.value = "";
+                    return;
+                }
+
+                const fd = new FormData();
+                fd.append("file", file);
+
+                $btnSave.prop("disabled", true);
+
+                $.ajax({
+                    url: /*[[@{/cafe/uploadImage}]]*/ "/cafe/uploadImage",
+                    type: "POST",
+                    data: fd,
+                    processData: false,
+                    contentType: false,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        if (header && token) xhr.setRequestHeader(header, token);
+                    },
+                    success: function (res) {
+                        $("#imgName").val(res.fileName);
+                        $("#imagePreview").attr("src", res.url).show();
+                    },
+                    error: function (xhr) {
+                        alert("대표 이미지 업로드 실패 (" + xhr.status + ")");
+                        // 기존 imgName 유지(서비스 beforeUpdate에서도 보정됨)
+                    },
+                    complete: function () {
+                        $btnSave.prop("disabled", false);
+                    }
+                });
+            });
+        });
+    </script>
+
+</div>
+
+</body>
+</html>

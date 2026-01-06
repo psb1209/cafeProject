@@ -21,7 +21,7 @@
             <h2 class="write-header">게시판 생성</h2>
 
             <form id="form"
-                  th:action="@{/boardManagement/createProc}"
+                  th:action="@{/boardManagement/createProc(c=${cafeCode})}"
                   method="post"
                   th:object="${data}">
 
@@ -134,7 +134,7 @@
             }
         }
     </script>
-    <script>
+    <script th:inline="javascript">
         $(document).ready(function () {
 
           // CSRF (meta 태그가 있어야 함)
@@ -160,7 +160,7 @@
             $btnSave.prop("disabled", true);
 
             $.ajax({
-              url: "/boardManagement/uploadImage",
+              url: /*[[@{/boardManagement/uploadImage(c=${cafeCode})}]]*/ "/boardManagement/uploadImage",
               type: "POST",
               data: fd,
               processData: false,

@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -50,17 +49,25 @@ public class PostService extends BaseImageService<Post, PostDTO> {
      * 2) 초성 검색(예: "ㅅㄱ") -> titleKey 기반 초성 검색
      * 3) 일반 검색 -> title like 검색
      */
-    public Page<Post> listByBoardCode(String code, String keyword, Pageable pageable) {
-        if (keyword == null || keyword.isBlank()) // 검색을 안 했을 경우
-            return postRepository.findByBoard_Code(code, pageable);
+    public Page<Post> listByBoardId(Integer boardId, String keyword, Pageable pageable) {
+        if (boardId == null) throw new IllegalArgumentException("boardId is null");
 
-        if (BaseUtility.isChosungQuery(keyword.trim())) // 초성 검색
-            return postRepository.searchByChosungTitle(code, BaseUtility.jaeumBreaker(keyword), keyword.trim(), pageable);
+        if (keyword == null || keyword.isBlank())
+            return postRepository.findByBoard_Id(boardId, pageable);
 
-        return postRepository.searchByTitle(code, keyword.trim(), pageable); // 일반 검색
+        if (BaseUtility.isChosungQuery(keyword.trim()))
+            return postRepository.searchByChosungTitle(
+                    boardId,
+                    BaseUtility.jaeumBreaker(keyword),
+                    keyword.trim(),
+                    pageable
+            );
+
+        return postRepository.searchByTitle(boardId, keyword.trim(), pageable);
     }
-    public Page<PostDTO> listByBoardCodeDTO(String code, String keyword, Pageable pageable) {
-        return listByBoardCode(code, keyword, pageable).map(this::toDTO);
+
+    public Page<PostDTO> listByBoardIdDTO(Integer boardId, String keyword, Pageable pageable) {
+        return listByBoardId(boardId, keyword, pageable).map(this::toDTO);
     }
 
     /**
@@ -76,11 +83,11 @@ public class PostService extends BaseImageService<Post, PostDTO> {
     }
 
     /** 삭제된 게시글 조회 */
-    public Page<Post> trashListByBoardCode(String code, Pageable pageable) {
-        return postRepository.findTrashByBoard_Code(code, pageable);
+    public Page<Post> trashListByBoardId(Integer boardId, Pageable pageable) {
+        return postRepository.findTrashByBoard_Id(boardId, pageable);
     }
-    public Page<PostDTO> trashListByBoardCodeDTO(String code, Pageable pageable) {
-        return trashListByBoardCode(code, pageable).map(this::toDTO);
+    public Page<PostDTO> trashListByBoardIdDTO(Integer boardId, Pageable pageable) {
+        return trashListByBoardId(boardId, pageable).map(this::toDTO);
     }
 
     /** 삭제된 게시글 상세 */
@@ -214,9 +221,8 @@ public class PostService extends BaseImageService<Post, PostDTO> {
         return canEdit(post, authentication, roles);
     }
 
-    public List<PostDTO> noticeListByBoardCodeDTO(String code) {
-        return postRepository
-                .findByNotice(code)
+    public List<PostDTO> noticeListByBoardIdDTO(Integer boardId) {
+        return postRepository.findByNotice(boardId)
                 .stream()
                 .map(this::toDTO)
                 .toList();

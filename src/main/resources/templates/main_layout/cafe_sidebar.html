@@ -21,12 +21,15 @@
 
         <div class="sidenav-section-title">게시판</div>
 
-        <!-- 전체글 -->
-<!--        <a class="nav-link"
+        <!-- 전체게시판 -->
+        <a class="nav-link"
+           th:if="${cafe != null
+                and cafe.code != null
+                and !#strings.isEmpty(cafe.code)}"
            th:classappend="${activeMenu == 'all'} ? ' active'"
-           href="#">
-            <span class="nav-emoji">📄</span>전체글보기
-        </a>-->
+           th:href="@{/cafe/{cafeCode}/board/(cafeCode=${cafe.code})}">
+            <span class="nav-emoji">📄</span>모든게시판
+        </a>
 
         <!-- 자유게시판 -->
         <a class="nav-link"

@@ -20,7 +20,7 @@
             <div class="write-header">게시판 수정</div>
 
             <form id="form"
-                  th:action="@{/boardManagement/updateProc}"
+                  th:action="@{/boardManagement/updateProc(c=${cafeCode})}"
                   method="post"
                   th:object="${data}">
 
@@ -69,7 +69,8 @@
 
                     <img id="imagePreview"
                          class="mt-2 border rounded"
-                         style="max-width:200px; display:none;">
+                         style="max-width:200px; display:none;"
+                         alt="대표 이미지 미리보기">
                 </div>
 
                 <!-- 쓰기 권한 -->
@@ -102,7 +103,7 @@
                         수정사항 저장
                     </button>
                     <a class="cafe-action-btn"
-                       th:href="@{/boardManagement/list}">
+                       th:href="@{/boardManagement/list(c=${cafeCode})}">
                         목록
                     </a>
                 </div>
@@ -150,7 +151,7 @@
                 $btnSave.prop("disabled", true);
 
                 $.ajax({
-                    url: "/boardManagement/uploadImage",
+                    url: /*[[@{/boardManagement/uploadImage(c=${cafeCode})}]]*/ "/boardManagement/uploadImage",
                     type: "POST",
                     data: fd,
                     processData: false,

@@ -22,7 +22,7 @@
             <h2 class="cafe-board-title">게시판 목록</h2>
 
             <div class="cafe-article-actions">
-                <a href="/boardManagement/create"
+                <a th:href="@{/boardManagement/create(c=${cafeCode})}"
                    class="cafe-action-btn write">
                     게시판 등록
                 </a>
@@ -44,7 +44,7 @@
 
             <tbody>
             <tr th:each="data, loop : ${list}"
-                th:onclick="|location.href='@{|/boardManagement/view/${data.id}|}'|">
+                th:onclick="|location.href='@{/boardManagement/view/{id}(id=${data.id}, c=${cafeCode})}'|">
                 <td class="td_underline" th:text="${loop.index + 1}"></td>
                 <td class="td_underline col-subject text-center" th:text="${data.name}"></td>
                 <td class="td_underline" th:text="${data.description}"></td>
@@ -63,7 +63,7 @@
             <!-- 이전 버튼 -->
             <a class="page-btn"
                th:classappend="${list.first} ? ' disabled'"
-               th:href="@{|/operationBoard/list?page=${list.number - 1}|}">이전</a>
+               th:href="@{/boardManagement/list(c=${cafeCode}, page=${list.number - 1})}">이전</a>
 
             <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
             <th:block th:with="
@@ -74,13 +74,13 @@
                    th:each="page : ${#numbers.sequence(startPage, endPage)}"
                    th:text="${page + 1}"
                    th:classappend="${page == list.number} ? ' active'"
-                   th:href="@{|/operationBoard/list?page=${page}|}"></a>
+                   th:href="@{/boardManagement/list(c=${cafeCode}, page=${page})}"></a>
             </th:block>
 
             <!-- 다음 버튼 -->
             <a class="page-btn"
                th:classappend="${list.last} ? ' disabled'"
-               th:href="@{|/operationBoard/list?page=${list.number + 1}|}">다음</a>
+               th:href="@{/boardManagement/list(c=${cafeCode}, page=${list.number + 1})}">다음</a>
         </div>
 
     </div>

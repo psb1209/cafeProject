@@ -65,6 +65,12 @@ public class BoardDTO extends BaseDTO {
     )
     private RoleType readRole; // 보기 권한
 
+    private Integer cafeId;
+
+    private String cafeCode;
+
+    private String cafeName;
+
     public void normalize() {
         if (name != null) name = name.trim();
         if (code != null) code = code.trim().toLowerCase(Locale.ROOT);

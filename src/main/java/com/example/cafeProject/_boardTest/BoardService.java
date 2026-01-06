@@ -2,6 +2,8 @@ package com.example.cafeProject._boardTest;
 
 import com.example.base.BaseImageService;
 import com.example.base.BaseUtility;
+import com.example.cafeProject._cafeTest.Cafe;
+import com.example.cafeProject._cafeTest.CafeService;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.member.RoleType;
 import com.example.exception.DuplicateValueException;
@@ -12,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
@@ -22,47 +23,56 @@ import java.util.List;
 public class BoardService extends BaseImageService<Board, BoardDTO> {
 
     private final BoardRepository boardRepository;
+    private final CafeService cafeService;
     private final MemberService memberService;
 
-    public BoardService(BoardRepository repository, ModelMapper modelMapper, MemberService memberService) {
+    public BoardService(BoardRepository repository, ModelMapper modelMapper, CafeService cafeService, MemberService memberService) {
         super(repository, modelMapper, Board.class, BoardDTO.class);
         this.boardRepository = repository;
+        this.cafeService = cafeService;
         this.memberService = memberService;
     }
 
-    public Board viewByCode(String code) {
-        return boardRepository.findByCode(code)
+    public Board viewByCode(String cafeCode, String code) {
+        return boardRepository.findByCafe_CodeAndCode(cafeCode, code)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시판 code=" + code));
     }
-    public BoardDTO viewDTOByCode(String code) {
-        return toDTO(viewByCode(code));
+    public BoardDTO viewDTOByCode(String cafeCode, String code) {
+        return toDTO(viewByCode(cafeCode, code));
     }
 
-    public Page<Board> listVisible(Pageable pageable, RoleType[] roles) {
+    public Page<Board> list(String cafeCode, Pageable pageable) {
+        return boardRepository.findByCafe_Code(cafeCode, pageable);
+    }
+    public Page<BoardDTO> listDTO(String cafeCode, Pageable pageable) {
+        return list(cafeCode, pageable).map(this::toDTO);
+    }
+
+    public Page<Board> listVisible(String cafeCode, Pageable pageable, RoleType[] roles) {
         List<RoleType> roleList = normalizeRoles(roles);
         if (roleList.isEmpty()) return Page.empty(pageable);
-        return boardRepository.findVisible(roleList, pageable);
+        return boardRepository.findVisible(cafeCode, roleList, pageable);
     }
-    public Page<BoardDTO> listVisibleDTO(Pageable pageable, RoleType[] roles) {
-        return listVisible(pageable, roles).map(this::toDTO);
+    public Page<BoardDTO> listVisibleDTO(String cafeCode, Pageable pageable, RoleType[] roles) {
+        return listVisible(cafeCode, pageable, roles).map(this::toDTO);
     }
 
-    public Page<Board> listVisible(Pageable pageable, RoleType[] roles, String keyword) {
+    public Page<Board> listVisible(String cafeCode, Pageable pageable, RoleType[] roles, String keyword) {
         List<RoleType> roleList = normalizeRoles(roles);
 
         if (roleList.isEmpty())
             return Page.empty(pageable);
 
         if (keyword == null || keyword.isBlank())
-            return boardRepository.findVisible(roleList, pageable);
+            return boardRepository.findVisible(cafeCode, roleList, pageable);
 
         if (BaseUtility.isChosungQuery(keyword.trim()))
-            return boardRepository.searchVisibleByChosung(roleList, BaseUtility.jaeumBreaker(keyword), pageable);
+            return boardRepository.searchVisibleByChosung(cafeCode, roleList, BaseUtility.jaeumBreaker(keyword), pageable);
 
-        return boardRepository.searchVisible(roleList, keyword.trim(), pageable);
+        return boardRepository.searchVisible(cafeCode, roleList, keyword.trim(), pageable);
     }
-    public Page<BoardDTO> listVisibleDTO(Pageable pageable, RoleType[] roles, String keyword) {
-        return listVisible(pageable, roles, keyword).map(this::toDTO);
+    public Page<BoardDTO> listVisibleDTO(String cafeCode, Pageable pageable, RoleType[] roles, String keyword) {
+        return listVisible(cafeCode, pageable, roles, keyword).map(this::toDTO);
     }
 
     /**
@@ -92,6 +102,7 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         if (memberService.isNotLogin(authentication)) throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
         Board board = super.toEntity(dto);
         board.setMember(memberService.viewCurrentMember(authentication));
+        board.setCafe(resolveCafe(dto));
         return board;
     }
 
@@ -141,9 +152,9 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
             throw new IllegalArgumentException("읽기 권한은 쓰기 권한보다 높을 수 없습니다.");
 
         // 중복 체크
-        if (boardRepository.existsByName(dto.getName()))
+        if (boardRepository.existsByCafe_IdAndName(dto.getCafeId(), dto.getName()))
             throw new DuplicateValueException("이미 존재하는 게시판 이름입니다.", "name", dto.getName());
-        if (boardRepository.existsByCode(dto.getCode()))
+        if (boardRepository.existsByCafe_IdAndCode(dto.getCafeId(), dto.getCode()))
             throw new DuplicateValueException("이미 사용 중인 게시판 코드입니다.", "code", dto.getCode());
     }
 
@@ -154,6 +165,8 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         dto.setCreateDate(null);
         dto.setMemberId(null);
         dto.setUsername(null);
+        dto.setCafeId(null);
+        dto.setCafeCode(null);
 
         if (dto.getImgName() == null || dto.getImgName().isBlank()) dto.setImgName(board.getImgName());
         if (dto.getReadRole() == null)  dto.setReadRole(board.getReadRole());
@@ -171,6 +184,16 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
     @Override
     protected void beforeDelete(Board board) {
         throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "게시판 삭제는 허용되지 않습니다.");
+    }
+
+    /** dto에서 Cafe를 추출, 기본은 reference지만 id가 없다면 code기반 view */
+    private Cafe resolveCafe(BoardDTO dto) {
+        if (dto.getCafeId() != null)
+            return cafeService.getReference(dto.getCafeId());
+        if (dto.getCafeCode() != null && !dto.getCafeCode().isBlank())
+            return cafeService.viewByCode(dto.getCafeCode());
+
+        throw new IllegalArgumentException("cafeId/cafeCode가 없습니다.");
     }
 
     /** 배열로 들어온 RoleType을 리스트로 변환 */

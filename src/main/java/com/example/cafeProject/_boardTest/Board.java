@@ -1,6 +1,7 @@
 package com.example.cafeProject._boardTest;
 
 import com.example.base.BaseEntity;
+import com.example.cafeProject._cafeTest.Cafe;
 import com.example.cafeProject.member.RoleType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class Board extends BaseEntity {
 
-    @Column(nullable = false, length = 100, unique = true)
+    @Column(nullable = false, length = 100)
     private String name;
 
     @Column(nullable = false, length = 300)
@@ -44,4 +45,8 @@ public class Board extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private RoleType readRole; // 보기 권한
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cafeid", nullable = false)
+    private Cafe cafe;
 }

@@ -14,7 +14,7 @@
     <!-- ================= 상단 헤더 ================= -->
     <div class="board-detail-header">
         <div class="board-title-wrap">
-            <h2 th:text="${data.name}">게시판 이름</h2>
+            <h2 th:text="${data.name}">카페 이름</h2>
 
             <span class="board-status active"
                   th:if="${data.enabled}">ACTIVE</span>
@@ -23,8 +23,8 @@
         </div>
 
         <div class="cafe-article-actions">
-            <a th:href="@{/boardManagement/list}" class="cafe-action-btn">목록</a>
-            <a th:href="@{|/boardManagement/update/${data.id}|}"
+            <a th:href="@{/cafe/list}" class="cafe-action-btn">목록</a>
+            <a th:href="@{|/cafe/update/${data.id}|}"
                class="cafe-action-btn">수정</a>
         </div>
     </div>
@@ -40,7 +40,7 @@
                 <div class="write-header">기본 정보</div>
 
                 <div class="write-group">
-                    <span class="member-view-label">게시판 코드</span>
+                    <span class="member-view-label">카페 코드</span>
 
                     <div style="display:flex; gap:8px;">
                         <input id="cafeCode"
@@ -57,17 +57,17 @@
 
                     <a class="cafe-more-btn"
                        style="margin-top:8px; display:inline-block;"
-                       th:href="@{|/board/${data.code}|}"
+                       th:href="@{|/cafe/${data.code}|}"
                        target="_blank">
                     <span class="more-text">
-                        공개 링크로 열기 (/board/<span th:text="${data.code}"></span>)
+                        공개 링크로 열기 (/cafe/<span th:text="${data.code}"></span>)
                     </span>
                         <span class="arrow">→</span>
                     </a>
                 </div>
 
                 <div class="write-group">
-                    <span class="member-view-label">게시판 설명</span>
+                    <span class="member-view-label">카페 설명</span>
 
                     <pre class="board-desc"
                          th:text="${data.description}">
