@@ -124,7 +124,7 @@ public class OperationBoardController {
             model.addAttribute("operationBoard", operationBoard);
             
             /*============================================== 대댓글 ===============================================*/
-            //
+            // 해당 게시글의 댓글, 대댓글 값 불러오기
             Page<OperationBoardComment> commentList = operationBoardCommentService.getCommentListPage(operationBoardDTO.getId(), pageable);
             model.addAttribute("commentList", commentList);
             /*============================================== 대댓글 ===============================================*/
