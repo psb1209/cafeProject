@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{main_layout/layout}"
       th:with="headerImage=@{/assets/img/main.jpg},
                headerPosition='center center',
@@ -49,20 +49,23 @@
             <div class="cafe-article-content"
                  th:utext="${communityBoard.content}"></div>
 
+            <!--=================================== 변경사항 시작 ===================================-->
             <!-- 버튼 -->
             <div class="cafe-article-actions">
                 <a href="/communityBoard/list" class="cafe-action-btn">목록</a>
                 <a th:href="@{|/communityBoard/update/${communityBoard.id}|}"
-                   class="cafe-action-btn">수정</a>
+                   class="cafe-action-btn" th:if="${#authentication.name == communityBoard.member.username}">수정</a>
                 <form name="communityBoardDelete">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <input type="hidden" name="id" th:value="${communityBoard.id}">
-                    <button type="button" onclick="confirmDelete();" class="cafe-action-btn danger">삭제</button>
+                    <button type="button" onclick="confirmDelete();" class="cafe-action-btn danger"
+                            th:if="${#authentication.name == communityBoard.member.username || #authorization.expression('hasAnyRole(''ROLE_ADMIN'', ''ROLE_MANAGER'')')}">삭제</button>
                 </form>
             </div>
 
+
             <!--========================= 좋아요 ============================-->
-            <form class="like-form" action="/like/createProc" method="post">
+            <form class="like-form" action="/like/createProc" method="post" sec:authorize="isAuthenticated()">
                 <input type="hidden" name="_csrf" th:value="${_csrf.token}">
                 <input type="hidden" name="communityBoardNumber" th:value="${communityBoard.id}">
 
@@ -72,6 +75,14 @@
                     <span class="like-text">좋아요</span>
                 </button>
             </form>
+
+            <div class="like-form" sec:authorize="isAnonymous()">
+                <button type="submit" onclick="noLoginLikeButton();" class="like-btn" th:classappend="${isLike} ? ' active' : ''">
+                    <span class="like-icon">🤍</span>
+                    <span class="like-text">좋아요</span>
+                </button>
+            </div>
+            <!--=================================== 변경사항 끝 + <script> ===================================-->
 
 
             <!-- 댓글 -->
@@ -225,6 +236,16 @@
     </div>
 
     <!-- JS -->
+
+    <!-- JS -->
+    <!--=================================== 변경사항 시작 ===================================-->
+    <script>
+        function noLoginLikeButton() {
+            alert('로그인 후 이용 가능합니다.');
+        }
+    </script>
+    <!--=================================== 변경사항 끝 ===================================-->
+
     <script>
         function commentSave() {
             const form = document.commentForm;
