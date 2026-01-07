@@ -83,6 +83,18 @@
             <span class="nav-emoji">ℹ️</span>카페 소개
         </a>
 
+        <!-- 삭제된 게시글 관리 -->
+        <a class="nav-link"
+           sec:authorize="isAuthenticated()
+                      and hasAnyAuthority('ROLE_ADMIN','ROLE_MANAGER')"
+           th:if="${board != null
+                and board.code != null
+                and !#strings.isEmpty(board.code)}"
+           th:classappend="${activeMenu == 'trash'} ? ' active'"
+           th:href="@{/cafe/{cafeCode}/post/trashList(cafeCode=${cafe.code}, b=${board.code})}">
+            <span class="nav-emoji">🗑️</span>삭제된 게시글
+        </a>
+
     </div>
 </nav>
 </body>

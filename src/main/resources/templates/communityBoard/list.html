@@ -42,11 +42,11 @@
                         <option value="20" th:selected="${communityBoardList.size == 20}" class="cafe-action-btn write">20개씩 보기</option>
                     </select>
 
-                    <a th:href="@{/communityBoard/create}"
+                    <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')"
+                       th:href="@{/communityBoard/create}"
                        class="cafe-action-btn write">
                         ✏️ 게시글 작성
                     </a>
-
                 </div>
             </div>
 
@@ -62,7 +62,13 @@
                 </form>
             </div>
 
-            <table class="cafe-board-table">
+            <div th:if="${(communityBoardList == null or communityBoardList.isEmpty()) and (subNoticeList == null or subNoticeList.isEmpty())}"
+                 class="text-center" style="padding:40px; color:#888;">
+                등록된 게시글이 없습니다.
+            </div>
+
+            <table class="cafe-board-table"
+                   th:if="${(subNoticeList != null and !subNoticeList.isEmpty()) or (communityBoardList != null and !communityBoardList.isEmpty())}">
                 <thead>
                 <tr>
                     <th class="col-no">순번</th>
@@ -73,25 +79,32 @@
                     <th class="col-date">작성일</th>
                 </tr>
                 </thead>
-                <!--====================================================== 공지글!! =======================================================-->
+
                 <!-- 📢 공지글 영역 -->
                 <tbody th:if="${subNoticeList != null and !subNoticeList.isEmpty() and communityBoardList.number == 0}">
-                <tr th:each="subNotice : ${subNoticeList}" class="notice-row"
+                <!--====================================================== 검색 기능 변경사항!! =======================================================-->
+                <!--
+                        th:if="${#strings.isEmpty(keyword) or #strings.containsIgnoreCase(subNotice.subject, keyword)}" = 공지글을 화면에 보여줄지 말지 결정하는 조건
+                
+                        #strings.isEmpty(keyword) = 검색어(keyword)가 없으면 공지글을 보여준다
+                        #strings.containsIgnoreCase(subNotice.subject, keyword) = 검색어가 있으면 공지글 제목에 그 검색어가 들어 있을 때만 보여준다
+                -->
+                <tr class="notice-row"
+                    th:each="subNotice : ${subNoticeList}"
+                    th:if="${#strings.isEmpty(keyword) or #strings.containsIgnoreCase(subNotice.subject, keyword)}"
                     th:onclick="|location.href='@{|/communityBoard/view/${subNotice.id}|}'|">
+                    <!--====================================================== 검색 기능 변경사항!! =======================================================-->
 
                     <!-- 순번 대신 공지 -->
                     <td class="text-danger fw-bold text-center">공지</td>
 
                     <td>
                         📢 <span th:text="${subNotice.subject}"></span>
-
-                        <!-- 공지 해제 버튼 (관리자/매니저만) -->
-                        <!--                        <sec:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')">
-                                                    <form th:action="@{/communityBoard/toggleNotice/{id}(id=${subNotice.id})}" method="post" style="display:inline;">
-                                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                                        <button type="submit" class="notice-btn">공지해제</button>
-                                                    </form>-->
-                        </sec:authorize>
+                        <!--고정 공지 게시글 제목 옆 댓글수 표시-->
+                        <span class="text-danger small ms-2"
+                              th:if="${#lists.size(subNotice.commentList) > 0}"
+                              th:text="|[${#lists.size(subNotice.commentList)}]|">
+                        </span>
 
                         <form th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
                               th:action="@{/communityBoard/toggleNotice/{id}(id=${subNotice.id})}" method="post" style="display:inline;">
@@ -115,9 +128,30 @@
                 </tr>
                 </tbody>
                 <!--====================================================== 공지글!! =======================================================-->
-                <tbody th:if="${!communityBoardList.isEmpty()}">
+                <tbody>
+                <!--====================================================== 검색 기능 변경사항!! =======================================================-->
+                <!--
+                        기존 tr태그
+                        <tr th:each="communityBoard, loop : ${communityBoardList}"
+                            th:onclick="|location.href='@{|/communityBoard/view/${communityBoard.id}|}'|">
+                
+                            communityBoardList에는 공지글과 일반글 둘 다 포함이 되어있음
+                            th:if="${!communityBoard.subNotice} 이 조건을 넣어줌으로써 일반글과 공지글 분리
+                
+                            기존:
+                             박스 A(공지)
+                             박스 B(전체)
+                              ㄴ공지 물건이 A에도 있고 B에도 있음
+                
+                            변경 후:
+                             박스 A(공지)
+                             박스 B(일반만)
+                              ㄴ 역할 분리 완성
+                -->
                 <tr th:each="communityBoard, loop : ${communityBoardList}"
+                    th:if="${!communityBoard.subNotice}"
                     th:onclick="|location.href='@{|/communityBoard/view/${communityBoard.id}|}'|">
+                    <!--====================================================== 검색 기능 변경사항!! =======================================================-->
 
                     <td class="td_underline"
                         th:text="${communityBoardList.number * communityBoardList.size + loop.index + 1}"></td>
@@ -149,20 +183,14 @@
                         th:text="${#dates.format(communityBoard.createDate, 'yyyy-MM-dd')}"></td>
                 </tr>
                 </tbody>
-
-                <tbody th:if="${communityBoardList.isEmpty() && subNoticeList.isEmpty()}">
-                <tr>
-                    <td colspan="6" class="text-center">등록된 게시글이 없습니다.</td>
-                </tr>
-                </tbody>
             </table>
 
             <!-- 게시글 페이징 -->
-            <div class="cafe-pagination" th:if="${!communityBoardList.isEmpty()}">
+            <div class="cafe-pagination" th:if="${communityBoardList != null and !communityBoardList.isEmpty()}">
 
                 <!-- 이전 버튼 -->
                 <a class="page-btn"
-                   th:classappend="${communityBoardList.first} ? ' disabled'"
+                   th:classappend="${communityBoardList != null and communityBoardList.first} ? ' disabled'"
                    th:href="@{|/communityBoard/list?page=${communityBoardList.number - 1}|}">이전</a>
 
                 <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
@@ -187,7 +215,7 @@
 </div>
 </div>
 
-<script th:if="${communityBoardList.isEmpty()}">
+<script th:if="${communityBoardList != null and communityBoardList.isEmpty()}">
     alert([[${errMsg}]]);
 </script>
 

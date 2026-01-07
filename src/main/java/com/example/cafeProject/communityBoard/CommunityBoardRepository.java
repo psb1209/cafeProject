@@ -13,7 +13,7 @@ public interface CommunityBoardRepository extends JpaRepository<CommunityBoard, 
     /** 게시글 검색 */
     @Query("""
             select b
-            from OperationBoard b
+            from CommunityBoard b
             where lower(b.subject) like lower(concat('%', :keyword, '%'))
     """)
     Page<CommunityBoard> searchBySubject(@Param("keyword") String keyword, Pageable pageable);

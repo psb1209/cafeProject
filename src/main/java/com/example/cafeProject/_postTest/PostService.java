@@ -168,6 +168,8 @@ public class PostService extends BaseImageService<Post, PostDTO> {
 
         Board board = boardService.view(dto.getBoardId());
 
+        if (!board.isEnabled()) throw new PermissionDeniedException("비활성화된 게시판입니다.");
+
         // 권한 검사
         if (!Arrays.asList(roles).contains(board.getWriteRole())) throw new AccessDeniedException("쓰기 권한이 없습니다.");
         if (dto.isNotice() && !canSetNotice(board, authentication, roles)) throw new AccessDeniedException("공지 권한이 없습니다.");

@@ -62,7 +62,8 @@
                             <div class="cafe-title" th:text="${data.name}">카페 이름</div>
                             <div class="cafe-desc" th:text="${data.description}">카페 설명</div>
                             <div class="cafe-meta">
-                                <span>주제 | 000</span>
+                                <span>주제 |
+                                    <span th:text="${#strings.isEmpty(data.topic) ? '주제 없음' : data.topic}">주제</span></span>
                                 <span>👤 000</span>
                             </div>
                         </div>

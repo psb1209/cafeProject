@@ -19,6 +19,9 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
     @EntityGraph(attributePaths = "cafe")
     Optional<Board> findByCafe_CodeAndId(String cafeCode, Integer id);
 
+    @EntityGraph(attributePaths = "cafe")
+    Optional<Board> findByCafe_CodeAndCodeAndEnabledTrue(String cafeCode, String code);
+
     /** 현재 읽기 권한 내에서 볼 수 있는 활성화된 모든 게시판을 출력 */
     @Query("""
         select b
@@ -62,20 +65,9 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
                                        @Param("keyword") String keyword,
                                        Pageable pageable);
 
-    /** 비활성화된 보드 확인 */
-    @Query("""
-        select b
-        from Board b
-        join b.cafe c
-        where b.enabled = false
-          and c.code = :cafeCode
-    """)
-    Page<Board> findTrash(@Param("cafeCode") String cafeCode,
-                          Pageable pageable);
-
     /** id가 특정 카페에 속하는지 검증/조회 */
     boolean existsByCafe_CodeAndId(String cafeCode, Integer id);
 
-    boolean existsByCafe_IdAndCode(Integer cafeId, String code);
+    boolean existsByCode(String code);
     boolean existsByCafe_IdAndName(Integer cafeId, String name);
 }

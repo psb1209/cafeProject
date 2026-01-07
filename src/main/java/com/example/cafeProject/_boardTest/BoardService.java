@@ -41,6 +41,19 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         return toDTO(viewByCode(cafeCode, code));
     }
 
+    public Board viewVisibleByCode(String cafeCode, String code) {
+        // 매니저/관리자는 비활성 게시판도 접근 가능(운영/점검 목적)
+        RoleType[] roles = memberService.getEffectiveRoles(memberService.getCurrentMember());
+        if (isManagerOrAbove(roles)) return viewByCode(cafeCode, code);
+
+        // 일반 사용자/비로그인은 enabled=true 인 것만 조회되게
+        return boardRepository.findByCafe_CodeAndCodeAndEnabledTrue(cafeCode, code)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않거나 비활성화된 게시판 code=" + code));
+    }
+    public BoardDTO viewVisibleDTOByCode(String cafeCode, String code) {
+        return toDTO(viewVisibleByCode(cafeCode, code));
+    }
+
     public Page<Board> list(String cafeCode, Pageable pageable) {
         return boardRepository.findByCafe_Code(cafeCode, pageable);
     }
@@ -154,7 +167,7 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         // 중복 체크
         if (boardRepository.existsByCafe_IdAndName(dto.getCafeId(), dto.getName()))
             throw new DuplicateValueException("이미 존재하는 게시판 이름입니다.", "name", dto.getName());
-        if (boardRepository.existsByCafe_IdAndCode(dto.getCafeId(), dto.getCode()))
+        if (boardRepository.existsByCode(dto.getCode()))
             throw new DuplicateValueException("이미 사용 중인 게시판 코드입니다.", "code", dto.getCode());
     }
 
@@ -206,6 +219,14 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
             roleList.add(r);
         }
         return roleList;
+    }
+
+    private boolean isManagerOrAbove(RoleType[] roles) {
+        if (roles == null) return false;
+        for (RoleType r : roles) {
+            if (roleRank(r) > 20) return true;
+        }
+        return false;
     }
 
     /** RoleType마다 점수를 부여해서 비교하기 쉽게 하는 메서드 */

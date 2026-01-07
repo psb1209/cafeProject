@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 
 <nav class="sb-sidenav-menu" th:fragment="admin_sidebar">
@@ -46,17 +47,6 @@
            th:classappend="${activeMenu == 'boardCreate'} ? ' active'"
            th:href="@{|/boardManagement/create?c=${cafe.code}|}">
             <span class="nav-emoji">➕</span>게시판 추가
-        </a>
-
-
-        <!-- 삭제된 게시글 관리 -->
-        <a class="nav-link"
-           th:if="${board != null
-                and board.code != null
-                and !#strings.isEmpty(board.code)}"
-           th:classappend="${activeMenu == 'trash'} ? ' active'"
-           th:href="@{|/post/trashList?b=${board.code}|}">
-            <span class="nav-emoji">🗑️</span>삭제된 게시글
         </a>
 
         <!-- 운영 게시판 -->

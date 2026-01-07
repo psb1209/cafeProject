@@ -19,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class Board extends BaseEntity {
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100, updatable = false)
     private String name;
 
     @Column(nullable = false, length = 300)

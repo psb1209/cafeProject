@@ -70,7 +70,11 @@ public class PostController {
             @RequestParam(name = "b", required = false) String boardCode
     ) {
         if (boardCode == null || boardCode.isBlank()) return null; // b 없이 들어오는 페이지는 일단 null
-        return boardService.viewDTOByCode(cafeCode, boardCode);
+        try {
+            return boardService.viewVisibleDTOByCode(cafeCode, boardCode);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @ModelAttribute("cafe")

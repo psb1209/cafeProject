@@ -38,6 +38,19 @@ public class CafeService extends BaseImageService<Cafe, CafeDTO> {
         return toDTO(viewByCode(code));
     }
 
+    public Cafe viewVisibleByCode(String code) {
+        RoleType[] roles = memberService.getEffectiveRoles(memberService.getCurrentMember());
+        // 매니저/관리자는 비활성 카페도 접근 허용(운영/점검용)
+        if (isManagerOrAbove(roles)) return viewByCode(code);
+
+        // 일반 사용자/비로그인: enabled=true인 카페만
+        return cafeRepository.findByCodeAndEnabledTrue(code)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않거나 비활성화된 카페 code=" + code));
+    }
+    public CafeDTO viewVisibleDTOByCode(String code) {
+        return toDTO(viewVisibleByCode(code));
+    }
+
     public Page<Cafe> listVisible(Pageable pageable) {
         return cafeRepository.findVisible(pageable);
     }
@@ -101,6 +114,7 @@ public class CafeService extends BaseImageService<Cafe, CafeDTO> {
     @Override
     protected void updateEntity(Cafe cafe, CafeDTO dto) {
         cafe.setDescription(dto.getDescription());
+        cafe.setTopic(dto.getTopic());
         cafe.setEnabled(dto.isEnabled());
 
         if (dto.getImgName() != null && !dto.getImgName().isBlank()) {
@@ -142,5 +156,13 @@ public class CafeService extends BaseImageService<Cafe, CafeDTO> {
     @Override
     protected void beforeDelete(Cafe board) {
         throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "게시판 삭제는 허용되지 않습니다.");
+    }
+
+    private boolean isManagerOrAbove(RoleType[] roles) {
+        if (roles == null) return false;
+        for (RoleType r : roles) {
+            if (r == RoleType.ADMIN || r == RoleType.MANAGER) return true;
+        }
+        return false;
     }
 }

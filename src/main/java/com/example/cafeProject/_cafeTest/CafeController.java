@@ -1,7 +1,6 @@
 package com.example.cafeProject._cafeTest;
 
 import com.example.base.BaseImageController;
-import com.example.cafeProject._boardTest.BoardDTO;
 import com.example.cafeProject.communityBoard.CommunityBoardService;
 import com.example.cafeProject.informationBoard.InformationBoardService;
 import com.example.cafeProject.member.MemberService;
@@ -9,6 +8,7 @@ import com.example.cafeProject.noticeBoard.NoticeBoardService;
 import com.example.cafeProject.validation.ManagementOnly;
 import com.example.cafeProject.validation.ValidationGroups;
 import com.example.exception.DuplicateValueException;
+import com.example.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @Controller
-@ManagementOnly
 @RequestMapping("/cafe")
 public class CafeController extends BaseImageController<Cafe, CafeDTO> {
 
@@ -60,7 +59,11 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
             @RequestParam(name = "c", required = false) String c
     ) {
         if (c == null || c.isBlank()) return null; // c 없이 들어오는 페이지는 일단 null
-        return cafeService.viewDTOByCode(c);
+        try {
+            return cafeService.viewVisibleDTOByCode(c);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override
@@ -105,6 +108,7 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
     }
 
     /** 메타데이터 */
+    @ManagementOnly
     @GetMapping("/meta/{id}")
     public String meta(
             Model model,
@@ -114,7 +118,21 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
         return loadPathOrRedirect(id, model, basePath+"/meta");
     }
 
+    @ManagementOnly
+    public String create(Model model) {
+        return super.create(model);
+    }
+
+    @ManagementOnly
+    public String update(
+            Model model,
+            @PathVariable int id
+    ) {
+        return super.update(model, id);
+    }
+
     @Override
+    @ManagementOnly
     public String createProc(
             @Validated(ValidationGroups.OnCreate.class) @ModelAttribute("data") CafeDTO dto,
             BindingResult bindingResult
@@ -139,6 +157,7 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
     }
 
     @Override
+    @ManagementOnly
     public String updateProc(
             @Validated(ValidationGroups.OnUpdate.class) @ModelAttribute("data") CafeDTO dto,
             BindingResult bindingResult

@@ -15,6 +15,8 @@ import java.util.Optional;
 public interface CafeRepository extends JpaRepository<Cafe, Integer> {
     Optional<Cafe> findByCode(String code);
 
+    Optional<Cafe> findByCodeAndEnabledTrue(String code);
+
     @EntityGraph(attributePaths = "member") // Member 엔티티를 지연로딩 없이 바로 가져옴.
     Page<Cafe> findAll(Pageable pageable);
 

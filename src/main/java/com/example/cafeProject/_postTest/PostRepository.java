@@ -12,7 +12,6 @@ import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
-
     @EntityGraph(attributePaths = {"board", "member"})
     @Query("""
         select p

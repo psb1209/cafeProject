@@ -23,7 +23,7 @@
         </div>
 
         <div class="cafe-article-actions">
-            <a th:href="@{/cafe/list}" class="cafe-action-btn">목록</a>
+            <a th:href="@{/cafe/cafeList}" class="cafe-action-btn">목록</a>
             <a th:href="@{|/cafe/update/${data.id}|}"
                class="cafe-action-btn">수정</a>
         </div>
@@ -74,6 +74,16 @@
                         설명
                     </pre>
                 </div>
+
+                <div class="write-group">
+                    <span class="member-view-label">주제</span>
+
+                    <div class="member-view-box"
+                         th:text="${data.topic != null && !#strings.isEmpty(data.topic)} ? ${data.topic} : '주제 없음'">
+                        주제 없음
+                    </div>
+                </div>
+
             </div>
 
             <!-- 권한 / 상태 -->
