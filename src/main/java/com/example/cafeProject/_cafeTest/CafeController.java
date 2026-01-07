@@ -8,6 +8,7 @@ import com.example.cafeProject.noticeBoard.NoticeBoardService;
 import com.example.cafeProject.validation.ManagementOnly;
 import com.example.cafeProject.validation.ValidationGroups;
 import com.example.exception.DuplicateValueException;
+import com.example.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -58,7 +59,11 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
             @RequestParam(name = "c", required = false) String c
     ) {
         if (c == null || c.isBlank()) return null; // c 없이 들어오는 페이지는 일단 null
-        return cafeService.viewDTOByCode(c);
+        try {
+            return cafeService.viewVisibleDTOByCode(c);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override
