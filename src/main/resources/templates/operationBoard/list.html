@@ -79,13 +79,23 @@
                     <th class="col-date">작성일</th>
                 </tr>
                 </thead>
-                <!--====================================================== 공지글!! =======================================================-->
+
                 <!-- 📢 공지글 영역 -->
                 <tbody th:if="${subNoticeList != null and !subNoticeList.isEmpty() and operationBoardList.number == 0}">
-                <tr th:each="subNotice : ${subNoticeList}" class="notice-row"
-                    th:onclick="|location.href='@{|/operationBoard/view/${subNotice.id}|}'|">
+        <!--====================================================== 검색 기능 변경사항!! =======================================================-->
+<!--
+        th:if="${#strings.isEmpty(keyword) or #strings.containsIgnoreCase(subNotice.subject, keyword)}" = 공지글을 화면에 보여줄지 말지 결정하는 조건
 
-                    <!-- 순번 대신 공지 -->
+        #strings.isEmpty(keyword) = 검색어(keyword)가 없으면 공지글을 보여준다
+        #strings.containsIgnoreCase(subNotice.subject, keyword) = 검색어가 있으면 공지글 제목에 그 검색어가 들어 있을 때만 보여준다
+-->
+                <tr class="notice-row"
+                    th:each="subNotice : ${subNoticeList}"
+                    th:if="${#strings.isEmpty(keyword) or #strings.containsIgnoreCase(subNotice.subject, keyword)}"
+                    th:onclick="|location.href='@{|/operationBoard/view/${subNotice.id}|}'|">
+        <!--====================================================== 검색 기능 변경사항!! =======================================================-->
+
+                <!-- 순번 대신 공지 -->
                     <td class="text-danger fw-bold text-center">공지</td>
 
                     <td>
@@ -94,7 +104,7 @@
                         <span class="text-danger small ms-2"
                               th:if="${#lists.size(subNotice.commentList) > 0}"
                               th:text="|[${#lists.size(subNotice.commentList)}]|">
-                            </span>
+                        </span>
 
                         <form th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
                               th:action="@{/operationBoard/toggleNotice/{id}(id=${subNotice.id})}" method="post" style="display:inline;">
@@ -119,8 +129,29 @@
                 </tbody>
                 <!--====================================================== 공지글!! =======================================================-->
                 <tbody>
-                <tr th:each="operationBoard, loop : ${operationBoardList}"
+        <!--====================================================== 검색 기능 변경사항!! =======================================================-->
+<!--
+        기존 tr태그
+        <tr th:each="operationBoard, loop : ${operationBoardList}"
+            th:onclick="|location.href='@{|/operationBoard/view/${operationBoard.id}|}'|">
+
+            operationBoardList에는 공지글과 일반글 둘 다 포함이 되어있음
+            th:if="${!operationBoard.subNotice} 이 조건을 넣어줌으로써 일반글과 공지글 분리
+
+            기존:
+             박스 A(공지)
+             박스 B(전체)
+              ㄴ공지 물건이 A에도 있고 B에도 있음
+
+            변경 후:
+             박스 A(공지)
+             박스 B(일반만)
+              ㄴ 역할 분리 완성
+-->
+        <tr th:each="operationBoard, loop : ${operationBoardList}"
+                    th:if="${!operationBoard.subNotice}"
                     th:onclick="|location.href='@{|/operationBoard/view/${operationBoard.id}|}'|">
+        <!--====================================================== 검색 기능 변경사항!! =======================================================-->
 
                     <td class="td_underline"
                         th:text="${operationBoardList.number * operationBoardList.size + loop.index + 1}"></td>

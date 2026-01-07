@@ -47,10 +47,11 @@ public class OperationBoardController {
 
     /*=============================== 각 게시판 공지글 ===================================*/
 
+    // 공지글과 일반글로 전환
     @ManagementOnly
     @PostMapping("/toggleNotice/{id}")
     public String toggleNotice(
-            @PathVariable Integer id,
+            @PathVariable Integer id, // 게시글 아이디
             RedirectAttributes redirectAttributes
     ) {
         operationBoardService.toggleNotice(id);
@@ -62,27 +63,27 @@ public class OperationBoardController {
     @GetMapping("/list")
     public String list(
             Model model,
-            @RequestParam(required = false) String keyword,
-            @PageableDefault(size = 2, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+            @RequestParam(required = false) String keyword, // 검색값
+            @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         /*====================================================== 공지글!! =======================================================*/
-        List<OperationBoard> subNoticeList = operationBoardService.getSubNoticeList();
+        List<OperationBoard> subNoticeList = operationBoardService.getSubNoticeList(); // 공지글 불러오기
 
-        // 2️⃣ 공지 → 일반글 순 + 최신순 정렬
+        // 공지 → 일반글 순 + 최신순 정렬
         Sort sort = Sort.by(
                 Sort.Order.desc("subNotice"),
                 Sort.Order.desc("createDate")
         );
 
-        // 정렬값 다시 받기
+        // 공지글 정렬값 받기
         Pageable sortedPageable = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 sort
         );
 
-        Page<OperationBoard> operationBoardList =
-                operationBoardService.list(sortedPageable, keyword);
+        // 공지글 정렬값 담기
+        Page<OperationBoard> operationBoardList = operationBoardService.list(sortedPageable, keyword);
 
         model.addAttribute("subNoticeList", subNoticeList);
         /*====================================================== 공지글!! =======================================================*/
@@ -91,7 +92,7 @@ public class OperationBoardController {
         model.addAttribute("keyword", keyword);
 
         // ======================
-        // ✅ 조회수 Map 생성
+        // 조회수 Map 생성
         // ======================
         Map<Integer, Integer> viewCntMap = new HashMap<>(); // 한 게시글에 여러명의 id값이 있기에 Map으로 값을 여러개 받는다
 
@@ -121,6 +122,7 @@ public class OperationBoardController {
             @PageableDefault(size=3, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         try {
+            // 해당 게시글 존재여부 확인
             OperationBoard operationBoard = operationBoardService.getSelectOneById(operationBoardDTO);
             model.addAttribute("operationBoard", operationBoard);
             
