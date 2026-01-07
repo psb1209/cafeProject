@@ -1,12 +1,5 @@
 package com.example.cafeProject.informationBoard;
 
-//    정보 게시판 기능 정리
-//    1. 회원삭제하면 관련 게시글 모두 삭제
-//    2. 게시글 삭제하면 관련 댓글 모두 삭제
-//    3. 사용자가 페이징 기준 선택 - size(한페이지에 몇개), sort(페이지 정렬 순서)
-//    4. 게시글의 삭제 페이지 없이 경고문만 뛰어주고 삭제(댓글처럼) + 본인이 작성한 게시글만 삭제 & 관리자만 삭제 버튼 따로 생성(for 보안)
-//    5. 회원등급 반영 - 일반, 성실, 우수, 최우수
-
 import com.example.cafeProject.informationBoardComment.InformationBoardComment;
 import com.example.cafeProject.member.Member;
 import jakarta.persistence.*;
@@ -37,6 +30,11 @@ public class InformationBoard {
 
     private int cnt;
 
+    /*=============================== 각 게시판 공지글 ===================================*/
+    @Column(nullable = false)
+    private boolean subNotice = false;
+    /*=====================================================================================*/
+
     @CreationTimestamp
     private Timestamp createDate;
 
@@ -45,13 +43,18 @@ public class InformationBoard {
     @JoinColumn(name = "memberId")
     private Member member;
 
+    /*============================================== 대댓글 ===============================================*/
     @OneToMany(mappedBy = "informationBoard", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     //mappedBy = "informationBoard" --> 반대편 테이블의 외래키(Foreign Key)를 참조해서 조회용으로만 사용
     //cascade = CascadeType.REMOVE --> JPA가 댓글을 일일이 신경쓰면서 직접 삭제(db에서 지워지는 게 아님)
     //fetch = FetchType.LAZY --> 댓글이 당장 필요 없으면 가져오지 말고, 나중에 진짜로 부를 때 가져오게 함(성능향상)
     @OrderBy("id desc")
     private List<InformationBoardComment> commentList;
+    /*============================================== 대댓글 ===============================================*/
 
+    public void IncreaseViewCnt() {
+        cnt++;
+    }
 
     public static InformationBoard dtoToEntity(InformationBoardDTO informationBoardDTO, Member member) {
         InformationBoard informationBoard = new InformationBoard();
@@ -59,12 +62,15 @@ public class InformationBoard {
         informationBoard.setContent(informationBoardDTO.getContent());
         informationBoard.setCnt(0);
         informationBoard.setMember(member);
+
+        /*=============================== 각 게시판 공지글 ===================================*/
+        informationBoard.setSubNotice(informationBoardDTO.isSubNotice());
+        /*=====================================================================================*/
+
         return informationBoard;
     }
 
-    public void IncreaseViewCnt() {
-        cnt++;
-    }
+
 
 
 }

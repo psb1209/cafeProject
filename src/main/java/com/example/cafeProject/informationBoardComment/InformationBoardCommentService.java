@@ -4,6 +4,8 @@ import com.example.cafeProject.informationBoard.InformationBoard;
 import com.example.cafeProject.informationBoard.InformationBoardDTO;
 import com.example.cafeProject.informationBoard.InformationBoardRepository;
 import com.example.cafeProject.member.*;
+import com.example.cafeProject.operationBoard.OperationBoard;
+import com.example.cafeProject.operationBoard.OperationBoardDTO;
 import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardCommentDTO;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +14,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -39,22 +43,9 @@ public class InformationBoardCommentService {
     }
 
     //댓글 페이징
-    @Transactional(readOnly = true)
-    public Page<InformationBoardComment> getSelectAllPage(int id, Pageable pageable) {
-        return informationBoardCommentRepository.findByInformationBoard_Id(id, pageable);
-    }
-
-    //회원등업
-    public Member updateGrade(Member member) {
-        member.increaseReplyCount(); //댓글작성 +1
-        int posts = member.getPostCount();
-        int replies = member.getReplyCount();
-
-        if (posts >= 7 && replies >= 12) member.setGrade(Grade.SPECIAL);
-        else if (posts >= 5 && replies >= 10) member.setGrade(Grade.BEST);
-        else if (posts >= 3 && replies >= 5) member.setGrade(Grade.REGULAR);
-        else member.setGrade(Grade.USER);
-        return member;
+    @Transactional
+    public Page<InformationBoardComment> getCommentListPage(int informationBoardId, Pageable pageable) {
+        return informationBoardCommentRepository.findByInformationBoardIdOrderByRefDescLevelAsc(informationBoardId, pageable);
     }
 
 
@@ -65,6 +56,13 @@ public class InformationBoardCommentService {
         Member member = memberService.viewCurrentMember(user); //로그인한 사용자가 카페회원이 맞는지 (인증:아이디,비번확인 + 인가:권한확인)
 
         Grade oldGrade = member.getGrade(); //로그인한 사용자의 예전 등급
+
+        /*============================================== 대댓글 추가사항===============================================*/
+        // ref, step, level값 DTO에 담기
+        informationBoardCommentDTO.setRef(informationBoardCommentRepository.getMaxRef() + 1);
+        informationBoardCommentDTO.setStep(0);
+        informationBoardCommentDTO.setLevel(0);
+        /*============================================== 대댓글 추가사항===============================================*/
 
         InformationBoardComment informationBoardComment = InformationBoardComment.dtoToEntity(informationBoardCommentDTO, member, informationBoard);
         informationBoardCommentRepository.save(informationBoardComment);
@@ -110,6 +108,66 @@ public class InformationBoardCommentService {
         }
     }
 
+    @Transactional
+    public void setDeleteAll(InformationBoardDTO informationBoardDTO) {
+        List<InformationBoardComment> informationBoardComment = informationBoardCommentRepository.findByInformationBoardId(informationBoardDTO.getId());
+
+        informationBoardCommentRepository.deleteAll(informationBoardComment);
+    }
+
+    //회원등업
+    public Member updateGrade(Member member) {
+        member.increaseReplyCount(); //댓글작성 +1
+        int posts = member.getPostCount();
+        int replies = member.getReplyCount();
+
+        if (posts >= 7 && replies >= 12) member.setGrade(Grade.SPECIAL);
+        else if (posts >= 5 && replies >= 10) member.setGrade(Grade.BEST);
+        else if (posts >= 3 && replies >= 5) member.setGrade(Grade.REGULAR);
+        else member.setGrade(Grade.USER);
+        return member;
+    }
+
+    /*============================================== 대댓글 ===============================================*/
+    //대댓글 추가
+    @Transactional
+    public void replySetInsert(
+            InformationBoardCommentDTO informationBoardCommentDTO,
+            UserDetails userDetails
+    ){
+        // 게시글 유무 확인
+        InformationBoard informationBoard = informationBoardRepository.findById(informationBoardCommentDTO.getInformationBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+
+        // 부모글 유무 확인
+        InformationBoardComment informationBoardComment_ = informationBoardCommentRepository.findById(informationBoardCommentDTO.getInformationBoardCommentId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+
+        // 로그인 유무 확인
+        Member member = memberService.viewOptional(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+
+        // 자식글 정렬
+        informationBoardCommentRepository.updateRelevel(
+                informationBoardComment_.getRef(),
+                informationBoardComment_.getLevel()
+        );
+
+        int ref = informationBoardComment_.getRef();
+        int step = informationBoardComment_.getStep() + 1;
+        int level = informationBoardComment_.getLevel() + 1;
+
+        InformationBoardComment informationBoardComment = new InformationBoardComment();
+        informationBoardComment.setContent(informationBoardCommentDTO.getContent());
+        informationBoardComment.setInformationBoard(informationBoard);
+        informationBoardComment.setMember(member);
+        informationBoardComment.setRef(ref);
+        informationBoardComment.setStep(step);
+        informationBoardComment.setLevel(level);
+
+        informationBoardCommentRepository.save(informationBoardComment);
+    }
+    /*============================================== 대댓글 ===============================================*/
 
 
 

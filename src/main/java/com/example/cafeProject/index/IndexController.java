@@ -49,7 +49,7 @@ public class IndexController {
         Page<CommunityBoard> communityBoardList = communityBoardService.list(pageable,null);
         model.addAttribute("communityBoardList", communityBoardList);
 
-        Page<InformationBoard> informationBoardList = informationBoardService.getSelectAllPage(pageable, null);
+        Page<InformationBoard> informationBoardList = informationBoardService.list(pageable, null);
         model.addAttribute("informationBoardList", informationBoardList);
 
         model.addAttribute("activeMenu", "main");

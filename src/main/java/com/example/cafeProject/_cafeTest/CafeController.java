@@ -99,7 +99,7 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
         model.addAttribute("code", code);
         model.addAttribute("noticeBoardList", noticeBoardService.list(pageable, null));
         model.addAttribute("communityBoardList", communityBoardService.list(pageable,null));
-        model.addAttribute("informationBoardList", informationBoardService.getSelectAllPage(pageable, null));
+        model.addAttribute("informationBoardList", informationBoardService.list(pageable, null));
         model.addAttribute("activeMenu", "main");
         return super.basePath + "/main"; // ex) "memo/list"
     }

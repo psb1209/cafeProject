@@ -1,23 +1,58 @@
 package com.example.cafeProject.informationBoard;
 
 import com.example.cafeProject.member.*;
+import com.example.cafeProject.operationBoard.OperationBoard;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class InformationBoardService {
 
     private final InformationBoardRepository informationBoardRepository;
+    private final MemberRepository memberRepository;
+    protected final Logger log = LoggerFactory.getLogger(getClass());
+
     private final MemberService memberService;
+
+    /*=============================== 각 게시판 공지글 ===================================*/
+    @Transactional
+    public void toggleNotice(int id) {
+        InformationBoard informationBoard = informationBoardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+        informationBoard.setSubNotice(!informationBoard.isSubNotice());
+    }
+
+    public List<InformationBoard> getSubNoticeList() {
+        return informationBoardRepository.findBySubNoticeTrueOrderByCreateDateDesc();
+    }
+
+    public Page<InformationBoard> list(Pageable pageable, String keyword) {
+        if (keyword == null || keyword.isBlank()) // 검색을 안 했을 경우
+            return informationBoardRepository.findBySubNoticeFalse(pageable);
+        return informationBoardRepository.searchBySubject(keyword.trim(), pageable);
+    }
+    /*====================================================================================*/
 
 
     //기본키로 정보게시글 레코드 한줄 찾기
@@ -27,29 +62,12 @@ public class InformationBoardService {
                 .orElseThrow(()-> new IllegalArgumentException("해당 게시글 없음"));
     }
 
-    //목록 페이징 기능 + 키워드 검색 기능
     @Transactional(readOnly = true)
-    public Page<InformationBoard> getSelectAllPage(Pageable pageable, String keyword) {
-        if (keyword == null || keyword.isBlank()) // 검색을 안 했을 경우
-            return informationBoardRepository.findAll(pageable); //if문 뒤에 중괄호가 없으면, 딱 그 다음 한 문장(;으로 끝나는 곳까지)만 if문에 속한 것으로 간주
-
-        return informationBoardRepository.searchBySubject(keyword.trim(), pageable);
+    public Member getSelectOneByUsername(Authentication authentication) {
+        return memberRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
     }
 
-
-    //회원등업
-    @Transactional
-    public void updateGrade(Member member) {
-
-        member.increasePostCount(); //게시글 작성 +1
-        int posts = member.getPostCount();
-        int replies = member.getReplyCount();
-
-        if (posts >= 7 && replies >= 12) member.setGrade(Grade.SPECIAL);
-        else if (posts >= 5 && replies >= 10) member.setGrade(Grade.BEST);
-        else if (posts >= 3 && replies >= 5) member.setGrade(Grade.REGULAR);
-        else member.setGrade(Grade.USER);
-    }
 
     //카페 회원만 게시글 작성
     @Transactional
@@ -76,16 +94,9 @@ public class InformationBoardService {
         }
         informationBoard.setSubject(informationBoardDTO.getSubject());
         informationBoard.setContent(informationBoardDTO.getContent());
-        //수정일 추가??
+
     }
 
-    //조회수 증가
-    @Transactional
-    public InformationBoard increaseViewCount(int id) {
-        InformationBoard informationBoard = getSelectOneById(id);
-        informationBoard.IncreaseViewCnt();
-        return informationBoard;
-    }
 
     //작성자 & 관리자 & 매니저만 게시글 삭제
     @Transactional
@@ -105,14 +116,84 @@ public class InformationBoardService {
         boolean isAuthor = user.getUsername().equals(informationBoard.getMember().getUsername());
 
         if (isAuthor || isAdminOrManager) {
+
+            // 1. 메모 내용에서 이미지 src 추출
+            List<String> imageUrls = extractImageUrls(informationBoard.getContent());
+            // 2. 이미지 파일 삭제
+            deleteImageFiles(imageUrls);
+
             informationBoardRepository.delete(informationBoard);
         } else {
             throw new AccessDeniedException("삭제 권한이 없습니다.");
         }
     }
 
+    //조회수 증가
+    @Transactional
+    public InformationBoard increaseViewCount(int id) {
+        InformationBoard informationBoard = getSelectOneById(id);
+        informationBoard.IncreaseViewCnt();
+        return informationBoard;
+    }
+
+    //회원등업
+    @Transactional
+    public void updateGrade(Member member) {
+
+        member.increasePostCount(); //게시글 작성 +1
+        int posts = member.getPostCount();
+        int replies = member.getReplyCount();
+
+        if (posts >= 7 && replies >= 12) member.setGrade(Grade.SPECIAL);
+        else if (posts >= 5 && replies >= 10) member.setGrade(Grade.BEST);
+        else if (posts >= 3 && replies >= 5) member.setGrade(Grade.REGULAR);
+        else member.setGrade(Grade.USER);
+    }
 
 
+    //************************************************************************************************************************
+
+    @Value("${app.image.upload-dir}")
+    protected String imgPath;
+
+    //서머노트관련
+    protected List<String> extractImageUrls(String html) {
+        List<String> urls = new ArrayList<>();
+
+        Document doc = Jsoup.parse(html);
+        Elements imgs = doc.select("img");
+
+        for (Element img : imgs) {
+            String src = img.attr("src");
+            urls.add(src);
+        }
+
+        return urls;
+    }
+
+    protected void deleteImageFiles(List<String> imageUrls) {
+
+        for (String url : imageUrls) {
+            try {
+                // URL에서 파일명만 가져오기
+                String fileName = Paths.get(url).getFileName().toString();
+
+                File file = Paths.get(imgPath, fileName).toFile();
+                if (file.exists()) {
+                    if (file.delete()) {
+                        log.info("[deleteImageFiles] 이미지 파일 삭제 성공 - fileName={}, path={}",
+                                fileName, file.getAbsolutePath());
+                    } else {
+                        log.warn("[deleteImageFiles] 이미지 파일 삭제 실패 - fileName={}, path={}",
+                                fileName, file.getAbsolutePath());
+                    }
+                }
+            } catch (Exception e) {
+                log.error("[deleteImageFiles] 이미지 삭제중 예상 못한 오류 : {}", e.getMessage());
+            }
+        }
+    }
+    //************************************************************************************************************************
 
 
 

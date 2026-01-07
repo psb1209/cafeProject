@@ -1,18 +1,31 @@
 package com.example.cafeProject.informationBoard;
 
+import com.example.cafeProject.board_view.Board_viewDTO;
+import com.example.cafeProject.board_view.Board_viewService;
 import com.example.cafeProject.informationBoardComment.InformationBoardComment;
 import com.example.cafeProject.informationBoardComment.InformationBoardCommentService;
+import com.example.cafeProject.like.LikeService;
+import com.example.cafeProject.member.Member;
+import com.example.cafeProject.member.MemberService;
+import com.example.cafeProject.informationBoard.InformationBoard;
+import com.example.cafeProject.operationBoard.OperationBoard;
+import com.example.cafeProject.operationBoard.OperationBoardDTO;
+import com.example.cafeProject.operationBoardComment.OperationBoardComment;
+import com.example.cafeProject.validation.ManagementOnly;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +35,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @RequestMapping("/informationBoard")
 @RequiredArgsConstructor
@@ -34,71 +44,184 @@ public class InformationBoardController {
 
     private final InformationBoardService informationBoardService;
     private final InformationBoardCommentService informationBoardCommentService;
+    private final MemberService memberService;
+    private final LikeService likeService;
+    private final Board_viewService board_viewService;
 
-    private static final Logger log = LoggerFactory.getLogger(InformationBoardController.class);
+    String dirName = "informationBoard";
+    /*=============================== 각 게시판 공지글 ===================================*/
+
+    // 공지글과 일반글로 전환
+    @ManagementOnly
+    @PostMapping("/toggleNotice/{id}")
+    public String toggleNotice(
+            @PathVariable Integer id, // 게시글 아이디
+            RedirectAttributes redirectAttributes
+    ) {
+        informationBoardService.toggleNotice(id);
+        redirectAttributes.addFlashAttribute("msg", "공지 상태가 변경되었습니다.");
+        return "redirect:/" + dirName + "/list";
+    }
 
 
     @GetMapping("/list")
-    public String list(Model model,
-                       @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-                       @RequestParam(required = false) String keyword) {
-        try {
-            Page<InformationBoard> informationBoardList = informationBoardService.getSelectAllPage(pageable, keyword);
-            model.addAttribute("informationBoardList", informationBoardList);
-            model.addAttribute("activeMenu", "informationBorad");
-            model.addAttribute("keyword", keyword);
+    public String list(
+            Model model,
+            @RequestParam(required = false) String keyword, // 검색값
+            @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        /*====================================================== 공지글!! =======================================================*/
+        List<InformationBoard> subNoticeList = informationBoardService.getSubNoticeList(); // 공지글 불러오기
 
-            return "informationBoard/list";
-        } catch (DataAccessException e) {
-            model.addAttribute("errMsg", "접근 중 오류가 발생했습니다. 관리자에게 문의해주세요.");
-            return "error/error";
-        } catch (Exception e) {
-            model.addAttribute("errMsg", "예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-            return "error/error";
+        // 공지 → 일반글 순 + 최신순 정렬
+        Sort sort = Sort.by(
+                Sort.Order.desc("subNotice"),
+                Sort.Order.desc("createDate")
+        );
+
+        // 공지글 정렬값 받기
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                sort
+        );
+
+        // 공지글 정렬값 담기
+        Page<InformationBoard> informationBoardList = informationBoardService.list(sortedPageable, keyword);
+
+        model.addAttribute("subNoticeList", subNoticeList);
+        /*====================================================== 공지글!! =======================================================*/
+        model.addAttribute("informationBoardList", informationBoardList);
+        model.addAttribute("activeMenu", "informationBoard");
+        model.addAttribute("keyword", keyword);
+
+        // ======================
+        // 조회수 Map 생성
+        // ======================
+        Map<Integer, Integer> viewCntMap = new HashMap<>(); // 한 게시글에 여러명의 id값이 있기에 Map으로 값을 여러개 받는다
+
+        // 일반 글
+        for (InformationBoard board : informationBoardList.getContent()) {
+            int viewCnt = board_viewService.board_viewCnt("information", board.getId());
+            viewCntMap.put(board.getId(), viewCnt);
         }
+        /*====================================================== 공지글!! =======================================================*/
+        // 공지글
+        for (InformationBoard board : subNoticeList) {
+            int viewCnt = board_viewService.board_viewCnt("information", board.getId());
+            viewCntMap.put(board.getId(), viewCnt);
+        }
+        /*====================================================== 공지글!! =======================================================*/
+        model.addAttribute("viewCntMap", viewCntMap);
+
+        return dirName + "/list";
     }
+    /*=====================================================================================*/
 
     @GetMapping("/view/{id}")
-    public String view(Model model, InformationBoardDTO informationBoardDTO, @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public String view(
+            Model model,
+            InformationBoardDTO informationBoardDTO,
+            Authentication authentication,
+            @PageableDefault(size=3, sort="id", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
         try {
+            // 해당 게시글 존재여부 확인
             InformationBoard informationBoard = informationBoardService.getSelectOneById(informationBoardDTO.getId());
             model.addAttribute("informationBoard", informationBoard);
-            Page<InformationBoardComment> CommentList = informationBoardCommentService.getSelectAllPage(informationBoardDTO.getId(), pageable);
-            model.addAttribute("commentList", CommentList);
-            informationBoardService.increaseViewCount(informationBoardDTO.getId());
-            return "informationBoard/view";
+
+            /*============================================== 대댓글 ===============================================*/
+            // 해당 게시글의 댓글, 대댓글 값 불러오기
+            Page<InformationBoardComment> commentList = informationBoardCommentService.getCommentListPage(informationBoardDTO.getId(), pageable);
+
+            model.addAttribute("commentList", commentList);
+            /*============================================== 대댓글 ===============================================*/
+            model.addAttribute("activeMenu", "informationBoard");
+
+            boolean isLike = false;
+
+            if(!memberService.isNotLogin(authentication)) {
+                Member member = memberService.viewCurrentMember(authentication);
+                isLike = likeService.isLike(informationBoard.getId(), member.getId());
+            }
+
+            model.addAttribute("isLike", isLike);
+            model.addAttribute("likeCnt", likeService.likeCnt(dirName, informationBoard.getId()));
+
+            if (!memberService.isNotLogin(authentication)) {
+                Member member = memberService.viewCurrentMember(authentication);
+
+                Board_viewDTO board_viewDTO = new Board_viewDTO();
+                board_viewDTO.setUserId(member.getId());
+                board_viewDTO.setOperationBoardNumber(informationBoard.getId());
+
+                board_viewService.createProc(board_viewDTO);
+            }
+
+            int viewCnt = board_viewService.board_viewCnt("information", informationBoard.getId());
+            model.addAttribute("viewCnt", viewCnt);
+
+            return dirName + "/view";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errCode", "error404");
-            model.addAttribute("errMsg", "요청하신 게시글을 찾을 수 없습니다.");
+            model.addAttribute("errCode", "err1111");
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
     }
 
     @GetMapping("/create")
-    public String create() {
-        return "informationBoard/create";
+    public String create(
+            Model model
+    ) {
+        model.addAttribute("activeMenu", "informationBoard");
+        return dirName + "/create";
     }
 
     @GetMapping("/update/{id}")
-    public String update(Model model, InformationBoardDTO informationBoardDTO) {
+    public String update(
+            Model model,
+            InformationBoardDTO informationBoardDTO,
+            Authentication authentication
+    ) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String loginId = userDetails.getUsername(); // 로그인한 아이디
+        if (!loginId.equals(informationBoardService.getSelectOneById(informationBoardDTO.getId()).getMember().getUsername())) {
+            model.addAttribute("errCode", "err0000");
+            model.addAttribute("errMsg", "로그인 후 이용 가능합니다.");
+            return "error/error";
+        }
         try {
             InformationBoard informationBoard = informationBoardService.getSelectOneById(informationBoardDTO.getId());
             model.addAttribute("informationBoard", informationBoard);
-            return "informationBoard/update";
+            model.addAttribute("activeMenu", "informationBoard");
+            return dirName + "/update";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errCode", "error404");
-            model.addAttribute("errMsg", "요청하신 게시글을 찾을 수 없습니다.");
+            model.addAttribute("errCode", "err1111");
+            model.addAttribute("errMsg", e.getMessage());
             return "error/error";
         }
     }
 
-    //---> 삭제페이지 없이 삭제버튼으로만 경고창 띄어서 삭제여부확인 뒤 바로 삭제처리.
 
     // Proc --------------------------------------------------------------------------------------------
 
     @PostMapping("/createProc")
-    public String createProc(Model model, InformationBoardDTO informationBoardDTO,
-                             @AuthenticationPrincipal User user, RedirectAttributes redirectAttributes) { //리다이텍트할때 데이터를 같이 보내기 위해서 객체주입
+    public String createProc(Model model,
+                             InformationBoardDTO informationBoardDTO,
+                             @AuthenticationPrincipal User user,
+                             Authentication authentication,
+                             RedirectAttributes redirectAttributes)
+    {
+
+        try {
+            Member member = memberService.viewCurrentMember(authentication);
+            informationBoardDTO.setMemberId(member.getId());
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errCode", "err1111");
+            model.addAttribute("errMsg", e.getMessage());
+            return "error/error";
+        }
+
         try {
             boolean isUpgraded = informationBoardService.setInsert(informationBoardDTO, user);
             if(isUpgraded) { //등급 상승시 "msg" 데이터를 같이 리다이렉트 시킴
@@ -115,21 +238,30 @@ public class InformationBoardController {
     }
 
     @PostMapping("/updateProc")
-    public String updateProc(Model model, InformationBoardDTO informationBoardDTO, @AuthenticationPrincipal User user) {
+    public String updateProc(Model model, InformationBoardDTO informationBoardDTO,
+                             @AuthenticationPrincipal User user)
+    {
         try {
             informationBoardService.setUpdate(informationBoardDTO, user);
-            return "redirect:/informationBoard/view/" + informationBoardDTO.getId();
+            return "redirect:/" + dirName + "/view/" + informationBoardDTO.getId();
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "error404");
             model.addAttribute("errMsg", "요청하신 게시글을 찾을 수 없습니다.");
+            return "error/error";
+        } catch (Exception e) {
+            model.addAttribute("errCode", "err2322");
+            model.addAttribute("errMsg", "수정 중 문제가 발생했습니다.");
             return "error/error";
         }
     }
 
     @ResponseBody
     @PostMapping("/deleteProc")
-    public String deleteProc(InformationBoardDTO informationBoardDTO, @AuthenticationPrincipal User user) {
+    public String deleteProc(InformationBoardDTO informationBoardDTO,
+                             @AuthenticationPrincipal User user)
+    {
         try {
+            informationBoardCommentService.setDeleteAll(informationBoardDTO);
             informationBoardService.setDelete(informationBoardDTO, user);
             return "<script>" +
                     "alert('성공적으로 삭제되었습니다.');" +
