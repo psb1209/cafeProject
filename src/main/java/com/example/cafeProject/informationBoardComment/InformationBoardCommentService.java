@@ -116,7 +116,14 @@ public class InformationBoardCommentService {
     }
 
     //회원등업
-    public Member updateGrade(Member member) {
+    @Transactional
+    public void updateGrade(Member member) {
+
+        //관리자는 회원등급에 영향을 받지 않도록.
+        if (member.getRole() == RoleType.ADMIN || member.getRole() == RoleType.MANAGER) {
+            return;
+        }
+
         member.increaseReplyCount(); //댓글작성 +1
         int posts = member.getPostCount();
         int replies = member.getReplyCount();
@@ -125,7 +132,7 @@ public class InformationBoardCommentService {
         else if (posts >= 5 && replies >= 10) member.setGrade(Grade.BEST);
         else if (posts >= 3 && replies >= 5) member.setGrade(Grade.REGULAR);
         else member.setGrade(Grade.USER);
-        return member;
+
     }
 
     /*============================================== 대댓글 ===============================================*/

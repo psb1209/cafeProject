@@ -1,6 +1,8 @@
 package com.example.cafeProject.informationBoard;
 
 import com.example.cafeProject.member.*;
+import com.example.cafeProject.noticeBoard.NoticeBoard;
+import com.example.cafeProject.noticeBoard.NoticeBoardDTO;
 import com.example.cafeProject.operationBoard.OperationBoard;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
@@ -71,8 +73,8 @@ public class InformationBoardService {
 
     //카페 회원만 게시글 작성
     @Transactional
-    public boolean setInsert(InformationBoardDTO informationBoardDTO, User user) {
-       Member member = memberService.viewCurrentMember(user);
+    public boolean setInsert(InformationBoardDTO informationBoardDTO, Authentication authentication) {
+       Member member = memberService.viewCurrentMember(authentication);
        Grade oldGrade = member.getGrade(); //예전 등급
 
        InformationBoard informationBoard = InformationBoard.dtoToEntity(informationBoardDTO, member);
@@ -83,6 +85,17 @@ public class InformationBoardService {
         Grade newGrade = informationBoard.getMember().getGrade(); //새로운 등급
         return oldGrade != newGrade; //비교해서 등급이 바뀌었으면 true 반환
     }
+
+//    @Transactional
+//    public void setInsert(InformationBoardDTO informationBoardDTO) {
+//        InformationBoard informationBoard = new InformationBoard();
+//        informationBoard.setSubject(informationBoardDTO.getSubject());
+//        informationBoard.setContent(informationBoardDTO.getContent());
+//        informationBoard.setMember(memberService.view(informationBoardDTO.getMemberId()));
+//        informationBoard.setCnt(0);
+//
+//        informationBoardRepository.save(informationBoard);
+//    }
 
     //작성자만 게시글 수정
     @Transactional
@@ -130,15 +143,20 @@ public class InformationBoardService {
 
     //조회수 증가
     @Transactional
-    public InformationBoard increaseViewCount(int id) {
-        InformationBoard informationBoard = getSelectOneById(id);
-        informationBoard.IncreaseViewCnt();
-        return informationBoard;
+    public void cntPlus(InformationBoard informationBoard) {
+        informationBoard.setCnt(informationBoard.getCnt() + 1);
+
+        informationBoardRepository.save(informationBoard);
     }
 
     //회원등업
     @Transactional
     public void updateGrade(Member member) {
+
+        //관리자는 회원등급에 영향을 받지 않도록.
+        if (member.getRole() == RoleType.ADMIN || member.getRole() == RoleType.MANAGER) {
+            return;
+        }
 
         member.increasePostCount(); //게시글 작성 +1
         int posts = member.getPostCount();

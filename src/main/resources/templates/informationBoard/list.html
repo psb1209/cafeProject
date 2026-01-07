@@ -153,12 +153,25 @@
                     </td>
                     <td class="td_underline" th:text="${informationBoard.cnt}"></td>
                     <td class="td_underline" th:text="${informationBoard.member.username}"></td>
-                    <td class="td_underline text-center" th:switch="${informationBoard.member.grade.name()}">
-                        <span th:case="'USER'">일반🥉</span>
-                        <span th:case="'REGULAR'">성실🥈</span>
-                        <span th:case="'BEST'">우수🥇</span>
-                        <span th:case="'SPECIAL'">최우수🏆</span>
+<!--                    <td class="td_underline text-center" th:switch="${informationBoard.member.grade.name()}">-->
+<!--                        <span th:case="'USER'">일반🥉</span>-->
+<!--                        <span th:case="'REGULAR'">성실🥈</span>-->
+<!--                        <span th:case="'BEST'">우수🥇</span>-->
+<!--                        <span th:case="'SPECIAL'">최우수🏆</span>-->
+<!--                    </td>-->
+
+                    <td class="td_underline text-center">
+                    <span th:if="${informationBoard.member.role.name() == 'ADMIN' or informationBoard.member.role.name() == 'MANAGER'}">운영진👑</span>
+                        <th:block th:unless="${informationBoard.member.role.name() == 'ADMIN' or informationBoard.member.role.name() == 'MANAGER'}">
+                            <div th:switch="${informationBoard.member.grade.name()}" th:remove="tag">
+                                <span th:case="'USER'">일반🥉</span>
+                                <span th:case="'REGULAR'">성실🥈</span>
+                                <span th:case="'BEST'">우수🥇</span>
+                                <span th:case="'SPECIAL'">최우수🏆</span>
+                            </div>
+                        </th:block>
                     </td>
+
                     <td class="td_underline text-center"
                         th:text="${#dates.format(informationBoard.createDate, 'yyyy-MM-dd')}"></td>
                 </tr>

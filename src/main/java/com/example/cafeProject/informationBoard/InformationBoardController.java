@@ -7,16 +7,9 @@ import com.example.cafeProject.informationBoardComment.InformationBoardCommentSe
 import com.example.cafeProject.like.LikeService;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
-import com.example.cafeProject.informationBoard.InformationBoard;
-import com.example.cafeProject.operationBoard.OperationBoard;
-import com.example.cafeProject.operationBoard.OperationBoardDTO;
-import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import com.example.cafeProject.validation.ManagementOnly;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -208,7 +201,6 @@ public class InformationBoardController {
     @PostMapping("/createProc")
     public String createProc(Model model,
                              InformationBoardDTO informationBoardDTO,
-                             @AuthenticationPrincipal User user,
                              Authentication authentication,
                              RedirectAttributes redirectAttributes)
     {
@@ -223,7 +215,7 @@ public class InformationBoardController {
         }
 
         try {
-            boolean isUpgraded = informationBoardService.setInsert(informationBoardDTO, user);
+            boolean isUpgraded = informationBoardService.setInsert(informationBoardDTO, authentication);
             if(isUpgraded) { //등급 상승시 "msg" 데이터를 같이 리다이렉트 시킴
                 redirectAttributes.addFlashAttribute("msg","축하합니다! 등급이 올랐습니다!🎉"); //윈도우 로고 키(⊞) + 마침표(.) --> 임티창
                 return "redirect:/informationBoard/list";
