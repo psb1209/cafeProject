@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 
 <nav class="sb-sidenav-menu" th:fragment="admin_sidebar">
@@ -51,11 +52,13 @@
 
         <!-- 삭제된 게시글 관리 -->
         <a class="nav-link"
+           sec:authorize="isAuthenticated()
+                      and hasAnyAuthority('ROLE_ADMIN','ROLE_MANAGER')"
            th:if="${board != null
                 and board.code != null
                 and !#strings.isEmpty(board.code)}"
            th:classappend="${activeMenu == 'trash'} ? ' active'"
-           th:href="@{|/post/trashList?b=${board.code}|}">
+           th:href="@{/cafe/{cafeCode}/post/trashList(cafeCode=${cafe.code}, b=${board.code})}">
             <span class="nav-emoji">🗑️</span>삭제된 게시글
         </a>
 
