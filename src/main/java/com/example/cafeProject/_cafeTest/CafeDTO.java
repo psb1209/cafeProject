@@ -38,6 +38,8 @@ public class CafeDTO extends BaseDTO {
     )
     private String description;
 
+    private String topic;
+
     private String imgName;
 
     @NotBlank(

@@ -28,6 +28,9 @@ public class Cafe extends BaseEntity {
     @Column(nullable = false, columnDefinition = "longtext")
     private String description;
 
+    @Column(length = 20)
+    private String topic;
+
     @Column(length = 255)
     private String imgName;
 

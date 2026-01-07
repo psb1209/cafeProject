@@ -60,6 +60,22 @@
                     </div>
                 </div>
 
+                <!-- 카페 주제 -->
+                <div class="write-group">
+                    <label for="topic" class="write-label">카페 주제</label>
+                    <input type="text"
+                           id="topic"
+                           th:field="*{topic}"
+                           placeholder="카페 주제를 입력해주세요."
+                           class="write-title-input"
+                           th:classappend="${#fields.hasErrors('topic')} ? ' error'"
+                           required>
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('topic')}"
+                         th:errors="*{topic}">
+                    </div>
+                </div>
+
                 <!-- 링크 코드 -->
                 <div class="write-group">
                     <label for="code" class="write-label">설정할 링크</label>

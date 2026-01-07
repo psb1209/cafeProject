@@ -101,6 +101,7 @@ public class CafeService extends BaseImageService<Cafe, CafeDTO> {
     @Override
     protected void updateEntity(Cafe cafe, CafeDTO dto) {
         cafe.setDescription(dto.getDescription());
+        cafe.setTopic(dto.getTopic());
         cafe.setEnabled(dto.isEnabled());
 
         if (dto.getImgName() != null && !dto.getImgName().isBlank()) {
