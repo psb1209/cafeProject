@@ -30,6 +30,7 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
         where b.enabled = true
           and c.code = :cafeCode
           and b.readRole in :roles
+          and b.code not in :excludedCodes
     """)
     Page<Board> findVisible(@Param("cafeCode") String cafeCode,
                             @Param("roles") Collection<RoleType> roles,
@@ -44,6 +45,7 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
         where b.enabled = true
           and c.code = :cafeCode
           and b.readRole in :roles
+          and b.code not in :excludedCodes
           and lower(b.name) like lower(concat('%', :keyword, '%'))
     """)
     Page<Board> searchVisible(@Param("cafeCode") String cafeCode,
@@ -60,6 +62,7 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
         where b.enabled = true
           and c.code = :cafeCode
           and b.readRole in :roles
+          and b.code not in :excludedCodes
           and b.nameKey like concat('%', :keyword, '%')
     """)
     Page<Board> searchVisibleByChosung(@Param("cafeCode") String cafeCode,
