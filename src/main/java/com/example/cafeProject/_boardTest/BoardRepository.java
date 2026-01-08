@@ -67,6 +67,7 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
 
     /** id가 특정 카페에 속하는지 검증/조회 */
     boolean existsByCafe_CodeAndId(String cafeCode, Integer id);
+    boolean existsByCafe_CodeAndCode(String cafeCode, String code);
 
     boolean existsByCode(String code);
     boolean existsByCafe_IdAndName(Integer cafeId, String name);
