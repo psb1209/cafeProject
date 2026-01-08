@@ -106,6 +106,7 @@ public class InformationBoardController {
         }
         /*====================================================== 공지글!! =======================================================*/
         model.addAttribute("viewCntMap", viewCntMap);
+        System.out.println("------->" + viewCntMap);
 
         return dirName + "/list";
     }
@@ -146,13 +147,14 @@ public class InformationBoardController {
 
                 Board_viewDTO board_viewDTO = new Board_viewDTO();
                 board_viewDTO.setUserId(member.getId());
-                board_viewDTO.setOperationBoardNumber(informationBoard.getId());
+                board_viewDTO.setInformationBoardNumber(informationBoard.getId());
 
                 board_viewService.createProc(board_viewDTO);
             }
 
             int viewCnt = board_viewService.board_viewCnt("information", informationBoard.getId());
             model.addAttribute("viewCnt", viewCnt);
+
 
             return dirName + "/view";
         } catch (IllegalArgumentException e) {
