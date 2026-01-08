@@ -121,7 +121,7 @@ public class CommunityBoardService {
     //카페 회원만 게시글 작성
     @Transactional
     public boolean setInsert(CommunityBoardDTO communityBoardDTO, Authentication authentication) {
-        Member member = memberService.viewCurrentMember(authentication);
+        Member member = memberService.viewCurrentMember();
         Grade oldGrade = member.getGrade(); //예전 등급
 
         CommunityBoard communityBoard = CommunityBoard.dtoToEntity(communityBoardDTO, member);

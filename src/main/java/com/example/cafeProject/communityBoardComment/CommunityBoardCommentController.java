@@ -32,12 +32,11 @@ public class CommunityBoardCommentController {
     public String createProc(
             Model model,
             CommunityBoardCommentDTO communityBoardCommentDTO,
-            Authentication authentication,
             RedirectAttributes redirectAttributes,
             @AuthenticationPrincipal User user
     ) {
         try {
-            Member member = memberService.viewCurrentMember(authentication);
+            Member member = memberService.viewCurrentMember();
             communityBoardCommentDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1110");

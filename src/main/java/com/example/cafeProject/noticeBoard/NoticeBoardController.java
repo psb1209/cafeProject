@@ -124,7 +124,7 @@ public class NoticeBoardController {
 
             if(!memberService.isNotLogin(authentication)) {
                 Member member = memberService.viewCurrentMember(authentication);
-                isLike = likeService.isLike(noticeBoard.getId(), member.getId());
+                isLike = likeService.isLike("notice", noticeBoard.getId(), member.getId());
             }
 
             model.addAttribute("isLike", isLike);
@@ -218,7 +218,7 @@ public class NoticeBoardController {
             Authentication authentication
     ) {
         try {
-            Member member = memberService.viewCurrentMember(authentication);
+            Member member = memberService.viewCurrentMember();
             noticeBoardDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1111");

@@ -24,7 +24,7 @@ public class LikeViewController {
             Model model
     ) {
         try {
-            Member member = memberService.viewCurrentMember(memberService.getCurrentMember());
+            Member member = memberService.viewCurrentMember();
             likeDTO.setUserId(member.getId());
             likeService.createProc(likeDTO);
 

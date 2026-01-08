@@ -31,12 +31,11 @@ public class NoticeBoardCommentController {
     public String createProc(
             Model model,
             NoticeBoardCommentDTO noticeBoardCommentDTO,
-            Authentication authentication,
             RedirectAttributes redirectAttributes,
             @AuthenticationPrincipal User user
     ) {
         try {
-            Member member = memberService.viewCurrentMember(authentication);
+            Member member = memberService.viewCurrentMember();
             noticeBoardCommentDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1110");

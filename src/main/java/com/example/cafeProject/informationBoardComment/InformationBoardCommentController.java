@@ -35,12 +35,11 @@ public class InformationBoardCommentController {
     public String createProc(Model model,
                              InformationBoardCommentDTO informationBoardCommentDTO,
                              @AuthenticationPrincipal User user,
-                             Authentication authentication,
                              RedirectAttributes redirectAttributes)
     {
         //회원값 찾기
         try {
-            Member member = memberService.viewCurrentMember(authentication);
+            Member member = memberService.viewCurrentMember();
             informationBoardCommentDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1110");

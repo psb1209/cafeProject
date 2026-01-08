@@ -19,4 +19,6 @@ public class Board_viewDTO {
     private Integer noticeBoardNumber;
 
     private Integer informationBoardNumber;
+
+    private Integer postId;
 }

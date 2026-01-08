@@ -115,7 +115,7 @@ public class OperationBoardService {
     //카페 회원만 게시글 작성
     @Transactional
     public boolean setInsert(OperationBoardDTO operationBoardDTO, Authentication authentication) {
-        Member member = memberService.viewCurrentMember(authentication);
+        Member member = memberService.viewCurrentMember();
         Grade oldGrade = member.getGrade(); //예전 등급
 
         OperationBoard operationBoard = OperationBoard.dtoToEntity(operationBoardDTO, member);

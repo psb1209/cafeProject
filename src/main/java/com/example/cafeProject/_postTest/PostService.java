@@ -177,7 +177,7 @@ public class PostService extends BaseImageService<Post, PostDTO> {
         // 초성 검색을 위한 titleKey 세팅
         dto.setTitleKey(BaseUtility.toChosungKey(dto.getTitle()));
 
-        dto.setMemberId(memberService.viewCurrentMember(authentication).getId());
+        dto.setMemberId(memberService.viewCurrentMember().getId());
     }
 
     @Override
@@ -238,7 +238,7 @@ public class PostService extends BaseImageService<Post, PostDTO> {
     }
 
     public boolean gradeUpdateCheck(PostDTO dto) {
-        Member member = memberService.viewCurrentMember(memberService.getCurrentMember());
+        Member member = memberService.viewCurrentMember();
         Grade oldGrade = member.getGrade();
         updateGrade(member);
         Grade newGrade = memberService.view(member.getId()).getGrade();

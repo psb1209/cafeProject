@@ -4,6 +4,8 @@ import com.example.cafeProject._boardTest.BoardDTO;
 import com.example.cafeProject._boardTest.BoardService;
 import com.example.cafeProject._cafeTest.CafeDTO;
 import com.example.cafeProject._cafeTest.CafeService;
+import com.example.cafeProject.board_view.Board_viewDTO;
+import com.example.cafeProject.board_view.Board_viewService;
 import com.example.cafeProject.like.LikeService;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
@@ -42,6 +44,7 @@ public class PostController {
     private final CafeService cafeService;
     private final MemberService memberService;
     private final LikeService likeService;
+    private final Board_viewService viewService;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Value("${app.image.upload-dir}")
@@ -134,7 +137,7 @@ public class PostController {
     @GetMapping("/view/{id}")
     public String view(
             @PathVariable String cafeCode,
-            @RequestParam(name="b", required = false) String boardCode,
+            @RequestParam(name = "b", required = false) String boardCode,
             @PathVariable int id,
             Authentication authentication,
             Model model
@@ -149,15 +152,25 @@ public class PostController {
         model.addAttribute("data", dto);
         model.addAttribute("canEdit", postService.canEdit(id, authentication));
 
+        // 기본값
         boolean isLike = false;
 
-        if(!memberService.isNotLogin(authentication)) {
+        if (!memberService.isNotLogin(authentication)) {
             Member member = memberService.viewCurrentMember(authentication);
-            isLike = likeService.isLike(dto.getId(), member.getId());
+
+            // 좋아요 여부
+            isLike = likeService.isLike("post", dto.getId(), member.getId());
+
+            // 조회 기록(중복조회 방지)
+            Board_viewDTO viewDTO = new Board_viewDTO();
+            viewDTO.setUserId(member.getId());
+            viewDTO.setPostId(dto.getId());
+            viewService.createProc(viewDTO);
         }
 
         model.addAttribute("isLike", isLike);
-        model.addAttribute("likeCnt", likeService.likeCnt("customPost", dto.getId()));
+        model.addAttribute("likeCnt", likeService.likeCnt("post", dto.getId()));
+        model.addAttribute("viewCnt", viewService.board_viewCnt("post", dto.getId()));
 
         return "post/view";
     }

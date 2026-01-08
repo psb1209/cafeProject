@@ -135,14 +135,14 @@ public class CommunityBoardController {
 
             if(!memberService.isNotLogin(authentication)) {
                 Member member = memberService.viewCurrentMember(authentication);
-                isLike = likeService.isLike(communityBoard.getId(), member.getId());
+                isLike = likeService.isLike("community", communityBoard.getId(), member.getId());
             }
 
             model.addAttribute("isLike", isLike);
             model.addAttribute("likeCnt", likeService.likeCnt(dirName, communityBoard.getId()));
 
             if (!memberService.isNotLogin(authentication)) {
-                Member member = memberService.viewCurrentMember(authentication);
+                Member member = memberService.viewCurrentMember();
 
                 Board_viewDTO board_viewDTO = new Board_viewDTO();
                 board_viewDTO.setUserId(member.getId());
@@ -227,7 +227,7 @@ public class CommunityBoardController {
             Authentication authentication
     ) {
         try {
-            Member member = memberService.viewCurrentMember(authentication);
+            Member member = memberService.viewCurrentMember();
             communityBoardDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1111");

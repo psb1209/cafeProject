@@ -50,12 +50,24 @@ public class LikeService {
         return likeRepository.findById(id).orElseThrow();
     }
 
-    public boolean isLike(Integer boardNumber, int userId) {
+    public boolean isLike(String boardKey, Integer boardNumber, int userId) {
         if (boardNumber == null) return false;
-        return likeRepository.findByCommunityBoardNumberAndUserId(boardNumber, userId).isPresent()
-                || likeRepository.findByNoticeBoardNumberAndUserId(boardNumber, userId).isPresent()
-                || likeRepository.findByInformationBoardNumberAndUserId(boardNumber, userId).isPresent()
-                || likeRepository.findByOperationBoardNumberAndUserId(boardNumber, userId).isPresent();
+        if (boardKey == null || boardKey.isBlank()) return false;
+
+        String key = boardKey.toLowerCase();
+
+        if (key.contains("community"))
+            return likeRepository.findByCommunityBoardNumberAndUserId(boardNumber, userId).isPresent();
+        if (key.contains("notice"))
+            return likeRepository.findByNoticeBoardNumberAndUserId(boardNumber, userId).isPresent();
+        if (key.contains("information"))
+            return likeRepository.findByInformationBoardNumberAndUserId(boardNumber, userId).isPresent();
+        if (key.contains("operation"))
+            return likeRepository.findByOperationBoardNumberAndUserId(boardNumber, userId).isPresent();
+        if (key.contains("post"))
+            return likeRepository.findByPostIdAndUserId(boardNumber, userId).isPresent();
+
+        return false;
     }
 
     public int likeCnt(String boardCode, int postId) {
@@ -69,8 +81,9 @@ public class LikeService {
             return likeRepository.countLikeWithInformationBoardNumber(postId);
         if (boardCode.toLowerCase().contains("operation"))
             return likeRepository.countLikeWithOperationBoardNumber(postId);
-        if (boardCode.toLowerCase().contains("custompost"))
+        if (boardCode.toLowerCase().contains("post"))
             return likeRepository.countLikeWithPostId(postId);
+
         return 0;
     }
 

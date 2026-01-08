@@ -136,7 +136,7 @@ public class InformationBoardController {
 
             if(!memberService.isNotLogin(authentication)) {
                 Member member = memberService.viewCurrentMember(authentication);
-                isLike = likeService.isLike(informationBoard.getId(), member.getId());
+                isLike = likeService.isLike("information", informationBoard.getId(), member.getId());
             }
 
             model.addAttribute("isLike", isLike);
@@ -208,7 +208,7 @@ public class InformationBoardController {
     {
 
         try {
-            Member member = memberService.viewCurrentMember(authentication);
+            Member member = memberService.viewCurrentMember();
             informationBoardDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1111");

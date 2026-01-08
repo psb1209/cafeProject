@@ -42,7 +42,7 @@ public class OperationBoardCommentController {
     ) {
         //회원값 찾기
         try {
-            Member member = memberService.viewCurrentMember(authentication);
+            Member member = memberService.viewCurrentMember();
             operationBoardCommentDTO.setMemberId(member.getId());
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "err1110");

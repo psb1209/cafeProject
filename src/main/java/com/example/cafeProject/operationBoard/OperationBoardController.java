@@ -137,7 +137,7 @@ public class OperationBoardController {
 
             if(!memberService.isNotLogin(authentication)) {
                 Member member = memberService.viewCurrentMember(authentication);
-                isLike = likeService.isLike(operationBoard.getId(), member.getId());
+                isLike = likeService.isLike("operation", operationBoard.getId(), member.getId());
             }
 
             model.addAttribute("isLike", isLike);

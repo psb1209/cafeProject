@@ -134,6 +134,9 @@ public class MemberService {
             throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
         return viewByUsername(user.getUsername());
     }
+    public Member viewCurrentMember() {
+        return viewCurrentMember(getCurrentMember());
+    }
 
     /**
      * 연관관계 연결용 "가짜 엔티티(프록시)"를 가져온다.
@@ -191,7 +194,7 @@ public class MemberService {
      */
     @Transactional
     public void setDelete(Authentication authentication, MemberDeleteDTO dto) {
-        Member entity = viewCurrentMember(authentication);
+        Member entity = viewCurrentMember();
         beforeDelete(entity, dto);
         memberRepository.delete(entity);
         afterDelete(entity, dto);

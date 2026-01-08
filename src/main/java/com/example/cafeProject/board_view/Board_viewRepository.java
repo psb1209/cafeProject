@@ -15,6 +15,7 @@ public interface Board_viewRepository extends JpaRepository<Board_view, Integer>
     Optional<Board_view> findByNoticeBoardNumberAndUserId(int boardId, int userId);
     Optional<Board_view> findByInformationBoardNumberAndUserId(int boardId, int userId);
     Optional<Board_view> findByOperationBoardNumberAndUserId(int boardId, int userId);
+    Optional<Board_view> findByPostIdAndUserId(int postId, int userId);
 
     // ======================
     // 조회수 COUNT
@@ -46,4 +47,11 @@ public interface Board_viewRepository extends JpaRepository<Board_view, Integer>
         WHERE l.informationBoardNumber = :id
     """)
     int countBoard_viewWithInformationBoardNumber(@Param("id") int id);
+
+    @Query("""
+        SELECT COUNT(l)
+        FROM Board_view l
+        WHERE l.postId = :id
+    """)
+    int countBoard_viewWithPostId(@Param("id") int id);
 }

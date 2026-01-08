@@ -48,6 +48,12 @@ public class Board_viewService {
                             paramDTO.getInformationBoardNumber(),
                             paramDTO.getUserId()
                     );
+        } else if (paramDTO.getPostId() != null) {
+            optional = board_viewRepository
+                    .findByPostIdAndUserId(
+                            paramDTO.getPostId(),
+                            paramDTO.getUserId()
+                    );
         }
 
         // ✅ 이미 조회한 글이면 아무 것도 안 함
@@ -60,6 +66,7 @@ public class Board_viewService {
                 .communityBoardNumber(paramDTO.getCommunityBoardNumber())
                 .noticeBoardNumber(paramDTO.getNoticeBoardNumber())
                 .informationBoardNumber(paramDTO.getInformationBoardNumber())
+                .postId(paramDTO.getPostId())
                 .build();
 
         board_viewRepository.save(view);
@@ -69,30 +76,20 @@ public class Board_viewService {
     // 조회수 반환
     // ======================
     public int board_viewCnt(String boardCode, int postId) {
-
         if (boardCode == null || boardCode.isBlank()) return 0;
 
         boardCode = boardCode.toLowerCase();
 
-        if (boardCode.contains("operation")) {
-            return board_viewRepository
-                    .countBoard_viewWithOperationBoardNumber(postId);
-        }
-
-        if (boardCode.contains("community")) {
-            return board_viewRepository
-                    .countBoard_viewWithCommunityBoardNumber(postId);
-        }
-
-        if (boardCode.contains("notice")) {
-            return board_viewRepository
-                    .countBoard_viewWithNoticeBoardNumber(postId);
-        }
-
-        if (boardCode.contains("information")) {
-            return board_viewRepository
-                    .countBoard_viewWithInformationBoardNumber(postId);
-        }
+        if (boardCode.contains("operation"))
+            return board_viewRepository.countBoard_viewWithOperationBoardNumber(postId);
+        if (boardCode.contains("community"))
+            return board_viewRepository.countBoard_viewWithCommunityBoardNumber(postId);
+        if (boardCode.contains("notice"))
+            return board_viewRepository.countBoard_viewWithNoticeBoardNumber(postId);
+        if (boardCode.contains("information"))
+            return board_viewRepository.countBoard_viewWithInformationBoardNumber(postId);
+        if (boardCode.contains("post"))
+            return board_viewRepository.countBoard_viewWithPostId(postId);
 
         return 0;
     }

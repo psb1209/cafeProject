@@ -15,8 +15,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name="board_view")
 public class Board_view {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -30,4 +28,6 @@ public class Board_view {
     private Integer noticeBoardNumber;
 
     private Integer informationBoardNumber;
+
+    private Integer postId;
 }
