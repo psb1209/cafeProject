@@ -26,6 +26,11 @@
                 <th:block th:replace="~{main_layout/admin_sidebar :: admin_sidebar}"></th:block>
             </th:block>
 
+            <!-- 커스텀 카페 전용 -->
+            <th:block th:case="'custom'">
+                <th:block th:replace="~{main_layout/custom_sidebar :: custom_sidebar}"></th:block>
+            </th:block>
+
             <!-- 기본 -->
             <th:block th:case="*">
                 <th:block th:replace="~{main_layout/inc_sidebar :: inc_sidebar}"></th:block>

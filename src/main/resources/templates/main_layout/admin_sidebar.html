@@ -58,11 +58,11 @@
 
         <div class="sidenav-section-title">그 외</div>
 
-        <!-- 메타데이터 (미구현) -->
+        <!-- 관리 페이지 -->
         <a class="nav-link"
            th:classappend="${activeMenu == 'meta'} ? ' active'"
-           th:href="@{/healthCafe/meta}">
-            <span class="nav-emoji">⚙</span>메타데이터
+           th:href="${cafe?.code != null} ? @{|/admin?c=${cafe.code}|} : @{/admin}">
+            <span class="nav-emoji">⚙</span>관리 페이지
         </a>
 
     </div>
