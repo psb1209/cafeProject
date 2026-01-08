@@ -87,28 +87,27 @@ public class OperationBoardController {
 
         model.addAttribute("subNoticeList", subNoticeList);
         /*====================================================== 공지글!! =======================================================*/
-        model.addAttribute("operationBoardList", operationBoardList);
-        model.addAttribute("activeMenu", "operationBoard");
-        model.addAttribute("keyword", keyword);
 
-        // ======================
         // 조회수 Map 생성
-        // ======================
         Map<Integer, Integer> viewCntMap = new HashMap<>(); // 한 게시글에 여러명의 id값이 있기에 Map으로 값을 여러개 받는다
-
         // 일반 글
         for (OperationBoard board : operationBoardList.getContent()) {
             int viewCnt = board_viewService.board_viewCnt("operation", board.getId());
             viewCntMap.put(board.getId(), viewCnt);
+            board.setCnt(viewCnt);
         }
         /*====================================================== 공지글!! =======================================================*/
         // 공지글
         for (OperationBoard board : subNoticeList) {
             int viewCnt = board_viewService.board_viewCnt("operation", board.getId());
             viewCntMap.put(board.getId(), viewCnt);
+            board.setCnt(viewCnt);
         }
         /*====================================================== 공지글!! =======================================================*/
         model.addAttribute("viewCntMap", viewCntMap);
+        model.addAttribute("operationBoardList", operationBoardList);
+        model.addAttribute("activeMenu", "operationBoard");
+        model.addAttribute("keyword", keyword);
 
         return dirName + "/list";
     }
@@ -125,7 +124,7 @@ public class OperationBoardController {
             // 해당 게시글 존재여부 확인
             OperationBoard operationBoard = operationBoardService.getSelectOneById(operationBoardDTO);
             model.addAttribute("operationBoard", operationBoard);
-            
+
             /*============================================== 대댓글 ===============================================*/
             // 해당 게시글의 댓글, 대댓글 값 불러오기
             Page<OperationBoardComment> commentList = operationBoardCommentService.getCommentListPage(operationBoardDTO.getId(), pageable);

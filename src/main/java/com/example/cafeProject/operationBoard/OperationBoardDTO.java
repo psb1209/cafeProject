@@ -15,8 +15,6 @@ public class OperationBoardDTO {
 
     private String content;
 
-    private int cnt;
-
     private Timestamp createDate;
 
     private int memberId;
@@ -26,7 +24,6 @@ public class OperationBoardDTO {
 
     private String operationBoardCommentContent;
     /*============================================== 대댓글 ===============================================*/
-
 
     /*=============================== 각 게시판 공지글 ===================================*/
     private boolean subNotice;

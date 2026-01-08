@@ -40,6 +40,7 @@ public class MemberController {
     ) {
         log.debug("list 호출됨. 호출자 : {}", safeName(authentication));
         Page<Member> list = memberService.list(pageable);
+        model.addAttribute("activeMenu", "list");
         model.addAttribute("list", list);
         return basePath + "/list";
     }

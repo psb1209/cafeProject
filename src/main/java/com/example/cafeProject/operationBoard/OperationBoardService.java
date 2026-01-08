@@ -70,7 +70,6 @@ public class OperationBoardService {
         operationBoard.setSubject(paramDTO.getSubject());
         operationBoard.setContent(paramDTO.getContent());
         operationBoard.setMember(memberService.view(paramDTO.getMemberId()));
-        operationBoard.setCnt(0);
 
         operationBoardRepository.save(operationBoard);
     }
@@ -97,13 +96,6 @@ public class OperationBoardService {
         deleteImageFiles(imageUrls);
 
         operationBoardRepository.delete(operationBoard);
-    }
-
-    @Transactional
-    public void cntPlus(OperationBoard operationBoard) {
-        operationBoard.setCnt(operationBoard.getCnt() + 1);
-
-        operationBoardRepository.save(operationBoard);
     }
 
     //회원등업

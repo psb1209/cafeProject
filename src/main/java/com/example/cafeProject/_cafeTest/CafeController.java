@@ -84,6 +84,7 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
         Page<CafeDTO> list = cafeService.listVisibleDTO(pageable, keyword);
         model.addAttribute("list", list);
         model.addAttribute("keyword", keyword);
+        model.addAttribute("activeMenu", "cafeList");
         return super.basePath + "/list"; // ex) "memo/list"
     }
 
