@@ -4,6 +4,8 @@ import com.example.cafeProject._boardTest.BoardDTO;
 import com.example.cafeProject._boardTest.BoardService;
 import com.example.cafeProject._cafeTest.CafeDTO;
 import com.example.cafeProject._cafeTest.CafeService;
+import com.example.cafeProject.like.LikeService;
+import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.validation.AdminOnly;
 import com.example.cafeProject.validation.ManagementOnly;
@@ -39,6 +41,7 @@ public class PostController {
     private final BoardService boardService;
     private final CafeService cafeService;
     private final MemberService memberService;
+    private final LikeService likeService;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Value("${app.image.upload-dir}")
@@ -145,6 +148,17 @@ public class PostController {
 
         model.addAttribute("data", dto);
         model.addAttribute("canEdit", postService.canEdit(id, authentication));
+
+        boolean isLike = false;
+
+        if(!memberService.isNotLogin(authentication)) {
+            Member member = memberService.viewCurrentMember(authentication);
+            isLike = likeService.isLike(dto.getId(), member.getId());
+        }
+
+        model.addAttribute("isLike", isLike);
+        model.addAttribute("likeCnt", likeService.likeCnt("customPost", dto.getId()));
+
         return "post/view";
     }
 

@@ -21,12 +21,10 @@ public class LikeViewController {
     @PostMapping("/createProc")
     public String createProc(
             LikeDTO likeDTO,
-            Model model,
-            Authentication authentication
+            Model model
     ) {
         try {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            Member member = likeService.selectByUsername(userDetails.getUsername());
+            Member member = memberService.viewCurrentMember(memberService.getCurrentMember());
             likeDTO.setUserId(member.getId());
             likeService.createProc(likeDTO);
 
@@ -38,6 +36,11 @@ public class LikeViewController {
                 return "redirect:/informationBoard/view/" + likeDTO.getInformationBoardNumber();
             if (likeDTO.getOperationBoardNumber() != null)
                 return "redirect:/operationBoard/view/" + likeDTO.getOperationBoardNumber();
+            if (likeDTO.getPostId() != null) {
+                return "redirect:/cafe/" + likeDTO.getCafeCode()
+                        + "/post/view/" + likeDTO.getPostId()
+                        + "?b=" + likeDTO.getBoardCode();
+            }
 
             return "redirect:/";
         } catch (Exception e) {

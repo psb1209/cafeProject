@@ -30,7 +30,7 @@ public class Post extends BaseEntity {
 
     @Builder.Default
     @Column(nullable = false)
-    private int cnt = 0;   // 조회수
+    private int cnt = 0;     // 조회수
 
     @Builder.Default
     @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")

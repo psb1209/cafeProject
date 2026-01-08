@@ -20,4 +20,10 @@ public class LikeDTO {
     private Integer noticeBoardNumber;
 
     private Integer informationBoardNumber;
+
+    private Integer postId;
+
+    // 리다이렉트 URL 만들기용
+    private String cafeCode;
+    private String boardCode;
 }

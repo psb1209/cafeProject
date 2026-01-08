@@ -4,6 +4,7 @@ package com.example.cafeProject.like;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,8 @@ public class LikeService {
             optionalLike = likeRepository.findByInformationBoardNumberAndUserId(likeDTO.getInformationBoardNumber(), likeDTO.getUserId());
         if (likeDTO.getOperationBoardNumber() != null)
             optionalLike = likeRepository.findByOperationBoardNumberAndUserId(likeDTO.getOperationBoardNumber(), likeDTO.getUserId());
+        if (likeDTO.getPostId() != null)
+            optionalLike = likeRepository.findByPostIdAndUserId(likeDTO.getPostId(), likeDTO.getUserId());
 
         if (optionalLike.isPresent()) {
             likeRepository.delete(optionalLike.get());
@@ -37,6 +40,7 @@ public class LikeService {
             like.setNoticeBoardNumber(likeDTO.getNoticeBoardNumber());
             like.setInformationBoardNumber(likeDTO.getInformationBoardNumber());
             like.setOperationBoardNumber(likeDTO.getOperationBoardNumber());
+            like.setPostId(likeDTO.getPostId());
             like.setUserId(likeDTO.getUserId());
             likeRepository.save(like);
         }
@@ -44,10 +48,6 @@ public class LikeService {
 
     public Like selectOneById(int id){
         return likeRepository.findById(id).orElseThrow();
-    }
-
-    public Member selectByUsername(String username){
-        return memberRepository.findByUsername(username).orElseThrow();
     }
 
     public boolean isLike(Integer boardNumber, int userId) {
@@ -69,7 +69,8 @@ public class LikeService {
             return likeRepository.countLikeWithInformationBoardNumber(postId);
         if (boardCode.toLowerCase().contains("operation"))
             return likeRepository.countLikeWithOperationBoardNumber(postId);
-
+        if (boardCode.toLowerCase().contains("custompost"))
+            return likeRepository.countLikeWithPostId(postId);
         return 0;
     }
 

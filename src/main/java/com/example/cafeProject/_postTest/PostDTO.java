@@ -38,6 +38,12 @@ public class PostDTO extends BaseDTO {
     @Null
     private Integer cnt;
 
+    @Null
+    private Integer likeCnt;
+
+    @Null
+    private Boolean likedByMe;
+
     private boolean notice;
 
     @Null

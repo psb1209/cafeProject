@@ -11,6 +11,7 @@ public interface LikeRepository extends JpaRepository<Like,Integer> {
     Optional<Like> findByInformationBoardNumberAndUserId(int informationNumberId,int userId);
     Optional<Like> findByNoticeBoardNumberAndUserId(int noticeNumberId,int userId);
     Optional<Like> findByOperationBoardNumberAndUserId(int operationNumberId,int userId);
+    Optional<Like> findByPostIdAndUserId(int postId, int userId);
 
     @Query("""
             SELECT COUNT(*)
@@ -39,4 +40,11 @@ public interface LikeRepository extends JpaRepository<Like,Integer> {
             WHERE l.operationBoardNumber = :id
     """)
     int countLikeWithOperationBoardNumber(@Param("id") int OperationNumberId);
+
+    @Query("""
+            SELECT COUNT(*)
+            FROM Like l
+            WHERE l.postId = :id
+    """)
+    int countLikeWithPostId(@Param("id") int postId);
 }

@@ -15,8 +15,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name="likes")
 public class Like {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -33,4 +31,6 @@ public class Like {
     private Integer noticeBoardNumber;
 
     private Integer informationBoardNumber;
+
+    private Integer postId;
 }
