@@ -44,7 +44,7 @@
                         <span th:case="'UNKNOWN'">알 수 없음</span>
                     </span>
                     <span th:text="${#dates.format(informationBoard.createDate,'yyyy.MM.dd')}"></span>
-                    <span>조회 <b th:text="${informationBoard.cnt}"></b></span>
+                    <span>조회 <b th:text="${viewCnt}"></b></span>
 
                     <span th:if="${msg}">
                         <span th:text="${msg}">메시지내용</span>

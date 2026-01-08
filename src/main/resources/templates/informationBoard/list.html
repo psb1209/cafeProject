@@ -151,7 +151,7 @@
                         <!--====================================================== 공지글!! =======================================================-->
 
                     </td>
-                    <td class="td_underline" th:text="${informationBoard.cnt}"></td>
+                    <td class="td_underline" th:text="${viewCntMap[informationBoard.id]}"></td>
                     <td class="td_underline" th:text="${informationBoard.member.username}"></td>
 <!--                    <td class="td_underline text-center" th:switch="${informationBoard.member.grade.name()}">-->
 <!--                        <span th:case="'USER'">일반🥉</span>-->
