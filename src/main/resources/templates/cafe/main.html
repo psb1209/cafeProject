@@ -7,33 +7,38 @@
                          ? @{/assets/img/post-sample-image.jpg}
                          : @{|${imageUrlPrefix}${cafe.imgName}|},
                headerPosition='center center',
-               sidebarKey='cafe'">
+               sidebarKey='custom'">
 
 <body>
 
-<h1 layout:fragment="pageTitle" th:text="${cafe?.name} ?: 'My Cafe'" onclick="location.href='/'" style="cursor: pointer;">카페 이름</h1>
-<span layout:fragment="pageSubTitle" th:text="${cafe?.description} ?: 'description'">카페 설명</span>
+<h1 layout:fragment="pageTitle"
+    th:text="${cafe?.name} ?: 'My Cafe'"
+    onclick="location.href='/'"
+    style="cursor: pointer;">카페 이름</h1>
+
+<span layout:fragment="pageSubTitle"
+      th:text="${cafe?.description} ?: 'description'">카페 설명</span>
 
 <div layout:fragment="content">
 
     <link th:href="@{/css/board.css}" rel="stylesheet" />
     <link th:href="@{/css/theme2.css}" rel="stylesheet" />
+
     <div class="page-container">
-<!--==================================================================================================================-->
+
+        <!-- ====================================================================================================== -->
+        <!-- 공지사항 -->
         <div class="cafe-board-wrap">
             <div class="cafe-board-header">
-                <div class="cafe-board-title" onclick="location.href='/noticeBoard/list'" style="cursor: pointer;">공지사항</div>
+                <div class="cafe-board-title"
+                     th:onclick="|location.href='@{/cafe/{cafeCode}/post/list(cafeCode=${cafe.code}, b='noticeBoard')}'|"
+                     style="cursor: pointer;">공지사항</div>
 
-                <a href="/noticeBoard/list" class="cafe-more-btn">
+                <a class="cafe-more-btn"
+                   th:href="@{/cafe/{cafeCode}/post/list(cafeCode=${cafe.code}, b='noticeBoard')}">
                     <span class="more-text">더보기</span>
                     <span class="arrow">›</span>
                 </a>
-<!--                <div class="cafe-article-actions" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')">
-                    <a th:href="@{/noticeBoard/create}"
-                       class="cafe-action-btn write">
-                        ✏️ 게시글 작성
-                    </a>
-                </div>-->
             </div>
 
             <table class="cafe-board-table">
@@ -45,17 +50,17 @@
                 </tr>
                 </thead>
 
-                <tbody th:if="${!noticeBoardList.isEmpty()}">
-                <tr th:each="noticeBoard, loop : ${noticeBoardList}" class="text-center"
-                    th:onclick="|location.href='@{|/noticeBoard/view/${noticeBoard.id}|}'|">
-
+                <tbody th:if="${noticeBoardList != null and !noticeBoardList.isEmpty()}">
+                <tr th:each="noticeBoard, loop : ${noticeBoardList}"
+                    class="text-center"
+                    th:onclick="|location.href='@{/cafe/{cafeCode}/post/view/{id}(cafeCode=${cafe.code}, id=${noticeBoard.id}, b='noticeBoard')}'|">
                     <td th:text="${loop.index + 1}"></td>
-                    <td class="col-subject" th:text="${noticeBoard.subject}"></td>
-                    <td class="col-writer text-center" th:text="${noticeBoard.member?.username ?: '-'}"></td>
+                    <td class="col-subject" th:text="${noticeBoard.title}"></td>
+                    <td class="col-writer text-center" th:text="${noticeBoard.username ?: '-'}"></td>
                 </tr>
                 </tbody>
 
-                <tbody th:if="${noticeBoardList.isEmpty()}">
+                <tbody th:if="${noticeBoardList == null or noticeBoardList.isEmpty()}">
                 <tr>
                     <td class="text-center" colspan="3">게시글이 없습니다.</td>
                 </tr>
@@ -63,21 +68,19 @@
             </table>
         </div>
 
+        <!-- ====================================================================================================== -->
+        <!-- 정보게시판 -->
         <div class="cafe-board-wrap">
             <div class="cafe-board-header">
-                <div class="cafe-board-title" onclick="location.href='/informationBoard/list'" style="cursor: pointer;">정보게시판</div>
+                <div class="cafe-board-title"
+                     th:onclick="|location.href='@{/cafe/{cafeCode}/post/list(cafeCode=${cafe.code}, b='informationBoard')}'|"
+                     style="cursor: pointer;">정보게시판</div>
 
-                <a href="/informationBoard/list" class="cafe-more-btn">
+                <a class="cafe-more-btn"
+                   th:href="@{/cafe/{cafeCode}/post/list(cafeCode=${cafe.code}, b='informationBoard')}">
                     <span class="more-text">더보기</span>
                     <span class="arrow">›</span>
                 </a>
-
-  <!--              <div class="cafe-article-actions">
-                    <a th:href="@{/informationBoard/create}"
-                       class="cafe-action-btn write">
-                        ✏️ 게시글 작성
-                    </a>
-                </div>-->
             </div>
 
             <table class="cafe-board-table">
@@ -89,17 +92,17 @@
                 </tr>
                 </thead>
 
-                <tbody th:if="${!informationBoardList.isEmpty()}">
-                <tr th:each="informationBoard, loop : ${informationBoardList}" class="text-center"
-                    th:onclick="|location.href='@{|/informationBoard/view/${informationBoard.id}|}'|">
-
+                <tbody th:if="${informationBoardList != null and !informationBoardList.isEmpty()}">
+                <tr th:each="informationBoard, loop : ${informationBoardList}"
+                    class="text-center"
+                    th:onclick="|location.href='@{/cafe/{cafeCode}/post/view/{id}(cafeCode=${cafe.code}, id=${informationBoard.id}, b='informationBoard')}'|">
                     <td th:text="${loop.index + 1}"></td>
-                    <td class="col-subject" th:text="${informationBoard.subject}"></td>
-                    <td class="col-writer text-center" th:text="${informationBoard.member?.username ?: '-'}"></td>
-<!--                    <td class="col-writer text-center"> -</td>-->
+                    <td class="col-subject" th:text="${informationBoard.title}"></td>
+                    <td class="col-writer text-center" th:text="${informationBoard.username ?: '-'}"></td>
                 </tr>
                 </tbody>
-                <tbody th:if="${informationBoardList.isEmpty()}">
+
+                <tbody th:if="${informationBoardList == null or informationBoardList.isEmpty()}">
                 <tr>
                     <td class="text-center" colspan="3">게시글이 없습니다.</td>
                 </tr>
@@ -107,20 +110,19 @@
             </table>
         </div>
 
+        <!-- ====================================================================================================== -->
+        <!-- 자유게시판 -->
         <div class="cafe-board-wrap">
             <div class="cafe-board-header">
-                <div class="cafe-board-title" onclick="location.href='/communityBoard/list'" style="cursor: pointer;">자유게시판</div>
+                <div class="cafe-board-title"
+                     th:onclick="|location.href='@{/cafe/{cafeCode}/post/list(cafeCode=${cafe.code}, b='communityBoard')}'|"
+                     style="cursor: pointer;">자유게시판</div>
 
-                <a href="/communityBoard/list" class="cafe-more-btn">
+                <a class="cafe-more-btn"
+                   th:href="@{/cafe/{cafeCode}/post/list(cafeCode=${cafe.code}, b='communityBoard')}">
                     <span class="more-text">더보기</span>
                     <span class="arrow">›</span>
                 </a>
-<!--                <div class="cafe-article-actions">
-                    <a th:href="@{/communityBoard/create}"
-                       class="cafe-action-btn write">
-                        ✏️ 게시글 작성
-                    </a>
-                </div>-->
             </div>
 
             <table class="cafe-board-table">
@@ -132,16 +134,17 @@
                 </tr>
                 </thead>
 
-                <tbody th:if="${!communityBoardList.isEmpty()}">
-                <tr th:each="communityBoard, loop : ${communityBoardList}"  class=" text-center"
-                    th:onclick="|location.href='@{|/communityBoard/view/${communityBoard.id}|}'|">
-
+                <tbody th:if="${communityBoardList != null and !communityBoardList.isEmpty()}">
+                <tr th:each="communityBoard, loop : ${communityBoardList}"
+                    class="text-center"
+                    th:onclick="|location.href='@{/cafe/{cafeCode}/post/view/{id}(cafeCode=${cafe.code}, id=${communityBoard.id}, b='communityBoard')}'|">
                     <td th:text="${loop.index + 1}"></td>
-                    <td class="col-subject" th:text="${communityBoard.subject}"></td>
-                    <td class="col-writer text-center" th:text="${communityBoard.member?.username ?: '-'}"></td>
+                    <td class="col-subject" th:text="${communityBoard.title}"></td>
+                    <td class="col-writer text-center" th:text="${communityBoard.username ?: '-'}"></td>
                 </tr>
                 </tbody>
-                <tbody th:if="${communityBoardList.isEmpty()}">
+
+                <tbody th:if="${communityBoardList == null or communityBoardList.isEmpty()}">
                 <tr>
                     <td class="text-center" colspan="3">게시글이 없습니다.</td>
                 </tr>
@@ -151,11 +154,6 @@
 
     </div>
 </div>
-</div>
-
-<script th:if="${noticeBoard2List.isEmpty()}">
-    alert([[${errMsg}]]);
-</script>
 
 </body>
 </html>

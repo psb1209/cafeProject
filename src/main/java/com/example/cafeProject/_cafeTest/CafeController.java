@@ -1,6 +1,11 @@
 package com.example.cafeProject._cafeTest;
 
 import com.example.base.BaseImageController;
+import com.example.cafeProject._boardTest.BoardDTO;
+import com.example.cafeProject._boardTest.BoardService;
+import com.example.cafeProject._boardTest.DefaultBoard;
+import com.example.cafeProject._postTest.PostDTO;
+import com.example.cafeProject._postTest.PostService;
 import com.example.cafeProject.communityBoard.CommunityBoardService;
 import com.example.cafeProject.informationBoard.InformationBoardService;
 import com.example.cafeProject.member.MemberService;
@@ -10,6 +15,7 @@ import com.example.cafeProject.validation.ValidationGroups;
 import com.example.exception.DuplicateValueException;
 import com.example.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -23,29 +29,25 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/cafe")
 public class CafeController extends BaseImageController<Cafe, CafeDTO> {
 
     private final CafeService cafeService;
-    private final MemberService memberService;
-    private final NoticeBoardService noticeBoardService;
-    private final CommunityBoardService communityBoardService;
-    private final InformationBoardService informationBoardService;
+    private final BoardService boardService;
+    private final PostService postService;
 
     public CafeController(
             CafeService service,
-            MemberService memberService,
-            NoticeBoardService noticeBoardService,
-            CommunityBoardService communityBoardService,
-            InformationBoardService informationBoardService
+            BoardService boardService,
+            PostService postService
     ) {
         super(service, "cafe");
         this.cafeService = service;
-        this.memberService = memberService;
-        this.noticeBoardService = noticeBoardService;
-        this.communityBoardService = communityBoardService;
-        this.informationBoardService = informationBoardService;
+        this.boardService = boardService;
+        this.postService = postService;
     }
 
     /**
@@ -96,14 +98,14 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
 
     @GetMapping("/main")
     public String mainPage(
-            @PageableDefault(size=5, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestParam(required = false) String code,
+            @PageableDefault(size = 5, sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(name = "c", required = false) String code,
             Model model
     ) {
         model.addAttribute("code", code);
-        model.addAttribute("noticeBoardList", noticeBoardService.list(pageable, null));
-        model.addAttribute("communityBoardList", communityBoardService.list(pageable,null));
-        model.addAttribute("informationBoardList", informationBoardService.list(pageable, null));
+        model.addAttribute("noticeBoardList", latestPosts(code, DefaultBoard.NOTICE.getCode(), pageable));
+        model.addAttribute("informationBoardList", latestPosts(code, DefaultBoard.INFORMATION.getCode(), pageable));
+        model.addAttribute("communityBoardList", latestPosts(code, DefaultBoard.COMMUNITY.getCode(), pageable));
         model.addAttribute("activeMenu", "main");
         return super.basePath + "/main"; // ex) "memo/list"
     }
@@ -173,6 +175,15 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
         } catch (Exception e) {
             log.error("[updateProc] 예상하지 못 한 오류 : {}", e.getMessage(), e);
             return "redirect:/error/runtimeErrorPage";
+        }
+    }
+
+    private List<PostDTO> latestPosts(String cafeCode, String boardCode, Pageable pageable) {
+        try {
+            BoardDTO board = boardService.viewVisibleDTOByCode(cafeCode, boardCode);
+            return postService.listByBoardIdDTO(board.getId(), null, pageable).getContent();
+        } catch (Exception e) {
+            return List.of();
         }
     }
 }

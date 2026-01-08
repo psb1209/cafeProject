@@ -1,21 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 
-<nav class="sb-sidenav-menu" th:fragment="custom_sidebar">
+<nav class="sb-sidenav-menu"
+     th:fragment="custom_sidebar"
+     th:if="${cafe != null and cafe.code != null and !#strings.isEmpty(cafe.code)}">
     <div class="nav">
 
         <!-- 카페 홈 -->
         <a class="nav-link"
            th:classappend="${activeMenu == 'main'} ? ' active'"
-           th:href="@{/cafe/{code}(code=${cafe.code})">
+           th:href="@{|/cafe/${cafe.code}|}">
             <span class="nav-emoji">🏠</span>카페 홈
         </a>
 
         <!-- 공지 -->
         <a class="nav-link"
            th:classappend="${activeMenu == 'noticeBoard'} ? ' active'"
-           th:href="@{@{/cafe/{cafeCode}/post/list(cafeCode=${cafe.code}, b='noticeBoard')}">
+           th:href="@{/cafe/{cafeCode}/post/list(cafeCode=${cafe.code}, b='noticeBoard')}">
             <span class="nav-emoji">📢</span>공지사항
         </a>
 
@@ -24,7 +27,7 @@
         <!-- 전체게시판 -->
         <a class="nav-link"
            th:classappend="${activeMenu == 'all'} ? ' active'"
-           th:href="@{/cafe/{cafeCode}/board/(cafeCode=${cafe.code})}">
+           th:href="@{/cafe/{cafeCode}/board(cafeCode=${cafe.code})}">
             <span class="nav-emoji">📄</span>모든게시판
         </a>
 
@@ -45,7 +48,7 @@
         <!-- 운영게시판 -->
         <a class="nav-link"
            th:classappend="${activeMenu == 'operationBoard'} ? ' active'"
-           sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')"
+           sec:authorize="hasAnyAuthority('ROLE_ADMIN','ROLE_MANAGER')"
            th:href="@{/cafe/{cafeCode}/post/list(cafeCode=${cafe.code}, b='operationBoard')}">
             <span class="nav-emoji">📋</span>운영게시판
         </a>
@@ -68,9 +71,7 @@
 
         <a class="nav-link"
            sec:authorize="hasAnyAuthority('ROLE_ADMIN','ROLE_MANAGER')"
-           th:if="${board != null
-                and board.code != null
-                and !#strings.isEmpty(board.code)}"
+           th:if="${board != null and board.code != null and !#strings.isEmpty(board.code)}"
            th:classappend="${activeMenu == 'trash'} ? ' active'"
            th:href="@{/cafe/{cafeCode}/post/trashList(cafeCode=${cafe.code}, b=${board.code})}">
             <span class="nav-emoji">🗑️</span>삭제된 게시글
