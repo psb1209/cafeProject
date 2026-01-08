@@ -2,10 +2,12 @@ package com.example.cafeProject._cafeTest;
 
 import com.example.base.BaseImageService;
 import com.example.base.BaseUtility;
+import com.example.cafeProject._boardTest.DefaultBoardProvisioner;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.member.RoleType;
 import com.example.exception.DuplicateValueException;
 import com.example.exception.EntityNotFoundException;
+import com.example.exception.PermissionDeniedException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +25,17 @@ public class CafeService extends BaseImageService<Cafe, CafeDTO> {
 
     private final CafeRepository cafeRepository;
     private final MemberService memberService;
+    private final DefaultBoardProvisioner provisioner;
 
-    public CafeService(CafeRepository repository, ModelMapper modelMapper, MemberService memberService) {
+    public CafeService(
+            CafeRepository repository,
+            ModelMapper modelMapper,
+            MemberService memberService,
+            DefaultBoardProvisioner provisioner) {
         super(repository, modelMapper, Cafe.class, CafeDTO.class);
         this.cafeRepository = repository;
         this.memberService = memberService;
+        this.provisioner = provisioner;
     }
 
     public Cafe viewByCode(String code) {
@@ -139,6 +147,11 @@ public class CafeService extends BaseImageService<Cafe, CafeDTO> {
             throw new DuplicateValueException("이미 존재하는 게시판 이름입니다.", "name", dto.getName());
         if (cafeRepository.existsByCode(dto.getCode()))
             throw new DuplicateValueException("이미 사용 중인 게시판 코드입니다.", "code", dto.getCode());
+    }
+
+    @Override
+    protected void afterInsert(CafeDTO dto, Cafe cafe) {
+        provisioner.ensureDefaults(cafe);
     }
 
     @Override

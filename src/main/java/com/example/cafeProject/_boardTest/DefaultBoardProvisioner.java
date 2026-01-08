@@ -2,24 +2,21 @@ package com.example.cafeProject._boardTest;
 
 import com.example.base.BaseUtility;
 import com.example.cafeProject._cafeTest.Cafe;
-import com.example.cafeProject.member.MemberService;
-import com.example.exception.PermissionDeniedException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DefaultBoardProvisioner {
 
     private final BoardRepository boardRepository;// (예시) 보드 메타 저장소
-    private final MemberService memberService;
 
     @Transactional
     public void ensureDefaults(Cafe cafe) {
-        if (!memberService.isManagement(memberService.getCurrentMember()))
-            throw new PermissionDeniedException("권한 없음");
-
         for (DefaultBoard t : DefaultBoard.values()) {
 
             // 이미 있으면 스킵(중복 생성 방지)
@@ -38,7 +35,13 @@ public class DefaultBoardProvisioner {
                     .writeRole(t.getWriteRole())
                     .build();
 
-            boardRepository.save(b);
+            try {
+                boardRepository.save(b);
+                log.info("[ensureDefaults] {} 생성됨.", b.getName());
+            } catch (DataIntegrityViolationException e) {
+                log.info("[ensureDefaults] {} 이미 존재하거나 제약 위반으로 생성 스킵: {}",
+                        b.getName(), e.getMostSpecificCause().getMessage());
+            }
         }
     }
 }

@@ -33,6 +33,7 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
     """)
     Page<Board> findVisible(@Param("cafeCode") String cafeCode,
                             @Param("roles") Collection<RoleType> roles,
+                            @Param("excludedCodes") Collection<String> excludedCodes,
                             Pageable pageable);
 
     /** 게시판 검색 */
@@ -47,6 +48,7 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
     """)
     Page<Board> searchVisible(@Param("cafeCode") String cafeCode,
                               @Param("roles") Collection<RoleType> roles,
+                              @Param("excludedCodes") Collection<String> excludedCodes,
                               @Param("keyword") String keyword,
                               Pageable pageable);
 
@@ -62,6 +64,7 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
     """)
     Page<Board> searchVisibleByChosung(@Param("cafeCode") String cafeCode,
                                        @Param("roles") Collection<RoleType> roles,
+                                       @Param("excludedCodes") Collection<String> excludedCodes,
                                        @Param("keyword") String keyword,
                                        Pageable pageable);
 

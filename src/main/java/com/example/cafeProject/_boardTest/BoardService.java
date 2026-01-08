@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -32,6 +33,11 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         this.cafeService = cafeService;
         this.memberService = memberService;
     }
+
+    private static final List<String> DEFAULT_BOARD_CODES =
+            Arrays.stream(DefaultBoard.values())
+                    .map(DefaultBoard::getCode)
+                    .toList();
 
     public Board viewByCode(String cafeCode, String code) {
         return boardRepository.findByCafe_CodeAndCode(cafeCode, code)
@@ -64,7 +70,7 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
     public Page<Board> listVisible(String cafeCode, Pageable pageable, RoleType[] roles) {
         List<RoleType> roleList = normalizeRoles(roles);
         if (roleList.isEmpty()) return Page.empty(pageable);
-        return boardRepository.findVisible(cafeCode, roleList, pageable);
+        return boardRepository.findVisible(cafeCode, roleList, DEFAULT_BOARD_CODES, pageable);
     }
     public Page<BoardDTO> listVisibleDTO(String cafeCode, Pageable pageable, RoleType[] roles) {
         return listVisible(cafeCode, pageable, roles).map(this::toDTO);
@@ -77,12 +83,12 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
             return Page.empty(pageable);
 
         if (keyword == null || keyword.isBlank())
-            return boardRepository.findVisible(cafeCode, roleList, pageable);
+            return boardRepository.findVisible(cafeCode, roleList, DEFAULT_BOARD_CODES, pageable);
 
         if (BaseUtility.isChosungQuery(keyword.trim()))
-            return boardRepository.searchVisibleByChosung(cafeCode, roleList, BaseUtility.jaeumBreaker(keyword), pageable);
+            return boardRepository.searchVisibleByChosung(cafeCode, roleList, DEFAULT_BOARD_CODES, BaseUtility.jaeumBreaker(keyword), pageable);
 
-        return boardRepository.searchVisible(cafeCode, roleList, keyword.trim(), pageable);
+        return boardRepository.searchVisible(cafeCode, roleList, DEFAULT_BOARD_CODES, keyword.trim(), pageable);
     }
     public Page<BoardDTO> listVisibleDTO(String cafeCode, Pageable pageable, RoleType[] roles, String keyword) {
         return listVisible(cafeCode, pageable, roles, keyword).map(this::toDTO);
@@ -125,6 +131,9 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         if (board.getMember() != null) {
             dto.setMemberId(board.getMember().getId());
             dto.setUsername(board.getMember().getUsername());
+        }
+        if (DEFAULT_BOARD_CODES.contains(board.getCode())) {
+            dto.setUsername("Auto-Created");
         }
         return dto;
     }
