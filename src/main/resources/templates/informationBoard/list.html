@@ -56,6 +56,7 @@
                            name="keyword"
                            placeholder="게시판 검색"
                            th:value="${keyword}">
+                    <input type="hidden" name="size" value="15" th:selected="${informationBoardList.size == 15}">
                     <button type="submit">🔍</button>
                 </form>
             </div>
@@ -65,7 +66,8 @@
                 등록된 게시글이 없습니다.
             </div>
 
-            <table class="cafe-board-table">
+            <table class="cafe-board-table"
+                   th:if="${(subNoticeList != null and !subNoticeList.isEmpty()) or (informationBoardList != null and !informationBoardList.isEmpty())}">
                 <thead>
                 <tr>
                     <th class="col-no">순번</th>
@@ -117,7 +119,7 @@
                     <td class="td_underline" th:text="${subNotice.member.username}"></td>
 
                     <!-- 등급 -->
-                    <td class="td_underline text-center">운영진</td>
+                    <td class="td_underline text-center">운영진👑</td>
 
                     <!-- 날짜 -->
                     <td class="td_underline text-center"

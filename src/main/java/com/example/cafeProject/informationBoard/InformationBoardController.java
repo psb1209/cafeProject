@@ -106,8 +106,6 @@ public class InformationBoardController {
         }
         /*====================================================== 공지글!! =======================================================*/
         model.addAttribute("viewCntMap", viewCntMap);
-        System.out.println("------->" + viewCntMap);
-
         return dirName + "/list";
     }
     /*=====================================================================================*/
@@ -232,9 +230,10 @@ public class InformationBoardController {
     }
 
     @PostMapping("/updateProc")
-    public String updateProc(Model model, InformationBoardDTO informationBoardDTO,
-                             @AuthenticationPrincipal User user)
-    {
+    public String updateProc(
+            Model model, InformationBoardDTO informationBoardDTO,
+            @AuthenticationPrincipal User user
+    ) {
         try {
             informationBoardService.setUpdate(informationBoardDTO, user);
             return "redirect:/" + dirName + "/view/" + informationBoardDTO.getId();

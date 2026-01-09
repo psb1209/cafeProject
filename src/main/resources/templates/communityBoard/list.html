@@ -42,7 +42,7 @@
                         <option value="20" th:selected="${communityBoardList.size == 20}" class="cafe-action-btn write">20개씩 보기</option>
                     </select>
 
-                    <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')"
+                    <a
                        th:href="@{/communityBoard/create}"
                        class="cafe-action-btn write">
                         ✏️ 게시글 작성
@@ -58,6 +58,7 @@
                            name="keyword"
                            placeholder="게시판 검색"
                            th:value="${keyword}">
+                    <input type="hidden" name="size" value="15" th:selected="${communityBoardList.size == 15}">
                     <button type="submit">🔍</button>
                 </form>
             </div>

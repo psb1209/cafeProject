@@ -41,10 +41,10 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // ✅ ADMIN만 접근 가능
-                        // .requestMatchers("/operationBoard/**").hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers("/operationBoard/**").hasAnyRole("ADMIN", "MANAGER")
 
                         // ✅ 로그인한 사용자만
-//                        .requestMatchers("/operationBoard/**").authenticated()
+                        .requestMatchers("/operationBoard/**").authenticated()
                         .requestMatchers("/noticeBoard/update/**").authenticated()
                         .requestMatchers("/noticeBoard/create/**").authenticated()
 

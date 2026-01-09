@@ -289,6 +289,14 @@
     text-align: center;
 }
 
+/* 테이블 헤더 & 셀 글자 줄바꿈 방지 */
+.cafe-board-table th,
+.cafe-board-table td {
+    white-space: nowrap;
+    word-break: keep-all;
+    text-align: center;
+}
+
 .td_underline {
     padding: 14px 10px;
     border-bottom: 1px solid var(--table-border-light);
@@ -300,6 +308,10 @@
     text-align: left;
     padding-left: 20px;
     font-weight: 500;
+    max-width: 300px;          /* 원하는 길이 */
+    white-space: nowrap;       /* 줄바꿈 금지 */
+    overflow: hidden;          /* 넘친 텍스트 숨김 */
+    text-overflow: ellipsis;   /* ... 처리 */
 }
 
 .cafe-board-table tbody tr {

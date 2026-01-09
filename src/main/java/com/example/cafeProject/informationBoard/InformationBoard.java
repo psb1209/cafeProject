@@ -25,7 +25,7 @@ public class InformationBoard {
     private String subject;
 
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "longtext")
     private String content;
 
     private int cnt;
