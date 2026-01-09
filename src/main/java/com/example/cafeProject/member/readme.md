@@ -37,7 +37,9 @@
     - 화면: `GET /member/delete`
     - 처리: `POST /member/deleteProc`
         - `MemberDeleteDTO` 검증(비밀번호 규칙 + 동의 체크 `@AssertTrue`)
-        - 비밀번호 `matches` 성공 시 `memberRepository.delete(entity)`
+        - 비밀번호 `matches` 성공 시 **소프트 삭제 처리**
+            - `entity.softDelete(reason)` + `memberRepository.save(entity)`
+            - 이후 세션/인증 정리(SecurityContext clear + session invalidate)
 
 ---
 

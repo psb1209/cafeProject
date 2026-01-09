@@ -7,6 +7,9 @@ import com.example.exception.EntityNotFoundException;
 import com.example.exception.PermissionDeniedException;
 import com.example.exception.WrongPasswordException;
 import jakarta.validation.Valid;
+import org.springframework.security.core.context.SecurityContextHolder;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
  * - 실제 서비스 빈이 아님 (의도적으로 @Controller 없음)
  * - 로그 제거 버전: "로직만" 보기 위한 참고용 파일
  * 실제 동작은 MemberController 담당
- * 해당 파일은 2025년 12월 16일에 마지막으로 수정됨
+ * 해당 파일은 2026년 1월 9일에 마지막으로 수정됨
  */
 // @Controller
 // @RequestMapping("/member")
@@ -204,7 +207,8 @@ public final class MemberControllerReadable {
     public String deleteProc(
             @Valid @ModelAttribute("data") MemberDeleteDTO dto,
             BindingResult bindingResult,
-            Authentication authentication
+            Authentication authentication,
+            HttpServletRequest request
     ) {
         if (bindingResult.hasErrors()) return validationFailView("delete", bindingResult);
 
@@ -213,6 +217,12 @@ public final class MemberControllerReadable {
             if (authentication.getAuthorities().toString().contains("ROLE_BANNED")) return "redirect:/";
 
             memberService.setDelete(authentication, dto);
+
+            // 소프트 삭제 후 현재 세션/인증을 정리
+            SecurityContextHolder.clearContext();
+            HttpSession session = request.getSession(false);
+            if (session != null) session.invalidate();
+
             return "redirect:/";
         } catch (AccessDeniedException e) {
             return "redirect:/";

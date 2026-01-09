@@ -23,8 +23,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Member member = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을수 없습니다."));
+        Member member = memberRepository.findByUsernameAndDeletedFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("탈퇴했거나 존재하지 않는 계정입니다."));
+
+        // 혹시라도 데이터가 꼬여 deleted=true가 들어왔다면 2중 방어
+        if (member.isDeleted())
+            throw new UsernameNotFoundException("탈퇴했거나 존재하지 않는 계정입니다.");
 
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + member.getRole().name()));

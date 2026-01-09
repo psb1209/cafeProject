@@ -20,7 +20,7 @@ import java.util.Optional;
  * - 실제 서비스 빈이 아님 (의도적으로 @Service 없음)
  * - 로그 제거 버전: "로직만" 보기 위한 참고용 파일
  * 실제 동작은 MemberService가 담당
- * 해당 파일은 2025년 12월 16일에 마지막으로 수정됨
+ * 해당 파일은 2026년 1월 9일에 마지막으로 수정됨
  */
 // @Service
 // @RequiredArgsConstructor
@@ -54,19 +54,38 @@ public final class MemberServiceReadable {
 
     /** 전체 회원 목록 조회 (페이징 포함) */
     public Page<Member> list(Pageable pageable) {
-        return memberRepository.findAll(pageable);
+        return memberRepository.findAllByDeletedFalse(pageable);
     }
 
     /** 회원 상세 (id 기준) - 없으면 EntityNotFoundException */
     public Member view(int id) throws EntityNotFoundException {
-        return memberRepository.findById(id)
+        return memberRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 id=" + id));
     }
 
+
+    /** 회원 상세 (username 기준) - 없으면 EntityNotFoundException */
+    public Member viewByUsername(String username) throws EntityNotFoundException {
+        if (username == null || username.isBlank())
+            throw new IllegalArgumentException("username is null");
+
+        return memberRepository.findByUsernameAndDeletedFalse(username)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 username=" + username));
+    }
+
+
     /** Optional 버전 상세 조회 */
     public Optional<Member> viewOptional(int id) {
-        return memberRepository.findById(id);
+        return memberRepository.findByIdAndDeletedFalse(id);
     }
+
+
+    /** Optional 버전 상세 조회 (username 기준) */
+    public Optional<Member> viewOptional(String username) {
+        if (username == null || username.isBlank()) return Optional.empty();
+        return memberRepository.findByUsernameAndDeletedFalse(username);
+    }
+
 
     /**
      * 현재 로그인한 사용자의 Member 엔티티 조회.
@@ -78,8 +97,7 @@ public final class MemberServiceReadable {
             throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");
         }
         String username = authentication.getName();
-        return memberRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 username=" + username));
+        return viewByUsername(username);
     }
 
     /** 회원 등록 */
@@ -106,7 +124,8 @@ public final class MemberServiceReadable {
     public void setDelete(Authentication authentication, MemberDeleteDTO dto) {
         Member entity = viewCurrentMember(authentication);
         beforeDelete(entity, dto);
-        memberRepository.delete(entity);
+        entity.softDelete(dto.getReason());
+        memberRepository.save(entity);
         afterDelete(entity, dto);
     }
 

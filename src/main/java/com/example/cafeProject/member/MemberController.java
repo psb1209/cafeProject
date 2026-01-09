@@ -4,6 +4,8 @@ import com.example.cafeProject.validation.ManagementOnly;
 import com.example.cafeProject.validation.ValidationGroups;
 import com.example.exception.*;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -308,7 +311,8 @@ public class MemberController {
     public String deleteProc(
             @Valid @ModelAttribute("data") MemberDeleteDTO dto,
             BindingResult bindingResult,
-            Authentication authentication
+            Authentication authentication,
+            HttpServletRequest request
     ) {
         // 검증 에러가 터지면 logValidationErrors(공통 검증 실패 로그 + 실패시 링크)를 반환
         if (bindingResult.hasErrors()) return logValidationErrors("deleteProc", "delete", bindingResult, safeName(authentication));
@@ -322,6 +326,12 @@ public class MemberController {
                 return "redirect:/";
             }
             memberService.setDelete(authentication, dto);
+
+            // 소프트 삭제 후 현재 세션/인증을 정리
+            SecurityContextHolder.clearContext();
+            HttpSession session = request.getSession(false);
+            if (session != null) session.invalidate();
+
             return "redirect:/";
         } catch (AccessDeniedException e) { // 현재 로그인 정보를 확인할 수 없음
             log.warn("[deleteProc] 현재 로그인 정보를 확인할 수 없음. principal={}", safeName(authentication), e);

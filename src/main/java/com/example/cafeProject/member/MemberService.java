@@ -53,7 +53,7 @@ public class MemberService {
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 pageable.getSort());
-        Page<Member> page = memberRepository.findAll(pageable);
+        Page<Member> page = memberRepository.findAllByDeletedFalse(pageable);
         log.debug("[{}] 목록 조회 결과, totalElements={}, totalPages={}, currentElements={}",
                 memberServiceClass.getSimpleName(),
                 page.getTotalElements(),
@@ -68,7 +68,7 @@ public class MemberService {
      */
     public Member view(int id) throws EntityNotFoundException {
         log.debug("[{}] Entity 조회 시도, id={}", memberServiceClass.getSimpleName(), id);
-        Member entity = memberRepository.findById(id)
+        Member entity = memberRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 id=" + id));
         log.debug("[{}] Entity 조회 성공, id={}", memberServiceClass.getSimpleName(), id);
         return entity;
@@ -83,7 +83,7 @@ public class MemberService {
         if (username == null || username.isBlank())
             throw new IllegalArgumentException("username is null");
         log.debug("[{}] Username 조회 시도, name={}", memberServiceClass.getSimpleName(), username);
-        Member entity = memberRepository.findByUsername(username)
+        Member entity = memberRepository.findByUsernameAndDeletedFalse(username)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 username=" + username));
         log.debug("[{}] Username 조회 성공, name={}", memberServiceClass.getSimpleName(), entity.getUsername());
         return entity;
@@ -96,14 +96,14 @@ public class MemberService {
      */
     public Optional<Member> viewOptional(int id) {
         log.debug("[{}] Optional 조회 시도, id={}", memberServiceClass.getSimpleName(), id);
-        Optional<Member> result = memberRepository.findById(id);
+        Optional<Member> result = memberRepository.findByIdAndDeletedFalse(id);
         log.debug("[{}] Optional 조회 결과, id={}, present={}",
                 memberServiceClass.getSimpleName(), id, result.isPresent());
         return result;
     }
     public Optional<Member> viewOptional(String username) {
         log.debug("[{}] Optional 조회 시도, username={}", memberServiceClass.getSimpleName(), username);
-        Optional<Member> result = memberRepository.findByUsername(username);
+        Optional<Member> result = memberRepository.findByUsernameAndDeletedFalse(username);
         log.debug("[{}] Optional 조회 결과, username={}, present={}",
                 memberServiceClass.getSimpleName(), username, result.isPresent());
         return result;
@@ -194,9 +194,10 @@ public class MemberService {
      */
     @Transactional
     public void setDelete(Authentication authentication, MemberDeleteDTO dto) {
-        Member entity = viewCurrentMember();
+        Member entity = viewCurrentMember(authentication);
         beforeDelete(entity, dto);
-        memberRepository.delete(entity);
+        entity.softDelete(dto.getReason());
+        memberRepository.save(entity);
         afterDelete(entity, dto);
     }
 
@@ -233,12 +234,12 @@ public class MemberService {
 
         // 금지된 username 체크
         checkForbiddenUsername(dto.getUsername());
-        // username 중복 체크
+        // username 중복 체크 (소프트 삭제 사용자 포함)
         if (memberRepository.existsByUsername(dto.getUsername())) {
             log.warn("회원가입 실패(아이디 중복): username={}", dto.getUsername());
             throw new DuplicateValueException("이미 사용 중인 id", "username", dto.getUsername());
         }
-        // email 중복 체크
+        // email 중복 체크 (소프트 삭제 사용자 포함)
         if (memberRepository.existsByEmail(dto.getEmail())) {
             log.warn("회원가입 실패(이메일 중복): email={}", dto.getEmail());
             throw new DuplicateValueException("이미 사용 중인 email", "email", dto.getEmail());
@@ -265,13 +266,13 @@ public class MemberService {
     }
     private void beforeDelete(Member entity, MemberDeleteDTO dto) {
         dto.normalize();
-        log.warn("회원 삭제 시도: id={}, username={}",
+        log.warn("회원 탈퇴 시도: id={}, username={}",
                 entity.getId(), entity.getUsername());
         // 삭제 전 비밀번호 체크
         checkPassword(dto.getPassword(), entity);
     }
     private void afterDelete(Member entity, MemberDeleteDTO dto) {
-        log.warn("회원 삭제 완료: id={}, username={}",
+        log.warn("회원 탈퇴 완료: id={}, username={}",
                 entity.getId(), entity.getUsername());
     }
 

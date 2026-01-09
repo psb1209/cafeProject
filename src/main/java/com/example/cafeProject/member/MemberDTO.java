@@ -69,6 +69,12 @@ public class MemberDTO { //일반적인 상황에서 Member 관련 처리를 수
 
     private Grade grade;
 
+    private boolean deleted;
+
+    private Timestamp deletedDate;
+
+    private ReasonType deleteReason;
+
     private int postCount;
 
     private int replyCount;
@@ -81,12 +87,18 @@ public class MemberDTO { //일반적인 상황에서 Member 관련 처리를 수
 
     @Override
     public String toString() {
+        String deletedDateStr = (deletedDate == null)
+                ? "null"
+                : BaseUtility.formatTimestamp(deletedDate, "yyyy-MM-dd");
         return "[MemberDTO]: {[id: " + id +
                 "][username: " + username +
                 "][email: " + email +
                 "][role: " + role +
                 "][grade: " + grade +
-                "][createDate: " + BaseUtility.formatTimestamp(createDate, "yyyy-MM-DD") +
+                "][createDate: " + BaseUtility.formatTimestamp(createDate, "yyyy-MM-dd") +
+                "][deleted: " + deleted +
+                "][deletedDate: " + deletedDateStr +
+                "][deleteReason: " + deleteReason +
                 "][postCnt: " + postCount +
                 "][replyCnt: " + replyCount + "]}";
     }

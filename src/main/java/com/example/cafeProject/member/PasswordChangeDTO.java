@@ -1,6 +1,5 @@
 package com.example.cafeProject.member;
 
-import com.example.cafeProject.validation.ValidationGroups;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
