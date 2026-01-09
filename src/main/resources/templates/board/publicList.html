@@ -10,73 +10,79 @@
 <span layout:fragment="pageSubTitle">first page</span>
 
 <div layout:fragment="content">
-    <!-- 본문 내용 시작 -->
-    <form name="form" method="get" th:action="@{/cafe/{cafeCode}/board/list(cafeCode=${cafeCode})}" class="mb-3">
-        <div class="input-group mb-3">
-            <input class="form-control"
-                   type="search"
+
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+
+    <!-- 검색 -->
+    <div class="cafe-board-search">
+        <form class="cafe-search-form"
+              method="get"
+              th:action="@{/cafe/{cafeCode}/board/list(cafeCode=${cafeCode})}">
+            <input type="search"
                    name="keyword"
                    placeholder="게시판 검색"
                    th:value="${keyword}">
-            <button class="btn btn-primary" type="submit">검색</button>
-            <a class="btn btn-outline-secondary" th:href="@{/cafe/{cafeCode}/board/list(cafeCode=${cafeCode})}">초기화</a>
+            <button type="submit">🔍</button>
+        </form>
+    </div>
+
+    <!-- 게시판 카드 영역 -->
+    <div class="cafe-board-wrap">
+
+        <!-- 카드형 게시판 (CSS 미정 영역 → 구조 유지) -->
+        <div class="board-grid">
+            <a class="board-tile"
+               th:each="data : ${list.content}"
+               th:href="@{/cafe/{cafeCode}/board/{code}(cafeCode=${cafeCode}, code=${data.code})}">
+
+                <div class="board-thumb" style="max-height:150px;">
+                    <img th:src="${#strings.isEmpty(data.imgName)}
+                                 ? @{/assets/img/post-sample-image.jpg}
+                                 : @{|${imageUrlPrefix}${data.imgName}|}"
+                         loading="lazy">
+                </div>
+
+                <div class="board-title" th:text="${data.name}"></div>
+            </a>
         </div>
-    </form>
 
-    <div class="board-grid">
-        <a class="board-tile"
-           th:each="data : ${list.content}"
-           th:href="@{/cafe/{cafeCode}/board/{code}(cafeCode=${cafeCode}, code=${data.code})}">
+        <!-- 비었을 때 -->
+        <div th:if="${#lists.isEmpty(list.content)}"
+             class="text-center mt-3" style="padding: 40px;">
+            <h2 th:text="${#strings.isEmpty(keyword)
+                          ? '확인 가능한 게시판이 없습니다.'
+                          : '검색 결과가 없습니다.'}">
+            </h2>
+        </div>
 
-            <div class="board-thumb" style="max-height:150px;">
-                <img th:src="${#strings.isEmpty(data.imgName)}
-                             ? @{/assets/img/post-sample-image.jpg}
-                             : @{|${imageUrlPrefix}${data.imgName}|}"
-                     alt=""
-                     loading="lazy">
-            </div>
+        <!-- 페이지네이션 -->
+        <div class="cafe-pagination" th:if="${list.totalPages > 0}">
+            <a class="page-btn"
+               th:classappend="${list.first} ? 'disabled'"
+               th:href="${list.first} ? '#'
+                        : @{/cafe/{cafeCode}/board/list(cafeCode=${cafeCode}, page=${list.number-1}, keyword=${keyword})}">
+                이전
+            </a>
 
-            <div class="board-title" th:text="${data.name}">게시판명</div>
-        </a>
+            <a class="page-btn"
+               th:each="page : ${#numbers.sequence(0, list.totalPages-1)}"
+               th:if="${page >= (list.number/5)*5 and page <= (list.number/5)*5 + 4}"
+               th:classappend="${page == list.number} ? 'active'"
+               th:text="${page + 1}"
+               th:href="@{/cafe/{cafeCode}/board/list(cafeCode=${cafeCode}, page=${page}, keyword=${keyword})}">
+            </a>
+
+            <a class="page-btn"
+               th:classappend="${list.last} ? 'disabled'"
+               th:href="${list.last} ? '#'
+                        : @{/cafe/{cafeCode}/board/list(cafeCode=${cafeCode}, page=${list.number+1}, keyword=${keyword})}">
+                다음
+            </a>
+        </div>
+
     </div>
-
-    <!-- 비었을 때 메시지 -->
-    <div th:if="${#lists.isEmpty(list.content)}" class="alert alert-info text-center mt-3">
-        <h2 th:text="${#strings.isEmpty(keyword) ? '확인 가능한 게시판이 없습니다.' : '검색 결과가 없습니다.'}">
-            안내 메시지</h2>
-    </div>
-
-    <!-- 페이지네이션 -->
-    <div style="margin-top: 25px;" th:if="${list.totalPages > 0}"
-         th:with="kw=${#strings.isEmpty(keyword) ? '' : '&keyword=' + keyword}">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${list.first} ? 'disabled'">
-                <a class="page-link"
-                   th:href="${list.first} ? '#'
-                                          : @{/cafe/{cafeCode}/board/list(cafeCode=${cafeCode}, page=${list.number-1}, keyword=${keyword})}">
-                    Prev</a>
-            </li>
-
-            <li class="page-item"
-                th:each="page : ${#numbers.sequence(0, list.totalPages-1)}"
-                th:if="${page >= (list.number/5)*5 and page <= (list.number/5)*5 + 4}"
-                th:classappend="${page == list.number} ? 'active'">
-                <a class="page-link"
-                   th:text="${page + 1}"
-                   th:href="@{/cafe/{cafeCode}/board/list(cafeCode=${cafeCode}, page=${page}, keyword=${keyword})}">
-                </a>
-            </li>
-
-            <li class="page-item" th:classappend="${list.last} ? 'disabled'">
-                <a class="page-link"
-                   th:href="${list.last} ? '#'
-                                         : @{/cafe/{cafeCode}/board/list(cafeCode=${cafeCode}, page=${list.number+1}, keyword=${keyword})}">
-                    Next</a>
-            </li>
-        </ul>
-    </div>
-    <!-- 본문 내용 종료 -->
 </div>
+
 
 </body>
 </html>

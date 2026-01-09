@@ -27,12 +27,14 @@
 
                 <div class="cafe-article-meta">
                     <span th:text="${noticeBoard.member?.username ?: '-'}"></span>
-                    <span th:switch="${noticeBoard.member?.grade?.name() ?: 'UNKNOWN'}">
+                    <span th:switch="${(noticeBoard.member?.role?.name() == 'ADMIN' or noticeBoard.member?.role?.name() == 'MANAGER') ? 'STAFF' : (noticeBoard.member?.grade?.name() ?: 'UNKNOWN')}">
+                        <span th:case="'STAFF'">운영진👑</span>
                         <span th:case="'USER'">일반🥉</span>
                         <span th:case="'REGULAR'">성실🥈</span>
                         <span th:case="'BEST'">우수🥇</span>
                         <span th:case="'SPECIAL'">최우수🏆</span>
-                        <span th:case="'UNKNOWN'">알 수 없음</span></span>
+                        <span th:case="'UNKNOWN'">알 수 없음</span>
+                    </span>
                     <span th:text="${#dates.format(noticeBoard.createDate,'yyyy.MM.dd')}"></span>
                     <span>조회 <b th:text="${viewCnt}"></b></span>
                     <span>좋아요 <b th:text="${likeCnt}"></b></span>
@@ -130,14 +132,15 @@
                         <div class="comment-header">
                             <span>
                                 <span class="comment-writer" th:text="${comment.member?.username ?: '-'}"></span>
-                                    <span th:switch="${comment.member?.grade?.name() ?: 'UNKNOWN'}">
+                                    <span th:switch="${(noticeBoard.member?.role?.name() == 'ADMIN' or noticeBoard.member?.role?.name() == 'MANAGER') ? 'STAFF' : (noticeBoard.member?.grade?.name() ?: 'UNKNOWN')}">
+                                        <span th:case="'STAFF'">운영진👑</span>
                                         <span th:case="'USER'">일반🥉</span>
                                         <span th:case="'REGULAR'">성실🥈</span>
                                         <span th:case="'BEST'">우수🥇</span>
                                         <span th:case="'SPECIAL'">최우수🏆</span>
                                         <span th:case="'UNKNOWN'">알 수 없음</span>
                                     </span>
-                            </span>
+                                </span>
                             <div class="comment-actions">
                                 <form>
                                     <button type="button" class="comment-link-btn" th:onclick="|toggleReplyForm(${comment.id})|">답글</button>

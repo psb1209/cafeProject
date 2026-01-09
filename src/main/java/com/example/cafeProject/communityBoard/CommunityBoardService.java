@@ -1,10 +1,7 @@
 package com.example.cafeProject.communityBoard;
 
 
-import com.example.cafeProject.member.Grade;
-import com.example.cafeProject.member.Member;
-import com.example.cafeProject.member.MemberRepository;
-import com.example.cafeProject.member.MemberService;
+import com.example.cafeProject.member.*;
 
 import com.example.cafeProject.operationBoard.OperationBoard;
 import lombok.RequiredArgsConstructor;
@@ -107,6 +104,11 @@ public class CommunityBoardService {
     //회원등업
     @Transactional
     public void updateGrade(Member member) {
+
+        //관리자는 회원등급에 영향을 받지 않도록.
+        if (member.getRole() == RoleType.ADMIN || member.getRole() == RoleType.MANAGER) {
+            return;
+        }
 
         member.increasePostCount(); //게시글 작성 +1
         int posts = member.getPostCount();

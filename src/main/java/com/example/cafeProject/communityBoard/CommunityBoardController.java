@@ -152,7 +152,7 @@ public class CommunityBoardController {
             }
 
             int viewCnt = board_viewService.board_viewCnt(
-                    "operation",
+                    "community",
                     communityBoard.getId()
             );
             model.addAttribute("viewCnt", viewCnt);
