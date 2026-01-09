@@ -66,6 +66,47 @@
         </div>
     </div>
 
+    <!-- Flash Toast: 권한 변경 알림 -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+        <div id="flashToast" class="toast align-items-center border-0" role="alert"
+             aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">완료!</div>
+                <button type="button" class="btn-close me-2 m-auto"
+                        data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+            function showFlashToast(message, isError = false) {
+                const toastEl = document.getElementById("flashToast");
+                if (!toastEl) return;
+
+                const body = toastEl.querySelector(".toast-body");
+                if (body) body.textContent = message;
+
+                toastEl.classList.toggle("text-bg-danger", isError);
+                toastEl.classList.toggle("text-bg-success", !isError);
+
+                const closeBtn = toastEl.querySelector(".btn-close");
+                if (closeBtn) closeBtn.classList.toggle("btn-close-white", true);
+
+                const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 1800 });
+                toast.show();
+            }
+
+            // roleProc에서 redirectAttributes.addFlashAttribute("msg", "...")로 보낸 메시지
+            const flashMsg = /*[[${msg}]]*/ null;
+
+            // bootstrap 로드까지 안전하게 기다렸다가 실행
+            window.addEventListener("load", () => {
+                if (flashMsg) showFlashToast(flashMsg, false);
+            });
+        /*]]>*/
+    </script>
+
 </div>
 
 </body>

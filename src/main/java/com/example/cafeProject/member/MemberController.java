@@ -22,6 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -260,6 +261,7 @@ public class MemberController {
             @Validated(ValidationGroups.OnUpdate.class) @ModelAttribute("data") MemberDTO dto,
             BindingResult bindingResult,
             Authentication authentication,
+            RedirectAttributes redirectAttributes,
             Model model
     ) {
         // 검증 에러가 터지면 logValidationErrors(공통 검증 실패 로그 + 실패시 링크)를 반환
@@ -268,6 +270,7 @@ public class MemberController {
         try {
             Member admin = memberService.viewCurrentMember(authentication);
             memberService.updateRoleType(dto, admin);
+            redirectAttributes.addFlashAttribute("msg", "권한 변경됨");
             return "redirect:/" + basePath + "/view/" + dto.getId();
         } catch (AccessDeniedException e) { // 현재 로그인 정보를 확인할 수 없음
             log.warn("[roleProc] 현재 로그인 정보를 확인할 수 없음. principal={}", safeName(authentication), e);
