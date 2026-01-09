@@ -18,6 +18,7 @@
 
 <div layout:fragment="content">
     <link th:href="@{/css/board.css}" rel="stylesheet"/>
+    <link th:href="@{/css/theme2.css}" rel="stylesheet"/>
 
     <div class="page-container">
         <div class="cafe-board-wrap">
@@ -93,7 +94,7 @@
                     th:onclick="|location.href='@{|/cafe/${cafe?.code}/post/view/${post.id}?b=${board?.code}|}'|"
                     style="cursor:pointer;">
                     <td class="td_underline text-center" th:text="${list.number * list.size + loop.index + 1}"></td>
-                    <td>
+                    <td class="td_underline" style="text-align: left;">
                         <span th:text="${post.title ?: '(제목 없음)'}"></span>
                         <form th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
                               th:action="@{/cafe/{cafeCode}/post/toggleNotice/{id}(cafeCode=${cafe?.code}, id=${post.id})}"

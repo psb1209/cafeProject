@@ -159,7 +159,7 @@ public class InformationBoardCommentController {
             UserDetails userDetails = (UserDetails)authentication.getPrincipal();
             // 대댓글 등록
             informationBoardCommentService.replySetInsert(informationBoardCommentDTO, userDetails);
-            return "redirect:/information/view/" + informationBoardCommentDTO.getInformationBoardId();
+            return "redirect:/informationBoard/view/" + informationBoardCommentDTO.getInformationBoardId();
         } catch (IllegalArgumentException e) {
             model.addAttribute("errCode", "221213321");
             model.addAttribute("errMsg", e.getMessage());

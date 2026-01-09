@@ -84,7 +84,6 @@
             </div>
             <!--=================================== 변경사항 끝 + <script> ===================================-->
 
-
             <!-- 댓글 -->
             <div class="cafe-comment-section">
 
@@ -132,7 +131,7 @@
                         <div class="comment-header">
                             <span>
                                 <span class="comment-writer" th:text="${comment.member?.username ?: '-'}"></span>
-                                    <span th:switch="${(noticeBoard.member?.role?.name() == 'ADMIN' or noticeBoard.member?.role?.name() == 'MANAGER') ? 'STAFF' : (noticeBoard.member?.grade?.name() ?: 'UNKNOWN')}">
+                                    <span th:switch="${(comment.member?.role?.name() == 'ADMIN' or comment.member?.role?.name() == 'MANAGER') ? 'STAFF' : (comment.member?.grade?.name() ?: 'UNKNOWN')}">
                                         <span th:case="'STAFF'">운영진👑</span>
                                         <span th:case="'USER'">일반🥉</span>
                                         <span th:case="'REGULAR'">성실🥈</span>

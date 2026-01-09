@@ -49,10 +49,10 @@
         <!-- 비었을 때 -->
         <div th:if="${#lists.isEmpty(list.content)}"
              class="text-center mt-3" style="padding: 40px;">
-            <h2 th:text="${#strings.isEmpty(keyword)
+            <div th:text="${#strings.isEmpty(keyword)
                           ? '확인 가능한 게시판이 없습니다.'
-                          : '검색 결과가 없습니다.'}">
-            </h2>
+                          : '검색 결과가 없습니다.'}" class="text-center">
+            </div>
         </div>
 
         <!-- 페이지네이션 -->

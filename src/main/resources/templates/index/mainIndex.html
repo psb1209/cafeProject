@@ -128,7 +128,9 @@
                     </div>
                     <button class="btn-logout" onclick="logout(); return false;">로그아웃</button>
                 </div>
-                <div class="side-card" sec:authorize="isAuthenticated()" style="margin-top: 20px">
+                <div class="side-card"
+                     sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')"
+                     style="margin-top: 20px">
                     <button class="create-btn" onclick="location.href='/cafe/create'">카페 만들기</button>
                 </div>
 
