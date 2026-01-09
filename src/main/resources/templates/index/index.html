@@ -19,6 +19,12 @@
     <div class="page-container">
 
         <!-- ============================== 공지사항 ============================== -->
+
+        <div th:if="${(noticeBoardList == null or noticeBoardList.isEmpty()) and (subNoticeBoardNoticeList == null or subNoticeBoardNoticeList.isEmpty())}"
+             class="text-center" style="padding:40px; color:#888;">
+            등록된 게시글이 없습니다.
+        </div>
+
         <div class="cafe-board-wrap">
             <div class="cafe-board-header">
                 <div class="cafe-board-title" onclick="location.href='/noticeBoard/list'" style="cursor:pointer;">
@@ -29,7 +35,8 @@
                 </a>
             </div>
 
-            <table class="cafe-board-table">
+            <table class="cafe-board-table"
+                   th:if="${(subNoticeBoardNoticeList != null and !subNoticeBoardNoticeList.isEmpty()) or (noticeBoardList != null and !noticeBoardList.isEmpty())}">
                 <thead>
                 <tr>
                     <th class="col-no">순번</th>
@@ -71,7 +78,7 @@
                 </tbody>
 
                 <!-- 일반글 -->
-                <tbody th:if="${!noticeBoardList.isEmpty()}">
+                <tbody>
                 <tr th:each="board, loop : ${noticeBoardList}"
                     class="text-center"
                     th:onclick="|location.href='@{|/noticeBoard/view/${board.id}|}'|">
@@ -97,16 +104,16 @@
                     </td>
                 </tr>
                 </tbody>
-
-                <tbody th:if="${noticeBoardList.isEmpty()}">
-                <tr>
-                    <td colspan="3" class="text-center">게시글이 없습니다.</td>
-                </tr>
-                </tbody>
             </table>
         </div>
 
         <!-- ============================== 정보게시판 ============================== -->
+
+        <div th:if="${(informationBoardList == null or informationBoardList.isEmpty()) and (subInformationBoardNoticeList == null or subInformationBoardNoticeList.isEmpty())}"
+             class="text-center" style="padding:40px; color:#888;">
+            등록된 게시글이 없습니다.
+        </div>
+
         <div class="cafe-board-wrap">
             <div class="cafe-board-header">
                 <div class="cafe-board-title" onclick="location.href='/informationBoard/list'" style="cursor:pointer;">
@@ -117,7 +124,8 @@
                 </a>
             </div>
 
-            <table class="cafe-board-table">
+            <table class="cafe-board-table"
+                   th:if="${(subInformationBoardNoticeList != null and !subInformationBoardNoticeList.isEmpty()) or (informationBoardList != null and !informationBoardList.isEmpty())}">
                 <thead>
                 <tr>
                     <th class="col-no">순번</th>
@@ -156,7 +164,7 @@
                 </tbody>
 
                 <!-- 일반글 -->
-                <tbody th:if="${!informationBoardList.isEmpty()}">
+                <tbody>
                 <tr th:each="board, loop : ${informationBoardList}"
                     class="text-center"
                     th:onclick="|location.href='@{|/informationBoard/view/${board.id}|}'|">
@@ -181,16 +189,16 @@
                     </td>
                 </tr>
                 </tbody>
-
-                <tbody th:if="${informationBoardList.isEmpty()}">
-                <tr>
-                    <td colspan="3" class="text-center">게시글이 없습니다.</td>
-                </tr>
-                </tbody>
             </table>
         </div>
 
         <!-- ============================== 자유게시판 ============================== -->
+
+        <div th:if="${(communityBoardList == null or communityBoardList.isEmpty()) and (subCommunityBoardNoticeList == null or subCommunityBoardNoticeList.isEmpty())}"
+             class="text-center" style="padding:40px; color:#888;">
+            등록된 게시글이 없습니다.
+        </div>
+
         <div class="cafe-board-wrap">
             <div class="cafe-board-header">
                 <div class="cafe-board-title" onclick="location.href='/communityBoard/list'" style="cursor:pointer;">
@@ -201,7 +209,8 @@
                 </a>
             </div>
 
-            <table class="cafe-board-table">
+            <table class="cafe-board-table"
+                   th:if="${(subCommunityBoardNoticeList != null and !subCommunityBoardNoticeList.isEmpty()) or (communityBoardList != null and !communityBoardList.isEmpty())}">
                 <thead>
                 <tr>
                     <th class="col-no">순번</th>
@@ -240,7 +249,7 @@
                 </tbody>
 
                 <!-- 일반글 -->
-                <tbody th:if="${!communityBoardList.isEmpty()}">
+                <tbody>
                 <tr th:each="board, loop : ${communityBoardList}"
                     class="text-center"
                     th:onclick="|location.href='@{|/communityBoard/view/${board.id}|}'|">
@@ -263,12 +272,6 @@
                         or board.member?.role?.name() == 'MANAGER'}"
                         th:text="${#strings.abbreviate(board.member?.username, 8)}">
                     </td>
-                </tr>
-                </tbody>
-
-                <tbody th:if="${communityBoardList.isEmpty()}">
-                <tr>
-                    <td colspan="3" class="text-center">게시글이 없습니다.</td>
                 </tr>
                 </tbody>
             </table>

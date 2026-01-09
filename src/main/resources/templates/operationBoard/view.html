@@ -125,7 +125,7 @@
                         <div class="comment-header">
                             <span>
                                 <span class="comment-writer" th:text="${comment.member?.username ?: '-'}"></span>
-                                    <span th:switch="${(operationBoard.member?.role?.name() == 'ADMIN' or operationBoard.member?.role?.name() == 'MANAGER') ? 'STAFF' : (operationBoard.member?.grade?.name() ?: 'UNKNOWN')}">
+                                    <span th:switch="${(comment.member?.role?.name() == 'ADMIN' or comment.member?.role?.name() == 'MANAGER') ? 'STAFF' : (comment.member?.grade?.name() ?: 'UNKNOWN')}">
                                         <span th:case="'STAFF'">운영진👑</span>
                                         <span th:case="'USER'">일반🥉</span>
                                         <span th:case="'REGULAR'">성실🥈</span>

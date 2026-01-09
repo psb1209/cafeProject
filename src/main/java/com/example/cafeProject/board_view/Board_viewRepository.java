@@ -1,6 +1,9 @@
 package com.example.cafeProject.board_view;
 
+import com.example.cafeProject.operationBoard.OperationBoard;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -54,4 +57,5 @@ public interface Board_viewRepository extends JpaRepository<Board_view, Integer>
         WHERE l.postId = :id
     """)
     int countBoard_viewWithPostId(@Param("id") int id);
+
 }

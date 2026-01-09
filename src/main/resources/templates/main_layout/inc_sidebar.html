@@ -5,11 +5,17 @@
 <nav class="sb-sidenav-menu" th:fragment="inc_sidebar">
     <div class="nav">
 
+        <!-- ===================== 메인 ===================== -->
+        <div class="sidenav-section-title">메인</div>
+
         <a class="nav-link"
            th:classappend="${activeMenu == 'main'} ? ' active'"
            href="/">
             <span class="nav-emoji">🏠</span>카페 홈
         </a>
+
+        <!-- ===================== 내 활동 ===================== -->
+        <div class="sidenav-section-title">내 활동</div>
 
         <a class="nav-link"
            th:classappend="${activeMenu == 'subscribe'} ? ' active'"
@@ -23,13 +29,14 @@
             <span class="nav-emoji">🔔</span>내 소식
         </a>
 
+        <!-- ===================== 카페 탐색 ===================== -->
+        <div class="sidenav-section-title">카페 탐색</div>
+
         <a class="nav-link"
            th:classappend="${activeMenu == 'cafeList'} ? ' active'"
            href="/cafe/cafeList">
             <span class="nav-emoji">◎</span>모든 카페
         </a>
-
-        <div class="sidenav-section-title">카페 탐색</div>
 
         <a class="nav-link"
            th:classappend="${activeMenu == 'THEMED'} ? ' active'"
@@ -43,6 +50,9 @@
             <span class="nav-emoji">📍</span>지역별 카페
         </a>
 
+        <!-- ===================== 추천 ===================== -->
+        <div class="sidenav-section-title">추천</div>
+
         <a class="nav-link"
            th:classappend="${activeMenu == 'TOP'} ? ' active'"
            href="/explore_cafes/top_cafes">
@@ -55,13 +65,8 @@
             <span class="nav-emoji">📈</span>카페 랭킹
         </a>
 
-<!--        <a class="nav-link"
-           th:classappend="${activeMenu == 'main'} ? ' active'"
-           href="/cafe/cafeList">
-            <span class="nav-emoji">🏠</span>카페 홈
-        </a>-->
-
     </div>
 </nav>
+
 </body>
 </html>
