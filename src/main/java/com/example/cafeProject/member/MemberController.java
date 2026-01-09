@@ -66,8 +66,19 @@ public class MemberController {
             Authentication authentication
     ) {
         log.debug("관리자용 view 호출됨. 호출자 : {}", safeName(authentication));
-        model.addAttribute("sidebarKey", true);
-        return loadPathOrRedirect(id, model, basePath+"/view");
+        try {
+            Member entity = memberService.view(id);
+            model.addAttribute("data", entity);
+            model.addAttribute("sidebarKey", true);
+            model.addAttribute("canRoleUpdate", memberService.roleRank(memberService.viewCurrentMember().getRole()) > memberService.roleRank(entity.getRole()));
+            return "member/view";
+        } catch (AccessDeniedException e) {
+            log.warn("현재 로그인 정보를 확인할 수 없음. principal={}", safeName(authentication));
+            return "redirect:/";
+        } catch (EntityNotFoundException e) {
+            log.warn("대상이 되는 Entity를 찾을 수 없음. id={}", id, e);
+            return "redirect:/" + basePath + "/list";
+        }
     }
 
     @PreAuthorize("isAnonymous()")
@@ -382,21 +393,6 @@ public class MemberController {
     }
 
     /**
-     * id로 Member를 조회해서 존재하면 model에 "data"로 담고 지정된 뷰로 이동.
-     * 대상이 없으면 경고 로그를 남기고 메인으로 redirect.
-     */
-    private String loadPathOrRedirect(int id, Model model, String path) {
-        try {
-            Member entity = memberService.view(id);
-            model.addAttribute("data", entity);
-            return path;
-        } catch (EntityNotFoundException e) {
-            log.warn("대상이 되는 Entity를 찾을 수 없음. id={}", id, e);
-            return "redirect:/";
-        }
-    }
-
-    /**
      * 현재 로그인한 사용자의 Member를 조회해서 model에 "data"로 담고 지정된 뷰로 이동.
      * 대상이 없으면 경고 로그를 남기고 메인으로 redirect.
      */
@@ -409,7 +405,7 @@ public class MemberController {
             log.warn("[loadPathOrRedirect] 현재 로그인 정보를 확인할 수 없음. principal={}", safeName(authentication));
             return "redirect:/";
         } catch (EntityNotFoundException e) { // 이미 삭제되었거나 존재하지 않는 계정 오류
-            log.warn("대상이 되는 Entity를 찾을 수 없음. principal={}", safeName(authentication), e);
+            log.warn("[loadPathOrRedirect] 대상이 되는 Entity를 찾을 수 없음. principal={}", safeName(authentication), e);
             return "redirect:/";
         }
     }

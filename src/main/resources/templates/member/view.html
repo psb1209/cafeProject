@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       layout:decorate="~{main_layout/layout}"
       th:with="showHeader=false,
@@ -44,7 +45,12 @@
                 <a th:href="@{/}"
                    class="cafe-action-btn">메인 페이지</a>
 
-                <a th:href="@{|/member/roleUpdate/${data.id}|}"
+                <a th:href="@{/member/list}"
+                   sec:authorize="hasAnyRole('MANAGER','ADMIN')"
+                   class="cafe-action-btn">회원 목록</a>
+
+                <a th:if="${canRoleUpdate == true}"
+                   th:href="@{|/member/roleUpdate/${data.id}|}"
                    sec:authorize="hasAnyRole('MANAGER','ADMIN')"
                    class="cafe-action-btn">권한 수정</a>
 

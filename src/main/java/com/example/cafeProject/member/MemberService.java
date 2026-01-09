@@ -360,6 +360,24 @@ public class MemberService {
         return new RoleType[]{ RoleType.GUEST };
     }
 
+    /** RoleType마다 점수를 부여해서 비교하기 쉽게 하는 메서드 */
+    public int roleRank(RoleType role) {
+        if (role == null) return Integer.MIN_VALUE;
+
+        switch (role) {
+            case GUEST:
+                return 0;
+            case USER:
+                return 10;
+            case MANAGER:
+                return 20;
+            case ADMIN:
+                return 30;
+            default:
+                return Integer.MIN_VALUE;
+        }
+    }
+
     /**
      * 사용자가 입력한 비밀번호가 DB에 저장된 비밀번호와 일치하는지 확인.
      * - 일치하지 않으면 WrongPasswordException 발생.
