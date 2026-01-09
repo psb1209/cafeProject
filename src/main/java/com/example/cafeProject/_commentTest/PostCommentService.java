@@ -4,7 +4,6 @@ import com.example.cafeProject._postTest.Post;
 import com.example.cafeProject._postTest.PostRepository;
 import com.example.cafeProject.member.Grade;
 import com.example.cafeProject.member.Member;
-import com.example.cafeProject.member.MemberRepository;
 import com.example.cafeProject.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -86,12 +85,9 @@ public class PostCommentService {
         // 로그인 회원
         Member member = memberService.viewCurrentMember();
 
-        // 정렬을 위한 level 밀기
-        postCommentRepository.updateRelevel(parent.getRef(), parent.getLevel());
-
         int ref = parent.getRef();
         int step = parent.getStep() + 1;
-        int level = parent.getLevel() + 1;
+        int level = postCommentRepository.getMaxLevelInRef(ref) + 1;
 
         Post post = null;
         Optional<Post> postOptional = postRepository.findById(paramDTO.getPostId());

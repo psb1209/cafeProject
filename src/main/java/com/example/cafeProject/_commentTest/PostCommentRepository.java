@@ -19,6 +19,10 @@ public interface PostCommentRepository extends JpaRepository<PostComment, Intege
     @Query("SELECT COALESCE(MAX(c.ref),0) FROM PostComment c")
     int getMaxRef();
 
+    // 현재 ref(댓글 묶음)에서 가장 큰 level (대댓글 등록순 정렬용)
+    @Query("SELECT COALESCE(MAX(c.level),0) FROM PostComment c WHERE c.ref = :ref")
+    int getMaxLevelInRef(@Param("ref") int ref);
+
     // level 순차 누적
     @Modifying
     @Query("UPDATE PostComment c SET c.level=c.level + 1 WHERE c.ref = :ref AND c.level > :level")
