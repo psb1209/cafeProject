@@ -5,6 +5,34 @@
 이 문서는 `Member` 도메인에서 제공하는 기능(회원가입/로그인/내정보/비밀번호 변경/탈퇴(소프트 삭제))과  
 관리자(ADMIN/MANAGER)의 기능(회원 목록/회원 상세/권한 변경/탈퇴 사유 통계)을 **프로젝트 현재 코드 기준으로** 정리한 README입니다.
 
+
+---
+
+## 목차
+
+- [빠른 요약](#빠른-요약)
+- [1) 역할(Role) 모델](#1-역할role-모델)
+- [2) 접근 제어(누가 어떤 화면을 볼 수 있나)](#2-접근-제어누가-어떤-화면을-볼-수-있나)
+- [3) 데이터 모델(핵심 필드)](#3-데이터-모델핵심-필드)
+- [4) 주요 기능 흐름(사용자 관점)](#4-주요-기능-흐름사용자-관점)
+    - [4.1 회원가입 (익명만)](#41-회원가입-익명만)
+    - [4.2 로그인](#42-로그인)
+    - [4.3 내 정보 보기 (로그인만)](#43-내-정보-보기-로그인만)
+    - [4.4 비밀번호 변경 (로그인만)](#44-비밀번호-변경-로그인만)
+    - [4.5 회원 탈퇴 (로그인만, 소프트 삭제)](#45-회원-탈퇴-로그인만-소프트-삭제)
+- [5) 관리자 기능](#5-관리자-기능)
+    - [5.1 회원 목록 / 상세](#51-회원-목록--상세)
+    - [5.2 권한 변경](#52-권한-변경)
+    - [5.3 탈퇴 사유 통계 + 탈퇴 회원 목록](#53-탈퇴-사유-통계--탈퇴-회원-목록)
+- [6) MemberService 편의 메서드(개발자 참고)](#6-memberservice-편의-메서드개발자-참고)
+    - [6.1 로그인/권한 체크](#61-로그인권한-체크)
+    - [6.2 "현재 로그인한 Member" 가져오기](#62-현재-로그인한-member-가져오기)
+    - [6.3 Member 조회/연관관계 연결](#63-member-조회연관관계-연결)
+    - [6.4 Member 목록](#64-member-목록)
+    - [6.5 트랜잭션](#65-트랜잭션)
+- [7) Validation / 예외 처리(개발자 참고)](#7-validation--예외-처리개발자-참고)
+- [8) 파일 배치(프로젝트 적용 체크리스트)](#8-파일-배치프로젝트-적용-체크리스트)
+
 ---
 
 ## 빠른 요약
@@ -201,7 +229,99 @@
 
 ---
 
-## 6) Validation / 예외 처리(개발자 참고)
+## 6) MemberService 편의 메서드(개발자 참고)
+
+다른 컨트롤러/서비스에서 "가져다 쓰기 좋은" 메서드만 모았습니다.
+
+### 6.1 로그인/권한 체크
+
+- `boolean isNotLogin(Authentication auth)`
+    - **로그인 안 했으면 true**
+    - 보통 컨트롤러에서 가장 먼저 씁니다.
+
+- `boolean isManagement(Authentication auth)`
+    - **ADMIN/MANAGER면 true**
+    - `auth`가 null이면 NPE가 날 수 있어요 → `isNotLogin()` 먼저 체크하고 호출하세요.
+
+- `RoleType[] getEffectiveRoles(Authentication auth)`
+    - “이 사용자가 접근 가능한 역할 범위”를 **RoleType 배열**로 돌려줍니다.
+    - 반환 예:
+        - 비로그인: `{GUEST}`
+        - USER: `{GUEST, USER}`
+        - MANAGER: `{GUEST, USER, MANAGER}`
+        - ADMIN: `{GUEST, USER, MANAGER, ADMIN}`
+        - **BANNED: 빈 배열**
+    - **빈 배열**은 `IN (:roles)` 쿼리에서 문제가 될 수 있으니 호출부에서 방어하세요.
+
+- `int roleRank(RoleType role)`
+    - 역할 비교용 점수: `GUEST(0) < USER(10) < MANAGER(20) < ADMIN(30)`
+
+**자주 쓰는 패턴**
+    if (memberService.isNotLogin(authentication)) {
+        return "redirect:/member/login";
+    }
+    if (memberService.isManagement(authentication)) {
+        // 관리 기능
+    }
+
+### 6.2 "현재 로그인한 Member" 가져오기
+
+- `Authentication getCurrentMember()`
+    - `SecurityContextHolder`에서 현재 Authentication 꺼내오기
+
+- `Member viewCurrentMember(Authentication auth)`
+- `Member viewCurrentMember(UserDetails user)`
+- `Member viewCurrentMember()`
+    - 현재 로그인 사용자를 DB에서 `Member`로 조회해서 반환합니다.
+    - 로그인 정보가 없으면 `AccessDeniedException`
+    - DB에 없으면 `EntityNotFoundException`
+
+**예시**
+    Member me = memberService.viewCurrentMember(authentication);
+
+### 6.3 Member 조회/연관관계 연결
+
+- `Member view(int id)`
+- `Member viewByUsername(String username)`
+    - 없으면 `EntityNotFoundException`
+
+- `Optional<Member> viewOptional(int id)`
+- `Optional<Member> viewOptional(String username)`
+    - 예외 대신 Optional로 받고 싶을 때
+
+- `Member getReference(Integer id)`
+    - 연관관계 세팅용 "가짜 엔티티"를 얻습니다.
+    - 실제 필드를 건드리는 순간 SELECT/지연로딩 예외가 날 수 있으니 트랜잭션 범위에서 사용 권장
+
+### 6.4 Member 목록
+
+- `Page<Member> list(Pageable pageable)`
+    - 회원 목록
+
+- `Page<Member> listDeleted(Pageable pageable, ReasonType reason)`
+    - 탈퇴 회원 목록
+    - `reason == null`이면 전체, 아니면 사유별 필터
+
+- `List<WithdrawalReasonStat> withdrawalReasonStats()`
+    - 탈퇴 사유별 집계(요약 박스/차트 등에 사용)
+
+**BANNED 방어 예시(권한 필터 쿼리용)**
+    RoleType[] roles = memberService.getEffectiveRoles(authentication);
+    if (roles.length == 0) {
+        return Page.empty(pageable); // 또는 접근 거부 처리
+    }
+    return boardRepository.findVisibleBoards(roles, pageable);
+
+### 6.5 트랜잭션
+
+- `Member setInsert(MemberDTO dto)` : 회원가입
+- `Member setUpdate(Authentication auth, PasswordChangeDTO dto)` : 비밀번호 변경
+- `void setDelete(Authentication auth, MemberDeleteDTO dto)` : 탈퇴(소프트 삭제)
+- `void updateRoleType(MemberDTO dto, Member admin)` : 권한 변경(정책 검증 포함)
+
+---
+
+## 7) Validation / 예외 처리(개발자 참고)
 
 ### Validation 그룹
 
@@ -219,7 +339,7 @@
 
 ---
 
-## 7) 파일 배치(프로젝트 적용 체크리스트)
+## 8) 파일 배치(프로젝트 적용 체크리스트)
 
 ### Java
 
