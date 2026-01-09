@@ -52,31 +52,6 @@ public class MemberController {
         return basePath + "/list";
     }
 
-
-    @ManagementOnly
-    @GetMapping("/withdrawalReason")
-    public String withdrawalReason(
-            @RequestParam(name = "reason", required = false) ReasonType reason,
-            @PageableDefault(size = 20, sort = "deletedDate", direction = Sort.Direction.DESC)
-            Pageable pageable,
-            Model model
-    ) {
-        List<WithdrawalReasonStat> stats = memberService.withdrawalReasonStats();
-        long totalDeleted = 0L;
-        for (WithdrawalReasonStat s : stats) totalDeleted += s.getCount();
-
-        Page<Member> deletedPage = memberService.listDeleted(pageable, reason);
-
-        model.addAttribute("activeMenu", "withdrawalReason");
-        model.addAttribute("stats", stats);
-        model.addAttribute("totalDeleted", totalDeleted);
-        model.addAttribute("deletedPage", deletedPage);
-        model.addAttribute("reasons", ReasonType.values());
-        model.addAttribute("selectedReason", reason);
-
-        return basePath + "/withdrawalReason";
-    }
-
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/view")
     public String view(
@@ -163,6 +138,34 @@ public class MemberController {
         log.debug("delete 호출됨. 호출자 : {}", safeName(authentication));
         model.addAttribute("data", new MemberDeleteDTO());  // 입력 폼이 터지지 않게 data란 이름으로 빈 값을 보냄
         return basePath + "/delete";
+    }
+
+    /**
+     * 탈퇴 사유 페이지
+     * - 유저가 탈퇴할 때 사유를 수집해 통계로 만들어 보여주는 페이지
+     */
+    @ManagementOnly
+    @GetMapping("/withdrawalReason")
+    public String withdrawalReason(
+            @RequestParam(name = "reason", required = false) ReasonType reason,
+            @PageableDefault(size = 20, sort = "deletedDate", direction = Sort.Direction.DESC)
+            Pageable pageable,
+            Model model
+    ) {
+        List<WithdrawalReasonStat> stats = memberService.withdrawalReasonStats();
+        long totalDeleted = 0L;
+        for (WithdrawalReasonStat s : stats) totalDeleted += s.getCount();
+
+        Page<Member> deletedPage = memberService.listDeleted(pageable, reason);
+
+        model.addAttribute("activeMenu", "withdrawalReason");
+        model.addAttribute("stats", stats);
+        model.addAttribute("totalDeleted", totalDeleted);
+        model.addAttribute("deletedPage", deletedPage);
+        model.addAttribute("reasons", ReasonType.values());
+        model.addAttribute("selectedReason", reason);
+
+        return basePath + "/withdrawalReason";
     }
 
     /**
