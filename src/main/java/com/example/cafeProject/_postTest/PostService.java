@@ -8,7 +8,6 @@ import com.example.cafeProject.member.Grade;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.member.RoleType;
-import com.example.cafeProject.operationBoard.OperationBoard;
 import com.example.exception.EntityNotFoundException;
 import com.example.exception.PermissionDeniedException;
 import org.modelmapper.ModelMapper;

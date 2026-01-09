@@ -45,6 +45,7 @@ public class MemberController {
         Page<Member> list = memberService.list(pageable);
         model.addAttribute("activeMenu", "list");
         model.addAttribute("list", list);
+        model.addAttribute("activeMenu", "member");
         return basePath + "/list";
     }
 

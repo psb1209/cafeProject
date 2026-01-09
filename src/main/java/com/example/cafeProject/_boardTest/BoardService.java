@@ -170,7 +170,7 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
             throw new IllegalArgumentException("읽기/쓰기 권한에 BANNED는 사용할 수 없습니다.");
 
         // 읽기 권한은 쓰기 권한보다 높을 수 없음
-        if (roleRank(dto.getReadRole()) > roleRank(dto.getWriteRole()))
+        if (memberService.roleRank(dto.getReadRole()) > memberService.roleRank(dto.getWriteRole()))
             throw new IllegalArgumentException("읽기 권한은 쓰기 권한보다 높을 수 없습니다.");
 
         // 중복 체크
@@ -198,7 +198,7 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
             throw new IllegalArgumentException("읽기/쓰기 권한에 BANNED는 사용할 수 없습니다.");
 
         // 읽기 권한은 쓰기 권한보다 높을 수 없음
-        if (roleRank(dto.getReadRole()) > roleRank(dto.getWriteRole()))
+        if (memberService.roleRank(dto.getReadRole()) > memberService.roleRank(dto.getWriteRole()))
             throw new IllegalArgumentException("읽기 권한은 쓰기 권한보다 높을 수 없습니다.");
     }
 
@@ -206,6 +206,12 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
     @Override
     protected void beforeDelete(Board board) {
         throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "게시판 삭제는 허용되지 않습니다.");
+    }
+
+    /** 어떤 boardCode 값이 기본 보드인지 검사하는 메서드*/
+    public boolean isDefault(String boardCode) {
+        return Arrays.stream(DefaultBoard.values())
+                .anyMatch(b -> b.getCode().equals(boardCode));
     }
 
     /** dto에서 Cafe를 추출, 기본은 reference지만 id가 없다면 code기반 view */
@@ -233,26 +239,8 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
     private boolean isManagerOrAbove(RoleType[] roles) {
         if (roles == null) return false;
         for (RoleType r : roles) {
-            if (roleRank(r) > 20) return true;
+            if (memberService.roleRank(r) > 20) return true;
         }
         return false;
-    }
-
-    /** RoleType마다 점수를 부여해서 비교하기 쉽게 하는 메서드 */
-    private int roleRank(RoleType role) {
-        if (role == null) return Integer.MIN_VALUE;
-
-        switch (role) {
-            case GUEST:
-                return 0;
-            case USER:
-                return 10;
-            case MANAGER:
-                return 20;
-            case ADMIN:
-                return 30;
-            default:
-                return Integer.MIN_VALUE;
-        }
     }
 }

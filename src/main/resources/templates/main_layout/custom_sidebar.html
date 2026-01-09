@@ -5,7 +5,9 @@
 
 <nav class="sb-sidenav-menu"
      th:fragment="custom_sidebar"
-     th:if="${cafe != null and cafe.code != null and !#strings.isEmpty(cafe.code)}">
+     th:if="${cafe != null
+          and cafe.code != null
+          and !#strings.isEmpty(cafe.code)}">
     <div class="nav">
 
         <!-- 카페 홈 -->

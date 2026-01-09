@@ -50,6 +50,7 @@ public class BoardPublicController {
     ) {
         model.addAttribute("list", boardService.listVisibleDTO(cafeCode, pageable, memberService.getEffectiveRoles(authentication), keyword));
         model.addAttribute("keyword", keyword);
+        model.addAttribute("activeMenu", "all");
         return "board/publicList";
     }
 

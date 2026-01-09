@@ -1,10 +1,14 @@
 package com.example.cafeProject._boardTest;
 
 import com.example.base.BaseImageController;
+import com.example.cafeProject._cafeTest.Cafe;
+import com.example.cafeProject._cafeTest.CafeDTO;
+import com.example.cafeProject._cafeTest.CafeService;
 import com.example.cafeProject.member.RoleType;
 import com.example.cafeProject.validation.ManagementOnly;
 import com.example.cafeProject.validation.ValidationGroups;
 import com.example.exception.DuplicateValueException;
+import com.example.exception.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,15 +29,32 @@ import org.springframework.web.server.ResponseStatusException;
 public class BoardAdminController extends BaseImageController<Board, BoardDTO> {
 
     private final BoardService boardService;
+    private final CafeService cafeService;
     private final HttpServletRequest request;
 
-    public BoardAdminController(BoardService service, HttpServletRequest request) {
+    public BoardAdminController(
+            BoardService service,
+            CafeService cafeService,
+            HttpServletRequest request
+    ) {
         super(service, "boardManagement");
         this.boardService = service;
+        this.cafeService = cafeService;
         this.request = request;
     }
 
     /** 템플릿에서 공통으로 쓰기 위해 모델에 cafeCode 주입 */
+    @ModelAttribute("cafe")
+    public CafeDTO cafe(
+            @RequestParam(name = "c", required = false) String c
+    ) {
+        if (c == null || c.isBlank()) return null; // c 없이 들어오는 페이지는 일단 null
+        try {
+            return cafeService.viewVisibleDTOByCode(c);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
     @ModelAttribute("cafeCode")
     public String cafeCode(@RequestParam(name = "c", required = false) String cafeCode) {
         return cafeCode;
@@ -62,6 +83,7 @@ public class BoardAdminController extends BaseImageController<Board, BoardDTO> {
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
+        model.addAttribute("activeMenu", "boardManagement");
         model.addAttribute("list", boardService.listDTO(requireCafeCode(), pageable));
         return basePath + "/list";
     }

@@ -2,8 +2,11 @@ package com.example.cafeProject._postTest;
 
 import com.example.cafeProject._boardTest.BoardDTO;
 import com.example.cafeProject._boardTest.BoardService;
+import com.example.cafeProject._boardTest.DefaultBoard;
 import com.example.cafeProject._cafeTest.CafeDTO;
 import com.example.cafeProject._cafeTest.CafeService;
+import com.example.cafeProject._commentTest.PostComment;
+import com.example.cafeProject._commentTest.PostCommentService;
 import com.example.cafeProject.board_view.Board_viewDTO;
 import com.example.cafeProject.board_view.Board_viewService;
 import com.example.cafeProject.like.LikeService;
@@ -18,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -40,6 +44,7 @@ import java.util.*;
 public class PostController {
 
     private final PostService postService;
+    private final PostCommentService postCommentService;
     private final BoardService boardService;
     private final CafeService cafeService;
     private final MemberService memberService;
@@ -128,6 +133,7 @@ public class PostController {
             model.addAttribute("noticeList", postService.noticeListByBoardIdDTO(boardId));
             model.addAttribute("list", postService.listByBoardIdDTO(boardId, keyword, pageable));
             model.addAttribute("keyword", keyword);
+            model.addAttribute("activeMenu", boardService.isDefault(boardCode) ? boardCode : "all");
             return "post/list";
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -139,6 +145,7 @@ public class PostController {
             @PathVariable String cafeCode,
             @RequestParam(name = "b", required = false) String boardCode,
             @PathVariable int id,
+            @PageableDefault(size = 10) Pageable pageable,
             Authentication authentication,
             Model model
     ) {
@@ -151,6 +158,7 @@ public class PostController {
 
         model.addAttribute("data", dto);
         model.addAttribute("canEdit", postService.canEdit(id, authentication));
+        model.addAttribute("activeMenu", boardService.isDefault(boardCode) ? boardCode : "all");
 
         // 기본값
         boolean isLike = false;
@@ -172,6 +180,9 @@ public class PostController {
         model.addAttribute("likeCnt", likeService.likeCnt("post", dto.getId()));
         model.addAttribute("viewCnt", viewService.board_viewCnt("post", dto.getId()));
 
+        // 댓글
+        Page<PostComment> commentList = postCommentService.getCommentListPage(dto.getId(), pageable);
+        model.addAttribute("commentList", commentList);
         return "post/view";
     }
 
