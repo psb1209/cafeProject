@@ -42,7 +42,7 @@
 
                     <!-- 글 링크 복사 -->
                     <span th:if="${isTrash != true}" style="margin-left: auto;">
-                        <a href="#" class="comment-link-btn" onclick="copyPostLink(event)">링크 복사</a>
+                        <a href="#" class="comment-link-btn text-nowrap" onclick="copyPostLink(event)">링크 복사</a>
                     </span>
                 </div>
             </div>
@@ -101,11 +101,11 @@
                 </button>
             </div>
 
-                        <!-- 댓글 -->
+            <!-- 댓글 -->
             <div class="cafe-comment-section">
 
                 <div class="cafe-comment-title">
-                    댓글 <span th:text="${commentList.totalElements}">0</span>
+                    댓글 <span th:text="${commentCount}">0</span>
                 </div>
 
                 <!-- 댓글 작성 -->
@@ -113,38 +113,46 @@
                     <form name="commentForm"
                           th:attr="data-create-action=@{/cafe/{cafeCode}/postComment/createProc(cafeCode=${cafe.code}, b=${data.boardCode})},
                                    data-update-action=@{/cafe/{cafeCode}/postComment/updateProc(cafeCode=${cafe.code}, b=${data.boardCode})}">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                        <input type="hidden" name="postId" th:value="${data.id}"/>
-                        <input type="hidden" name="postCommentId"
-                               th:if="${postCommentUpdate != null}"
-                               th:value="${postCommentUpdate.id}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" name="postId" th:value="${data.id}"/>
+                    <input type="hidden"
+                           name="postCommentId"
+                           th:if="${postCommentUpdate != null}"
+                           th:value="${postCommentUpdate.id}">
 
-                        <div class="cafe-comment-write" th:if="${postCommentUpdate == null}">
-                            <textarea name="content"
-                                      class="cafe-comment-textarea"
-                                      placeholder="댓글을 입력하세요"></textarea>
+                    <!-- 등록 모드 -->
+                    <div class="cafe-comment-write" th:if="${postCommentUpdate == null}">
+                        <textarea name="content"
+                                  class="cafe-comment-textarea"
+                                  placeholder="댓글을 입력하세요"></textarea>
 
-                            <div class="cafe-comment-btns">
-                                <button type="button" class="cafe-comment-btn"
-                                        onclick="commentSave();">등록</button>
-                            </div>
+                        <div class="comment-btn-wrap">
+                            <button type="button"
+                                    class="cafe-comment-btn"
+                                    onclick="commentSave();">등록</button>
                         </div>
+                    </div>
 
-                        <div class="cafe-comment-write" th:if="${postCommentUpdate != null}">
-                            <textarea name="content"
-                                      class="cafe-comment-textarea"
-                                      th:text="${postCommentUpdate.content}"
-                                      placeholder="댓글을 입력하세요"></textarea>
+                    <!-- 수정 모드 -->
+                    <div class="cafe-comment-write" th:if="${postCommentUpdate != null}">
+                        <textarea name="content"
+                                  class="cafe-comment-textarea"
+                                  th:text="${postCommentUpdate.content}"
+                                  placeholder="댓글을 입력하세요"></textarea>
 
-                            <div class="cafe-comment-btns">
-                                <button type="button" class="cafe-comment-btn cancel"
-                                        th:onclick="|location.href='@{/cafe/{cafeCode}/post/view/{id}(cafeCode=${cafe.code}, id=${data.id}, b=${data.boardCode})}'|">
-                                    취소
-                                </button>
-                                <button type="button" class="cafe-comment-btn"
-                                        onclick="commentUpdate();">수정</button>
-                            </div>
+                        <div class="comment-btn-wrap">
+                            <button type="button"
+                                    class="cafe-comment-btn cancel"
+                                    th:onclick="|location.href='@{/cafe/{cafeCode}/post/view/{id}(cafeCode=${cafe.code}, id=${data.id}, b=${data.boardCode})}'|">
+                                취소</button>
+
+                            <button type="button"
+                                    class="cafe-comment-btn"
+                                    onclick="commentUpdate();">
+                                수정</button>
                         </div>
+                    </div>
+
                     </form>
                 </div>
 
@@ -158,72 +166,83 @@
                          th:each="comment : ${commentList.content}"
                          th:style="'padding-left:' + (${comment.step} * 30) + 'px'">
 
-                        <!-- 댓글 헤더 -->
-                        <div class="comment-header">
-                            <span>
-                                <span class="comment-writer" th:text="${comment.member?.username ?: '-'}"></span>
-                                <span th:switch="${(comment.member?.role?.name() == 'ADMIN' or comment.member?.role?.name() == 'MANAGER') ? 'STAFF' : (comment.member?.grade?.name() ?: 'UNKNOWN')}">
-                                    <span th:case="'STAFF'">운영진👑</span>
-                                    <span th:case="'USER'">일반🥉</span>
-                                    <span th:case="'REGULAR'">성실🥈</span>
-                                    <span th:case="'BEST'">우수🥇</span>
-                                    <span th:case="'SPECIAL'">최우수🏆</span>
-                                    <span th:case="'UNKNOWN'">알 수 없음</span>
+                        <div th:if="${comment.deleted}">
+                            <div class="comment-content deleted">[삭제된 댓글입니다.]</div>
+                        </div>
+
+                        <div th:unless="${comment.deleted}">
+                            <!-- 댓글 헤더 -->
+                            <div class="comment-header">
+                                <span>
+                                    <span class="comment-writer" th:text="${comment.member?.username ?: '-'}"></span>
+                                    <span th:switch="${(comment.member?.role?.name() == 'ADMIN' or comment.member?.role?.name() == 'MANAGER') ? 'STAFF' : (comment.member?.grade?.name() ?: 'UNKNOWN')}">
+                                        <span th:case="'STAFF'">운영진👑</span>
+                                        <span th:case="'USER'">일반🥉</span>
+                                        <span th:case="'REGULAR'">성실🥈</span>
+                                        <span th:case="'BEST'">우수🥇</span>
+                                        <span th:case="'SPECIAL'">최우수🏆</span>
+                                        <span th:case="'UNKNOWN'">알 수 없음</span>
+                                    </span>
                                 </span>
-                            </span>
 
-                            <div class="comment-actions" sec:authorize="isAuthenticated()">
-                                <button type="button"
-                                        class="comment-link-btn"
-                                        th:onclick="|toggleReplyForm(${comment.id})|">답글</button>
+                                <div class="comment-actions d-flex align-items-center gap-2" sec:authorize="isAuthenticated()">
+                                    <button type="button"
+                                            class="comment-link-btn text-nowrap"
+                                            th:onclick="|toggleReplyForm(${comment.id})|">답글</button>
 
-                                <form th:action="@{/cafe/{cafeCode}/postComment/update(cafeCode=${cafe.code}, b=${data.boardCode})}"
-                                      method="post">
-                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                    <input type="hidden" name="postId" th:value="${data.id}">
-                                    <input type="hidden" name="postCommentId" th:value="${comment.id}">
-                                    <button type="submit" class="comment-link-btn">수정</button>
-                                </form>
+                                    <div class="d-flex align-items-center gap-2"
+                                         th:if="${#authentication.name == comment.member?.username or #strings.contains(#authentication.authorities.toString(),'ROLE_ADMIN') or #strings.contains(#authentication.authorities.toString(),'ROLE_MANAGER')}">
 
-                                <form th:action="@{/cafe/{cafeCode}/postComment/deleteProc(cafeCode=${cafe.code}, b=${data.boardCode})}"
+                                        <form class="m-0 d-inline"
+                                              th:action="@{/cafe/{cafeCode}/postComment/update(cafeCode=${cafe.code}, b=${data.boardCode})}"
+                                              method="post">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                            <input type="hidden" name="postId" th:value="${data.id}">
+                                            <input type="hidden" name="postCommentId" th:value="${comment.id}">
+                                            <button type="submit" class="comment-link-btn text-nowrap">수정</button>
+                                        </form>
+
+                                        <form class="m-0 d-inline"
+                                              th:action="@{/cafe/{cafeCode}/postComment/deleteProc(cafeCode=${cafe.code}, b=${data.boardCode})}"
+                                              method="post"
+                                              onsubmit="return confirm('삭제하시겠습니까?');">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                            <input type="hidden" name="postId" th:value="${data.id}">
+                                            <input type="hidden" name="postCommentId" th:value="${comment.id}">
+                                            <button type="submit" class="comment-link-btn danger text-nowrap">삭제</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 댓글 내용 -->
+                            <div class="comment-content" th:text="${comment.content}"></div>
+
+                            <div class="comment-meta">
+                                <span class="comment-date"
+                                      th:text="${#dates.format(comment.createDate,'MM.dd HH:mm')}"></span>
+                            </div>
+
+                            <!-- 대댓글 입력폼 (댓글 바로 아래) -->
+                            <div class="comment-reply-box reply-form"
+                                 th:id="'reply-form-' + ${comment.id}"
+                                 style="display:none;"
+                                 sec:authorize="isAuthenticated()">
+                                <form th:action="@{/cafe/{cafeCode}/postComment/replyProc(cafeCode=${cafe.code}, b=${data.boardCode})}"
                                       method="post"
-                                      onsubmit="return confirm('삭제하시겠습니까?');">
-                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                      class="comment-reply-form">
+
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                     <input type="hidden" name="postId" th:value="${data.id}">
                                     <input type="hidden" name="postCommentId" th:value="${comment.id}">
-                                    <button type="submit" class="comment-link-btn danger">삭제</button>
+
+                                    <input type="text"
+                                           name="content"
+                                           class="comment-reply-input"
+                                           placeholder="답글을 입력하세요">
+                                    <button type="submit" class="comment-reply-btn">등록</button>
                                 </form>
                             </div>
-                        </div>
-
-                        <!-- 댓글 내용 -->
-                        <div class="comment-content"
-                             th:text="${comment.content}"></div>
-
-                        <div class="comment-meta">
-                            <span class="comment-date"
-                                  th:text="${#dates.format(comment.createDate,'MM.dd HH:mm')}"></span>
-                        </div>
-
-                        <!-- 대댓글 입력폼 (댓글 바로 아래) -->
-                        <div class="comment-reply-box reply-form"
-                             th:id="'reply-form-' + ${comment.id}"
-                             style="display:none;"
-                             sec:authorize="isAuthenticated()">
-                            <form th:action="@{/cafe/{cafeCode}/postComment/replyProc(cafeCode=${cafe.code}, b=${data.boardCode})}"
-                                  method="post"
-                                  class="comment-reply-form">
-
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                <input type="hidden" name="postId" th:value="${data.id}">
-                                <input type="hidden" name="postCommentId" th:value="${comment.id}">
-
-                                <input type="text"
-                                       name="content"
-                                       class="comment-reply-input"
-                                       placeholder="답글을 입력하세요">
-                                <button type="submit" class="comment-reply-btn">등록</button>
-                            </form>
                         </div>
 
                     </div>

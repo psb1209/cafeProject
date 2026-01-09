@@ -11,9 +11,21 @@ import java.util.List;
 
 public interface PostCommentRepository extends JpaRepository<PostComment, Integer> {
 
+    /**
+     * 댓글/대댓글 전체 목록(삭제 댓글 포함)
+     * - 댓글 최신순(ref desc)
+     * - 대댓글 등록순(level asc)
+     */
     Page<PostComment> findByPostIdOrderByRefDescLevelAsc(int postId, Pageable pageable);
 
+    /** 삭제되지 않은 댓글만 */
+    Page<PostComment> findByPostIdAndDeletedFalseOrderByRefDescLevelAsc(int postId, Pageable pageable);
+
     List<PostComment> findByPostId(int postId);
+
+    List<PostComment> findByPostIdAndDeletedFalse(int postId);
+
+    long countByPostIdAndDeletedFalse(int postId);
 
     // ref 최대값
     @Query("SELECT COALESCE(MAX(c.ref),0) FROM PostComment c")

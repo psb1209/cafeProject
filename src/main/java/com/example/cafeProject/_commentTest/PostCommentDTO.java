@@ -24,4 +24,8 @@ public class PostCommentDTO {
     private int ref;
     private int step;
     private int level;
+
+    private boolean deleted = false;
+
+    private Timestamp deletedAt;
 }

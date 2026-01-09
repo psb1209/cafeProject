@@ -46,6 +46,22 @@ public class PostComment {
     private int step;
     private int level;
 
+    /**
+     * 소프트 삭제 플래그
+     * - true면 "삭제 처리된 댓글"로 간주
+     */
+    @Builder.Default
+    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean deleted = false;
+
+    /** 소프트 삭제 시각 */
+    private Timestamp deletedAt;
+
+    public void softDelete() {
+        this.deleted = true;
+        this.deletedAt = new Timestamp(System.currentTimeMillis());
+    }
+
     public static PostComment dtoToEntity(PostCommentDTO postCommentDTO, Member member, Post post) {
         PostComment postComment = new PostComment();
         postComment.setContent(postCommentDTO.getContent());
@@ -54,6 +70,8 @@ public class PostComment {
         postComment.setRef(postCommentDTO.getRef());
         postComment.setStep(postCommentDTO.getStep());
         postComment.setLevel(postCommentDTO.getLevel());
+        postComment.setDeleted(false);
+        postComment.setDeletedAt(null);
         return postComment;
     }
 }

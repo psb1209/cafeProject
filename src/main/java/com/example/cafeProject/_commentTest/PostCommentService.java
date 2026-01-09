@@ -5,14 +5,19 @@ import com.example.cafeProject._postTest.PostRepository;
 import com.example.cafeProject.member.Grade;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
+import com.example.cafeProject.member.RoleType;
+import com.example.exception.PermissionDeniedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,27 +50,63 @@ public class PostCommentService {
         return oldGrade != newGrade;
     }
 
+    /**
+     * 댓글/대댓글 목록 조회
+     * - 삭제 댓글도 목록에는 포함(대댓글 구조 유지 목적)
+     * - 실제 표시/버튼 노출은 view에서 deleted 플래그로 제어
+     */
     public Page<PostComment> getCommentListPage(int postId, Pageable pageable) {
         return postCommentRepository.findByPostIdOrderByRefDescLevelAsc(postId, pageable);
     }
 
-    @Transactional
-    public void setDelete(PostCommentDTO paramDTO) {
-        PostComment postComment = postCommentRepository.findById(paramDTO.getPostCommentId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
-        postCommentRepository.delete(postComment);
+    /** 화면 상단 "댓글 n" 표기용(삭제되지 않은 댓글만 카운트) */
+    public long countActiveComments(int postId) {
+        return postCommentRepository.countByPostIdAndDeletedFalse(postId);
     }
 
+    /**
+     * 댓글 소프트 삭제
+     * - row 삭제 X
+     * - deleted=true, deletedAt=now
+     */
+    @Transactional
+    public void setDelete(PostCommentDTO paramDTO) {
+        PostComment postComment = getPostCommentId(paramDTO);
+
+        if (postComment.isDeleted()) {
+            throw new IllegalArgumentException("이미 삭제된 댓글입니다.");
+        }
+
+        ensureCanModify(postComment);
+
+        postComment.softDelete();
+        // dirty-checking으로 update
+    }
+
+    /**
+     * 게시글 단위 일괄 소프트 삭제(사용처가 생기면 활용)
+     */
     @Transactional
     public void setDeleteAllByPostId(int postId) {
         List<PostComment> list = postCommentRepository.findByPostId(postId);
-        postCommentRepository.deleteAll(list);
+        for (PostComment c : list) {
+            if (!c.isDeleted()) {
+                c.softDelete();
+            }
+        }
     }
 
+    /** 댓글 수정 */
     @Transactional
     public PostComment setUpdate(PostCommentDTO paramDTO) {
-        PostComment postComment = postCommentRepository.findById(paramDTO.getPostCommentId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
+        PostComment postComment = getPostCommentId(paramDTO);
+
+        if (postComment.isDeleted()) {
+            throw new IllegalArgumentException("삭제된 댓글은 수정할 수 없습니다.");
+        }
+
+        ensureCanModify(postComment);
+
         postComment.setContent(paramDTO.getContent());
         return postComment;
     }
@@ -102,6 +143,8 @@ public class PostCommentService {
         postComment.setRef(ref);
         postComment.setStep(step);
         postComment.setLevel(level);
+        postComment.setDeleted(false);
+        postComment.setDeletedAt(null);
 
         postCommentRepository.save(postComment);
     }
@@ -122,5 +165,32 @@ public class PostCommentService {
     public Post getSelectOneById_post(int postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글 없음"));
+    }
+
+    /** 댓글 수정/삭제 권한 체크(서버 측 방어) */
+    private void ensureCanModify(PostComment comment) {
+        Authentication authentication = memberService.getCurrentMember();
+        RoleType[] roles = memberService.getEffectiveRoles(authentication);
+        if (roles == null || roles.length == 0) {
+            throw new PermissionDeniedException("Banned 사용자입니다.");
+        }
+
+        boolean managerOrAbove = Arrays.asList(roles).contains(RoleType.MANAGER)
+                || Arrays.asList(roles).contains(RoleType.ADMIN);
+
+        if (managerOrAbove) return;
+
+        if (memberService.isNotLogin(authentication)) {
+            throw new AccessDeniedException("로그인이 필요합니다.");
+        }
+
+        String writer = (comment.getMember() == null) ? null : comment.getMember().getUsername();
+        if (writer == null || writer.isBlank()) {
+            throw new AccessDeniedException("작성자 정보가 없습니다.");
+        }
+
+        if (!writer.equals(authentication.getName())) {
+            throw new AccessDeniedException("댓글 수정/삭제 권한이 없습니다.");
+        }
     }
 }

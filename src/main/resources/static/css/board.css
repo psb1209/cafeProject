@@ -576,6 +576,11 @@
     line-height: 1.6;
 }
 
+.comment-content.deleted {
+    color: var(--text-sub);
+    font-style: italic;
+}
+
 .comment-meta {
     margin-top: 6px;
     font-size: 12px;
