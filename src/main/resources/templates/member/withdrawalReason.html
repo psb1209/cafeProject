@@ -91,7 +91,7 @@
                     <td th:text="${m.username}">user</td>
                     <td th:text="${m.email}">mail</td>
                     <td th:text="${m.deleteReason}">NONE</td>
-                    <td th:text="${m.deletedDate != null ? #dates.format(m.deletedDate, 'yyyy-MM-dd HH:mm') : ''}">-</td>
+                    <td th:text="${m.deletedDate != null ? #dates.format(m.deletedDate, 'yyyy-MM-dd') : ''}">-</td>
                 </tr>
                 </tbody>
             </table>
