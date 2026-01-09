@@ -16,6 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +64,72 @@ public class MemberService {
                 page.getTotalPages(),
                 page.getNumberOfElements());
         return page;
+    }
+
+
+    /**
+     * 탈퇴(삭제) 회원 목록 조회 (필터: deleteReason)
+     * - reason이 null이면 전체(삭제 회원)
+     */
+    public Page<Member> listDeleted(Pageable pageable, ReasonType reason) {
+        log.debug("[{}] 삭제 회원 목록 조회 요청, page={}, size={}, sort={}, reason={}",
+                memberServiceClass.getSimpleName(),
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                pageable.getSort(),
+                reason);
+
+        Page<Member> page = (reason == null)
+                ? memberRepository.findAllByDeletedTrue(pageable)
+                : memberRepository.findAllByDeletedTrueAndDeleteReason(reason, pageable);
+
+        log.debug("[{}] 삭제 회원 목록 조회 결과, totalElements={}, totalPages={}, currentElements={}",
+                memberServiceClass.getSimpleName(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.getNumberOfElements());
+        return page;
+    }
+
+    /**
+     * 탈퇴(삭제) 사유 통계
+     * - deleted=true 기준으로 ReasonType별 카운트를 집계
+     * - 모든 ReasonType을 포함(없으면 0)
+     */
+    public List<WithdrawalReasonStat> withdrawalReasonStats() {
+        List<MemberRepository.WithdrawalReasonCount> raw = memberRepository.countDeletedByReason();
+
+        Map<ReasonType, Long> counts = new EnumMap<>(ReasonType.class);
+        for (MemberRepository.WithdrawalReasonCount row : raw) {
+            if (row.getReason() == null) continue;
+            counts.put(row.getReason(), row.getCnt());
+        }
+
+        long total = 0L;
+        for (Long v : counts.values()) total += v;
+
+        List<WithdrawalReasonStat> result = new ArrayList<>();
+        // delete.html 옵션 순서와 맞춤
+        ReasonType[] order = {ReasonType.NONE, ReasonType.PRIVACY, ReasonType.CONTENT, ReasonType.SERVICE, ReasonType.ETC};
+
+        for (ReasonType reason : order) {
+            long cnt = counts.getOrDefault(reason, 0L);
+            double percent = (total == 0L) ? 0.0 : (cnt * 100.0 / total);
+            result.add(new WithdrawalReasonStat(reason, reasonLabel(reason), cnt, percent));
+        }
+
+        return result;
+    }
+
+    private String reasonLabel(ReasonType reason) {
+        if (reason == null) return "기타";
+        return switch (reason) {
+            case NONE -> "선택 안 함";
+            case PRIVACY -> "개인정보/보안";
+            case CONTENT -> "콘텐츠 부족";
+            case SERVICE -> "서비스/사용성";
+            case ETC -> "기타";
+        };
     }
 
     /**

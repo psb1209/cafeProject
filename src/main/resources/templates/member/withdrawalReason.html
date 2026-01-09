@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{main_layout/layout}"
+      th:with="showHeader=false,
+               sidebarKey='admin'">
+
+<body>
+
+<h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
+<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
+
+<div layout:fragment="content">
+
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+    <link th:href="@{/css/admin.css}" rel="stylesheet" />
+
+    <!-- ================= 본문 시작 ================= -->
+
+    <div class="write-card medium admin-withdrawal">
+        <div class="write-header">탈퇴 사유 통계</div>
+
+        <div class="text-muted small mb-3">
+            총 탈퇴 회원: <strong th:text="${totalDeleted}">0</strong>명
+        </div>
+
+        <!-- 사유별 요약 카드 -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6 col-lg-4" th:each="s : ${stats}">
+                <div class="p-3 border rounded-3 bg-white" style="border-color: var(--blue-border-strong) !important;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="fw-bold" th:text="${s.label}">사유</div>
+                        <span class="badge text-bg-light" th:text="${s.reason}">NONE</span>
+                    </div>
+
+                    <div class="mt-2" style="font-size: 28px; font-weight: 800;" th:text="${s.count}">0</div>
+
+                    <div class="text-muted small">
+                        <span th:text="${#numbers.formatDecimal(s.percent, 1, 1)}">0.0</span>%
+                    </div>
+
+                    <div class="progress mt-2" style="height: 8px;">
+                        <div class="progress-bar"
+                             role="progressbar"
+                             th:style="'width:' + ${s.percent} + '%'"
+                             aria-valuemin="0"
+                             aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-4"/>
+
+        <!-- 삭제 회원 목록 + 필터 -->
+        <div class="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-3">
+            <div class="fw-bold">탈퇴 회원 목록</div>
+
+            <form method="get" th:action="@{/member/withdrawalReason}" class="d-flex gap-2 align-items-center">
+                <select name="reason" class="form-select form-select-sm" style="min-width: 220px;">
+                    <option value="" th:selected="${selectedReason == null}">전체 사유</option>
+                    <option th:each="s : ${stats}"
+                            th:value="${s.reason}"
+                            th:selected="${selectedReason != null and selectedReason == s.reason}"
+                            th:text="${s.label} + ' (' + ${s.reason} + ')'">
+                        사유
+                    </option>
+                </select>
+                <button class="btn btn-sm btn-outline-secondary" type="submit">필터</button>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table board-table align-middle">
+                <thead>
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th style="width: 180px;">아이디</th>
+                    <th>이메일</th>
+                    <th style="width: 160px;">사유</th>
+                    <th style="width: 180px;">탈퇴일</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${deletedPage.totalElements == 0}">
+                    <td colspan="5" class="text-center text-muted py-4">표시할 탈퇴 회원이 없습니다.</td>
+                </tr>
+
+                <tr th:each="m : ${deletedPage.content}">
+                    <td th:text="${m.id}">1</td>
+                    <td th:text="${m.username}">user</td>
+                    <td th:text="${m.email}">mail</td>
+                    <td th:text="${m.deleteReason}">NONE</td>
+                    <td th:text="${m.deletedDate != null ? #dates.format(m.deletedDate, 'yyyy-MM-dd HH:mm') : ''}">-</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="cafe-pagination" th:if="${deletedPage.totalPages > 0}">
+            <!-- 이전 -->
+            <a class="page-btn"
+               th:classappend="${deletedPage.first} ? ' disabled'"
+               th:href="@{/member/withdrawalReason(page=${deletedPage.number - 1}, reason=${selectedReason})}">이전</a>
+
+            <!-- 페이지 번호: 현재 기준 +-2 -->
+            <th:block th:with="
+                    startPage=${deletedPage.number - 2 > 0 ? deletedPage.number - 2 : 0},
+                    endPage=${deletedPage.number + 2 < deletedPage.totalPages - 1 ? deletedPage.number + 2 : deletedPage.totalPages - 1}">
+                <a class="page-btn"
+                   th:each="page : ${#numbers.sequence(startPage, endPage)}"
+                   th:text="${page + 1}"
+                   th:classappend="${page == deletedPage.number} ? ' active'"
+                   th:href="@{/member/withdrawalReason(page=${page}, reason=${selectedReason})}"></a>
+            </th:block>
+
+            <!-- 다음 -->
+            <a class="page-btn"
+               th:classappend="${deletedPage.last} ? ' disabled'"
+               th:href="@{/member/withdrawalReason(page=${deletedPage.number + 1}, reason=${selectedReason})}">다음</a>
+        </div>
+
+    </div>
+
+    <!-- ================= 본문 종료 ================= -->
+
+</div>
+</body>
+</html>

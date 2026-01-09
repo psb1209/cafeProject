@@ -24,6 +24,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/member")
@@ -48,6 +50,31 @@ public class MemberController {
         model.addAttribute("list", list);
         model.addAttribute("activeMenu", "member");
         return basePath + "/list";
+    }
+
+
+    @ManagementOnly
+    @GetMapping("/withdrawalReason")
+    public String withdrawalReason(
+            @RequestParam(name = "reason", required = false) ReasonType reason,
+            @PageableDefault(size = 20, sort = "deletedDate", direction = Sort.Direction.DESC)
+            Pageable pageable,
+            Model model
+    ) {
+        List<WithdrawalReasonStat> stats = memberService.withdrawalReasonStats();
+        long totalDeleted = 0L;
+        for (WithdrawalReasonStat s : stats) totalDeleted += s.getCount();
+
+        Page<Member> deletedPage = memberService.listDeleted(pageable, reason);
+
+        model.addAttribute("activeMenu", "withdrawalReason");
+        model.addAttribute("stats", stats);
+        model.addAttribute("totalDeleted", totalDeleted);
+        model.addAttribute("deletedPage", deletedPage);
+        model.addAttribute("reasons", ReasonType.values());
+        model.addAttribute("selectedReason", reason);
+
+        return basePath + "/withdrawalReason";
     }
 
     @PreAuthorize("isAuthenticated()")

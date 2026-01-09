@@ -58,6 +58,13 @@
 
         <div class="sidenav-section-title">그 외</div>
 
+        <!-- 탈퇴 사유 통계 -->
+        <a class="nav-link"
+           th:classappend="${activeMenu == 'withdrawalReason'} ? ' active'"
+           th:href="@{/member/withdrawalReason}">
+            <span class="nav-emoji">📊</span>탈퇴 사유 통계
+        </a>
+
         <!-- 관리 페이지 -->
         <a class="nav-link"
            th:classappend="${activeMenu == 'meta'} ? ' active'"

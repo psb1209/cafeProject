@@ -37,3 +37,34 @@
     --gray-hover: #f0f0f0;
     --table-border-light: #eef2f8;
 }
+
+/* =========================
+   탈퇴 사유 통계(관리) 페이지
+   - 카드 높이 통일
+   - 필터 버튼 줄바꿈 방지
+   ========================= */
+.admin-withdrawal .row.g-3.mb-4 { align-items: stretch; }
+.admin-withdrawal .row.g-3.mb-4 > [class*="col-"] { display: flex; }
+.admin-withdrawal .row.g-3.mb-4 > [class*="col-"] > .p-3.border.rounded-3.bg-white{
+    width: 100%;
+    height: 100%;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 필터 영역: 버튼이 눌려서 글자가 세로로 깨지는 현상 방지 */
+.admin-withdrawal form.d-flex.gap-2.align-items-center{
+    flex-wrap: wrap;
+}
+.admin-withdrawal form.d-flex.gap-2.align-items-center > select.form-select.form-select-sm{
+    flex: 1 1 220px;
+    min-width: 220px;
+}
+.admin-withdrawal form.d-flex.gap-2.align-items-center > button.btn{
+    white-space: nowrap;
+    flex: 0 0 auto;
+    min-width: 64px;
+    padding-left: .75rem;
+    padding-right: .75rem;
+}
