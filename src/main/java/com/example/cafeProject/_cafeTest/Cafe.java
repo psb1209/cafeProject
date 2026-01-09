@@ -1,7 +1,6 @@
 package com.example.cafeProject._cafeTest;
 
 import com.example.base.BaseEntity;
-import com.example.cafeProject.member.RoleType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

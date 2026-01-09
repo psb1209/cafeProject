@@ -11,7 +11,15 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "boards")
+@Table(
+        name = "boards",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_boards_cafeid_code",
+                        columnNames = {"cafeid", "code"}
+                )
+        }
+)
 @Getter
 @Setter
 @SuperBuilder
@@ -32,7 +40,7 @@ public class Board extends BaseEntity {
     @Column(length = 255)
     private String imgName;
 
-    @Column(nullable = false, length = 20, unique = true, updatable = false)
+    @Column(nullable = false, length = 20, updatable = false)
     private String code; // 링크에 표시될 코드
 
     @Column(nullable = false)
