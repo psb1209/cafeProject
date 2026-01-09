@@ -145,45 +145,46 @@ public class PostController {
             @PathVariable String cafeCode,
             @RequestParam(name = "b", required = false) String boardCode,
             @PathVariable int id,
-            @PageableDefault(size = 10) Pageable pageable,
+            @PageableDefault(size = 5, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
             Authentication authentication,
             Model model
     ) {
-        PostDTO dto = postService.viewDetailDTO(id);
+        try {
+            PostDTO dto = postService.viewDetailDTO(id);
 
-        // b가 없으면 같은 cafeCode 경로로 보정 리다이렉트
-        if (boardCode == null || boardCode.isBlank()) {
-            return "redirect:/cafe/" + cafeCode + "/post/view/" + id + "?b=" + dto.getBoardCode();
+            // b가 없으면 같은 cafeCode 경로로 보정 리다이렉트
+            if (boardCode == null || boardCode.isBlank()) {
+                return "redirect:/cafe/" + cafeCode + "/post/view/" + id + "?b=" + dto.getBoardCode();
+            }
+
+            model.addAttribute("data", dto);
+            model.addAttribute("canEdit", postService.canEdit(id, authentication));
+            model.addAttribute("activeMenu", boardService.isDefault(boardCode) ? boardCode : "all");
+
+            // 기본값
+            boolean isLike = false;
+
+            if (!memberService.isNotLogin(authentication)) {
+                Member member = memberService.viewCurrentMember(authentication);
+
+                // 좋아요 여부
+                isLike = likeService.isLike("post", dto.getId(), member.getId());
+
+                // 조회 기록(중복조회 방지)
+                Board_viewDTO viewDTO = new Board_viewDTO();
+                viewDTO.setUserId(member.getId());
+                viewDTO.setPostId(dto.getId());
+                viewService.createProc(viewDTO);
+            }
+
+            model.addAttribute("isLike", isLike);
+            model.addAttribute("likeCnt", likeService.likeCnt("post", dto.getId()));
+            model.addAttribute("viewCnt", viewService.board_viewCnt("post", dto.getId()));
+            model.addAttribute("commentList", postCommentService.getCommentListPage(dto.getId(), pageable));
+            return "post/view";
+        } catch (Exception e) {
+            return "redirect:/error/runtimeErrorPage";
         }
-
-        model.addAttribute("data", dto);
-        model.addAttribute("canEdit", postService.canEdit(id, authentication));
-        model.addAttribute("activeMenu", boardService.isDefault(boardCode) ? boardCode : "all");
-
-        // 기본값
-        boolean isLike = false;
-
-        if (!memberService.isNotLogin(authentication)) {
-            Member member = memberService.viewCurrentMember(authentication);
-
-            // 좋아요 여부
-            isLike = likeService.isLike("post", dto.getId(), member.getId());
-
-            // 조회 기록(중복조회 방지)
-            Board_viewDTO viewDTO = new Board_viewDTO();
-            viewDTO.setUserId(member.getId());
-            viewDTO.setPostId(dto.getId());
-            viewService.createProc(viewDTO);
-        }
-
-        model.addAttribute("isLike", isLike);
-        model.addAttribute("likeCnt", likeService.likeCnt("post", dto.getId()));
-        model.addAttribute("viewCnt", viewService.board_viewCnt("post", dto.getId()));
-
-        // 댓글
-        Page<PostComment> commentList = postCommentService.getCommentListPage(dto.getId(), pageable);
-        model.addAttribute("commentList", commentList);
-        return "post/view";
     }
 
     @ManagementOnly
