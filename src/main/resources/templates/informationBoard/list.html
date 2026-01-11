@@ -24,6 +24,20 @@
                     <span th:text="${msg}">메시지내용</span>
                 </div>
 
+                <script>
+                    // 현재 URL에서 파라미터 가져오기
+                    const params = new URLSearchParams(window.location.search);
+
+                    const keyword = params.get("sort");
+                    const page = params.get("page");
+
+                    console.log(keyword); // 예: "카페"
+                    console.log(page);    // 예: "2"
+
+                    const param = keyword ? keyword.split(",") : [];
+                    console.log(param);
+                </script>
+
                 <!--사용자가 게시글의 정렬조건 선택-->
                 <div class="cafe-article-actions">
                     <select onchange="location.href='?page=0&sort=' + this.value" class="cafe-action-btn write">

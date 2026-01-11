@@ -1,5 +1,7 @@
 package com.example.cafeProject.operationBoard;
 
+import com.example.cafeProject.operationBoard.OperationBoard;
+import com.example.cafeProject.operationBoard.OperationBoardDTO;
 import com.example.cafeProject.member.*;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
@@ -75,9 +77,15 @@ public class OperationBoardService {
     public OperationBoard setUpdate(OperationBoardDTO paramDTO) {
         OperationBoard operationBoard = getSelectOneById(paramDTO);
 
-        operationBoard.setSubject(paramDTO.getSubject());
-        operationBoard.setContent(paramDTO.getContent());
-        /*operationBoard.setCnt(paramDTO.getCnt());*/
+        if (
+                paramDTO.getSubject() != null && paramDTO.getSubject().isBlank()
+                        && paramDTO.getContent() != null && paramDTO.getContent().isBlank()
+        ) {
+            operationBoard.setSubject(paramDTO.getSubject());
+            operationBoard.setContent(paramDTO.getContent());
+        } else {
+            operationBoard.setCnt(paramDTO.getCnt());
+        }
 
         return operationBoard;
     }

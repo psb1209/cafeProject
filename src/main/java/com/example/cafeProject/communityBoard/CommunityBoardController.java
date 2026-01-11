@@ -30,6 +30,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -45,9 +46,6 @@ public class CommunityBoardController {
     private final Board_viewService board_viewService;
 
     String dirName = "communityBoard";
-
-
-
 
     /*=============================== 각 게시판 공지글 ===================================*/
 
@@ -67,23 +65,50 @@ public class CommunityBoardController {
     public String list(
             Model model,
             @RequestParam(required = false) String keyword,
+            @RequestParam (required = false) String sort,
             @PageableDefault(size = 2, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         /*====================================================== 공지글!! =======================================================*/
         List<CommunityBoard> subNoticeList = communityBoardService.getSubNoticeList();
 
-        // 2️⃣ 공지 → 일반글 순 + 최신순 정렬
-        Sort sort = Sort.by(
-                Sort.Order.desc("subNotice"),
-                Sort.Order.desc("createDate")
-        );
+        Pageable sortedPageable = pageable;
 
-        // 정렬값 다시 받기
-        Pageable sortedPageable = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                sort
-        );
+        if(sort != null && !sort.isBlank()) {
+            String[] sortList = sort.split(",");
+
+            // 2️⃣ 공지 → 일반글 순 + 최신순 정렬 (기본형)
+            Sort sort2 = Sort.by(
+                    Sort.Order.desc("subNotice"),
+                    Sort.Order.desc("createDate")
+            );
+
+            // 정렬 방식에 따른 바꿈
+            if ("createDate".equals(sortList[0]) && "asc".equals(sortList[1])) {
+                sort2 = Sort.by(
+                        Sort.Order.desc("subNotice"),
+                        Sort.Order.asc("createDate")
+                );
+            } else if ("cnt".equals(sortList[0]) && "desc".equals(sortList[1])) {
+                sort2 = Sort.by(
+                        Sort.Order.desc("subNotice"),
+                        Sort.Order.desc("cnt"),
+                        Sort.Order.desc("createDate")
+                );
+            } else if ("cnt".equals(sortList[0]) && "asc".equals(sortList[1])) {
+                sort2 = Sort.by(
+                        Sort.Order.desc("subNotice"),
+                        Sort.Order.asc("cnt"),
+                        Sort.Order.desc("createDate")
+                );
+            }
+
+            // 정렬값 다시 받기
+            sortedPageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    sort2
+            );
+        }
 
         Page<CommunityBoard> communityBoardList =
                 communityBoardService.list(sortedPageable, keyword);
@@ -149,12 +174,12 @@ public class CommunityBoardController {
                 board_viewDTO.setCommunityBoardNumber(communityBoard.getId());
 
                 board_viewService.createProc(board_viewDTO);
+
             }
 
-            int viewCnt = board_viewService.board_viewCnt(
-                    "community",
-                    communityBoard.getId()
-            );
+            int viewCnt = board_viewService.board_viewCnt("community", communityBoard.getId());
+            communityBoardDTO.setCnt(viewCnt);
+            communityBoardService.setUpdate(communityBoardDTO);
             model.addAttribute("viewCnt", viewCnt);
 
             return dirName + "/view";

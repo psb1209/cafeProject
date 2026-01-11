@@ -58,23 +58,50 @@ public class NoticeBoardController {
     public String list(
             Model model,
             @RequestParam(required = false) String keyword,
-            @PageableDefault(size = 2, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+            @RequestParam (required = false) String sort,
+            @PageableDefault(size = 7, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         /*====================================================== 공지글!! =======================================================*/
         List<NoticeBoard> subNoticeList = noticeBoardService.getSubNoticeList();
 
-        // 2️⃣ 공지 → 일반 게시글 순 + 최신순 정렬
-        Sort sort = Sort.by(
-                Sort.Order.desc("subNotice"),
-                Sort.Order.desc("createDate")
-        );
+        Pageable sortedPageable = pageable;
 
-        // 정렬값 다시 받기
-        Pageable sortedPageable = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                sort
-        );
+        if(sort != null && !sort.isBlank()) {
+            String[] sortList = sort.split(",");
+
+            // 2️⃣ 공지 → 일반글 순 + 최신순 정렬 (기본형)
+            Sort sort2 = Sort.by(
+                    Sort.Order.desc("subNotice"),
+                    Sort.Order.desc("createDate")
+            );
+
+            // 정렬 방식에 따른 바꿈
+            if ("createDate".equals(sortList[0]) && "asc".equals(sortList[1])) {
+                sort2 = Sort.by(
+                        Sort.Order.desc("subNotice"),
+                        Sort.Order.asc("createDate")
+                );
+            } else if ("cnt".equals(sortList[0]) && "desc".equals(sortList[1])) {
+                sort2 = Sort.by(
+                        Sort.Order.desc("subNotice"),
+                        Sort.Order.desc("cnt"),
+                        Sort.Order.desc("createDate")
+                );
+            } else if ("cnt".equals(sortList[0]) && "asc".equals(sortList[1])) {
+                sort2 = Sort.by(
+                        Sort.Order.desc("subNotice"),
+                        Sort.Order.asc("cnt"),
+                        Sort.Order.desc("createDate")
+                );
+            }
+
+            // 정렬값 다시 받기
+            sortedPageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    sort2
+            );
+        }
 
         Page<NoticeBoard> noticeBoardList =
                 noticeBoardService.list(sortedPageable, keyword);
@@ -140,10 +167,9 @@ public class NoticeBoardController {
                 board_viewService.createProc(board_viewDTO);
             }
 
-            int viewCnt = board_viewService.board_viewCnt(
-                    "notice",
-                    noticeBoard.getId()
-            );
+            int viewCnt = board_viewService.board_viewCnt("notice", noticeBoard.getId());
+            noticeBoardDTO.setCnt(viewCnt);
+            noticeBoardService.setUpdate(noticeBoardDTO);
             model.addAttribute("viewCnt", viewCnt);
 
             return dirName + "/view";

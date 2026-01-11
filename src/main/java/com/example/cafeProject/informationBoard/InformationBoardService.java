@@ -107,9 +107,13 @@ public class InformationBoardService {
         }
         informationBoard.setSubject(informationBoardDTO.getSubject());
         informationBoard.setContent(informationBoardDTO.getContent());
-
     }
 
+    @Transactional
+    public void updateViewCnt(InformationBoardDTO informationBoardDTO) {
+        InformationBoard informationBoard = getSelectOneById(informationBoardDTO.getId());
+        informationBoard.setCnt(informationBoardDTO.getCnt());
+    }
 
     //작성자 & 관리자 & 매니저만 게시글 삭제
     @Transactional

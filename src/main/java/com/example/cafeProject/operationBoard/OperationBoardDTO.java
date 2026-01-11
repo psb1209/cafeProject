@@ -19,6 +19,8 @@ public class OperationBoardDTO {
 
     private int memberId;
 
+    private int cnt;
+
     /*============================================== 대댓글 ===============================================*/
     private int operationBoardCommentId;
 

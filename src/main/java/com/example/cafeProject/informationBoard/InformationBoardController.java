@@ -61,23 +61,50 @@ public class InformationBoardController {
     public String list(
             Model model,
             @RequestParam(required = false) String keyword, // 검색값
+            @RequestParam (required = false) String sort,
             @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         /*====================================================== 공지글!! =======================================================*/
         List<InformationBoard> subNoticeList = informationBoardService.getSubNoticeList(); // 공지글 불러오기
 
-        // 공지 → 일반글 순 + 최신순 정렬
-        Sort sort = Sort.by(
-                Sort.Order.desc("subNotice"),
-                Sort.Order.desc("createDate")
-        );
+        Pageable sortedPageable = pageable;
 
-        // 공지글 정렬값 받기
-        Pageable sortedPageable = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                sort
-        );
+        if(sort != null && !sort.isBlank()) {
+            String[] sortList = sort.split(",");
+
+            // 2️⃣ 공지 → 일반글 순 + 최신순 정렬 (기본형)
+            Sort sort2 = Sort.by(
+                    Sort.Order.desc("subNotice"),
+                    Sort.Order.desc("createDate")
+            );
+
+            // 정렬 방식에 따른 바꿈
+            if ("createDate".equals(sortList[0]) && "asc".equals(sortList[1])) {
+                sort2 = Sort.by(
+                        Sort.Order.desc("subNotice"),
+                        Sort.Order.asc("createDate")
+                );
+            } else if ("cnt".equals(sortList[0]) && "desc".equals(sortList[1])) {
+                sort2 = Sort.by(
+                        Sort.Order.desc("subNotice"),
+                        Sort.Order.desc("cnt"),
+                        Sort.Order.desc("createDate")
+                );
+            } else if ("cnt".equals(sortList[0]) && "asc".equals(sortList[1])) {
+                sort2 = Sort.by(
+                        Sort.Order.desc("subNotice"),
+                        Sort.Order.asc("cnt"),
+                        Sort.Order.desc("createDate")
+                );
+            }
+
+            // 정렬값 다시 받기
+            sortedPageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    sort2
+            );
+        }
 
         // 공지글 정렬값 담기
         Page<InformationBoard> informationBoardList = informationBoardService.list(sortedPageable, keyword);
@@ -151,6 +178,8 @@ public class InformationBoardController {
             }
 
             int viewCnt = board_viewService.board_viewCnt("information", informationBoard.getId());
+            informationBoardDTO.setCnt(viewCnt);
+            informationBoardService.updateViewCnt(informationBoardDTO);
             model.addAttribute("viewCnt", viewCnt);
 
 

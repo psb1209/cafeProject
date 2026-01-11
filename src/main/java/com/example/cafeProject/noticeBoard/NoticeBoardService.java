@@ -1,6 +1,8 @@
 package com.example.cafeProject.noticeBoard;
 
 
+import com.example.cafeProject.noticeBoard.NoticeBoard;
+import com.example.cafeProject.noticeBoard.NoticeBoardDTO;
 import com.example.cafeProject.member.*;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
@@ -69,9 +71,15 @@ public class NoticeBoardService {
     public NoticeBoard setUpdate(NoticeBoardDTO paramDTO) {
         NoticeBoard noticeBoard = getSelectOneById(paramDTO);
 
-        noticeBoard.setSubject(paramDTO.getSubject());
-        noticeBoard.setContent(paramDTO.getContent());
-        /*noticeBoard.setCnt(paramDTO.getCnt());*/
+        if (
+                paramDTO.getSubject() != null && paramDTO.getSubject().isBlank()
+                        && paramDTO.getContent() != null && paramDTO.getContent().isBlank()
+        ) {
+            noticeBoard.setSubject(paramDTO.getSubject());
+            noticeBoard.setContent(paramDTO.getContent());
+        } else {
+            noticeBoard.setCnt(paramDTO.getCnt());
+        }
 
         return noticeBoard;
     }

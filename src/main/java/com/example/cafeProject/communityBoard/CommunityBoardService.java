@@ -64,7 +64,7 @@ public class CommunityBoardService {
         CommunityBoard communityBoard = new CommunityBoard();
         communityBoard.setSubject(paramDTO.getSubject());
         communityBoard.setContent(paramDTO.getContent());
-        communityBoard.setMember(memberService.view(paramDTO.getMemberId()));
+        communityBoard.setMember(memberService.viewCurrentMember());
         communityBoard.setCnt(0);
 
         communityBoardRepository.save(communityBoard);
@@ -74,9 +74,15 @@ public class CommunityBoardService {
     public CommunityBoard setUpdate(CommunityBoardDTO paramDTO) {
         CommunityBoard communityBoard = getSelectOneById(paramDTO);
 
-        communityBoard.setSubject(paramDTO.getSubject());
-        communityBoard.setContent(paramDTO.getContent());
-        /*communityBoard.setCnt(paramDTO.getCnt());*/
+        if (
+                paramDTO.getSubject() != null && paramDTO.getSubject().isBlank()
+             && paramDTO.getContent() != null && paramDTO.getContent().isBlank()
+        ) {
+            communityBoard.setSubject(paramDTO.getSubject());
+            communityBoard.setContent(paramDTO.getContent());
+        } else {
+            communityBoard.setCnt(paramDTO.getCnt());
+        }
 
         return communityBoard;
     }

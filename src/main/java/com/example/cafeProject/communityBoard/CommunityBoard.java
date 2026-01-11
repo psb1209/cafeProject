@@ -65,7 +65,6 @@ public class CommunityBoard {
         communityBoard.setSubNotice(communityBoardDTO.isSubNotice());
         /*=====================================================================================*/
 
-
         return communityBoard;
     }
 
