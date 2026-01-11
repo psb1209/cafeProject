@@ -20,11 +20,6 @@
 
         <!-- ============================== 공지사항 ============================== -->
 
-        <div th:if="${(noticeBoardList == null or noticeBoardList.isEmpty()) and (subNoticeBoardNoticeList == null or subNoticeBoardNoticeList.isEmpty())}"
-             class="text-center" style="padding:40px; color:#888;">
-            등록된 게시글이 없습니다.
-        </div>
-
         <div class="cafe-board-wrap">
             <div class="cafe-board-header">
                 <div class="cafe-board-title" onclick="location.href='/noticeBoard/list'" style="cursor:pointer;">
@@ -33,6 +28,11 @@
                 <a href="/noticeBoard/list" class="cafe-more-btn">
                     <span class="more-text">더보기</span><span class="arrow">›</span>
                 </a>
+            </div>
+
+            <div th:if="${(noticeBoardList == null or noticeBoardList.isEmpty()) and (subNoticeBoardNoticeList == null or subNoticeBoardNoticeList.isEmpty())}"
+                 class="text-center" style="padding:40px; color:#888;">
+                등록된 게시글이 없습니다.
             </div>
 
             <table class="cafe-board-table"
@@ -109,11 +109,6 @@
 
         <!-- ============================== 정보게시판 ============================== -->
 
-        <div th:if="${(informationBoardList == null or informationBoardList.isEmpty()) and (subInformationBoardNoticeList == null or subInformationBoardNoticeList.isEmpty())}"
-             class="text-center" style="padding:40px; color:#888;">
-            등록된 게시글이 없습니다.
-        </div>
-
         <div class="cafe-board-wrap">
             <div class="cafe-board-header">
                 <div class="cafe-board-title" onclick="location.href='/informationBoard/list'" style="cursor:pointer;">
@@ -122,6 +117,11 @@
                 <a href="/informationBoard/list" class="cafe-more-btn">
                     <span class="more-text">더보기</span><span class="arrow">›</span>
                 </a>
+            </div>
+
+            <div th:if="${(informationBoardList == null or informationBoardList.isEmpty()) and (subInformationBoardNoticeList == null or subInformationBoardNoticeList.isEmpty())}"
+                 class="text-center" style="padding:40px; color:#888;">
+                등록된 게시글이 없습니다.
             </div>
 
             <table class="cafe-board-table"
@@ -194,11 +194,6 @@
 
         <!-- ============================== 자유게시판 ============================== -->
 
-        <div th:if="${(communityBoardList == null or communityBoardList.isEmpty()) and (subCommunityBoardNoticeList == null or subCommunityBoardNoticeList.isEmpty())}"
-             class="text-center" style="padding:40px; color:#888;">
-            등록된 게시글이 없습니다.
-        </div>
-
         <div class="cafe-board-wrap">
             <div class="cafe-board-header">
                 <div class="cafe-board-title" onclick="location.href='/communityBoard/list'" style="cursor:pointer;">
@@ -207,6 +202,11 @@
                 <a href="/communityBoard/list" class="cafe-more-btn">
                     <span class="more-text">더보기</span><span class="arrow">›</span>
                 </a>
+            </div>
+
+            <div th:if="${(communityBoardList == null or communityBoardList.isEmpty()) and (subCommunityBoardNoticeList == null or subCommunityBoardNoticeList.isEmpty())}"
+                 class="text-center" style="padding:40px; color:#888;">
+                등록된 게시글이 없습니다.
             </div>
 
             <table class="cafe-board-table"
