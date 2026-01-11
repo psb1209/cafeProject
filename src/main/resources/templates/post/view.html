@@ -55,6 +55,13 @@
             <!-- 버튼 -->
             <div class="cafe-article-actions">
                 <a class="cafe-action-btn"
+                   th:if="${isTrash == true}"
+                   th:href="@{/cafe/{cafeCode}/post/trashList(cafeCode=${cafe?.code}, b=${board?.code})}">
+                    목록
+                </a>
+
+                <a class="cafe-action-btn"
+                   th:unless="${isTrash == true}"
                    th:href="@{/cafe/{cafeCode}/post/list(cafeCode=${cafe?.code}, b=${board?.code})}">
                     목록
                 </a>
@@ -102,7 +109,7 @@
             </div>
 
             <!-- 댓글 -->
-            <div class="cafe-comment-section">
+            <div class="cafe-comment-section" th:if="${isTrash != true}">
 
                 <div class="cafe-comment-title">
                     댓글 <span th:text="${commentCount}">0</span>

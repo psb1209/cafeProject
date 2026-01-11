@@ -211,13 +211,14 @@ public class PostController {
             @PathVariable String cafeCode,
             @RequestParam(name="b", required = false) String boardCode,
             @PathVariable int id,
-            Authentication authentication,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             Model model
     ) {
         PostDTO dto = postService.viewTrashDTO(id);
         if (boardCode == null || boardCode.isBlank()) return "redirect:/cafe/" + cafeCode + "/post/trash/" + id + "?b=" + dto.getBoardCode();
 
         model.addAttribute("data", dto);
+        model.addAttribute("commentList", Page.empty(pageable));
         model.addAttribute("isTrash", true);
         model.addAttribute("canEdit", false);
         return "post/view";
