@@ -145,7 +145,8 @@
                                     <button type="button" class="comment-link-btn" th:onclick="|toggleReplyForm(${comment.id})|">답글</button>
                                 </form>
                                 <form th:action="@{/noticeBoardComment/update}"
-                                      method="post">
+                                      method="post"
+                                      th:if="${#authentication.name == noticeBoard.member.username}">
                                     <input type="hidden" name="noticeBoardId"
                                            th:value="${noticeBoard.id}"/>
                                     <input type="hidden" name="noticeBoardCommentId"
@@ -155,7 +156,8 @@
 
                                 <form th:action="@{/noticeBoardComment/deleteProc}"
                                       method="post"
-                                      onsubmit="return confirm('삭제하시겠습니까?');">
+                                      onsubmit="return confirm('삭제하시겠습니까?');"
+                                      th:if="${#authentication.name == noticeBoard.member.username}">
                                     <input type="hidden" name="noticeBoardId"
                                            th:value="${noticeBoard.id}"/>
                                     <input type="hidden" name="noticeBoardCommentId"
