@@ -135,6 +135,11 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
         if (DEFAULT_BOARD_CODES.contains(board.getCode())) {
             dto.setUsername("Auto-Created");
         }
+        if (board.getCafe() != null) {
+            dto.setCafeId(board.getCafe().getId());
+            dto.setCafeName(board.getCafe().getName());
+            dto.setCafeCode(board.getCafe().getCode());
+        }
         return dto;
     }
 
@@ -183,12 +188,6 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
     @Override
     protected void beforeUpdate(BoardDTO dto, Board board) {
         if (dto.getId() == null) throw new IllegalArgumentException("수정 대상 ID가 없습니다.");
-
-        dto.setCreateDate(null);
-        dto.setMemberId(null);
-        dto.setUsername(null);
-        dto.setCafeId(null);
-        dto.setCafeCode(null);
 
         if (dto.getImgName() == null || dto.getImgName().isBlank()) dto.setImgName(board.getImgName());
         if (dto.getReadRole() == null)  dto.setReadRole(board.getReadRole());

@@ -63,7 +63,16 @@ public class BoardAdminController extends BaseImageController<Board, BoardDTO> {
     /** 각 메서드들의 c 필수화 */
     private String requireCafeCode() {
         String c = request.getParameter("c");
-        if (c == null || c.isBlank()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "cafeCode가 없습니다.");
+        if (c == null || c.isBlank()) {
+            log.warn("[Missing c] method={} uri={} query={} referer={} paramKeys={}",
+                    request.getMethod(),
+                    request.getRequestURI(),
+                    request.getQueryString(),
+                    request.getHeader("Referer"),
+                    request.getParameterMap().keySet()
+            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "cafeCode가 없습니다.");
+        }
         return c;
     }
 
@@ -142,8 +151,10 @@ public class BoardAdminController extends BaseImageController<Board, BoardDTO> {
         dto.setCafeCode(requireCafeCode()); // 변조 방지
 
         try {
+            log.info("before setUpdate cafeCode={}", dto.getCafeCode());
             boardService.setUpdate(dto);
-            return "redirect:/" + basePath + "/view/" + boardService.getIdFromDTO(dto) + "?c=" + dto.getCafeCode();
+            log.info("after  setUpdate cafeCode={}", dto.getCafeCode());
+            return "redirect:/" + basePath + "/view/" + dto.getId() + "?c=" + dto.getCafeCode();
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("readRole", "invalid", e.getMessage());
             return basePath + "/update";

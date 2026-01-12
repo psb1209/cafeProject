@@ -20,7 +20,7 @@ public interface CafeRepository extends JpaRepository<Cafe, Integer> {
     @EntityGraph(attributePaths = "member") // Member 엔티티를 지연로딩 없이 바로 가져옴.
     Page<Cafe> findAll(Pageable pageable);
 
-    /** 현재 읽기 권한 내에서 볼 수 있는 활성화된 모든 카페를 출력 */
+    /** 활성화된 모든 카페를 출력 */
     @Query("""
         select c
         from Cafe c
