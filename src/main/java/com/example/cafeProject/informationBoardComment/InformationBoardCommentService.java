@@ -77,13 +77,12 @@ public class InformationBoardCommentService {
     //작성자만 댓글 수정
     @Transactional
     public InformationBoardComment setUpdate(InformationBoardCommentDTO informationBoardCommentDTO, User user) {
-        InformationBoardComment informationBoardComment = informationBoardCommentRepository.findById(informationBoardCommentDTO.getId())
+        InformationBoardComment informationBoardComment = informationBoardCommentRepository.findById(informationBoardCommentDTO.getInformationBoardCommentId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 답변을 찾을 수 없습니다."));
 
         informationBoardComment.setContent(informationBoardCommentDTO.getContent());
         return informationBoardComment;
     }
-
 
     //작성자 & 관리자 & 매니저만 댓글 삭제
     @Transactional

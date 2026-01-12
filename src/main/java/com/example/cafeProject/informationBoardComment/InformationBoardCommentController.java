@@ -4,9 +4,6 @@ import com.example.cafeProject.informationBoard.InformationBoardDTO;
 import com.example.cafeProject.informationBoard.InformationBoardService;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
-import com.example.cafeProject.operationBoard.OperationBoardDTO;
-import com.example.cafeProject.operationBoardComment.OperationBoardComment;
-import com.example.cafeProject.operationBoardComment.OperationBoardCommentDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -123,6 +120,8 @@ public class InformationBoardCommentController {
             InformationBoardCommentDTO informationBoardCommentDTO,
             @AuthenticationPrincipal User user
     ) {
+
+        System.out.println("============================ > " + informationBoardCommentDTO.getInformationBoardCommentId());
         try {
             InformationBoardDTO informationBoardDTO = new InformationBoardDTO();
             informationBoardDTO.setId(informationBoardCommentDTO.getInformationBoardId());

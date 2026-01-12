@@ -129,9 +129,7 @@
                                   class="cafe-comment-textarea"
                                   th:text="${informationBoardCommentUpdate.content}"></textarea>
                         <div class="comment-btn-wrap">
-                            <button type="button"
-                                    class="cafe-comment-btn"
-                                    onclick="commentUpdate();">수정</button>
+                            <button type="button" class="cafe-comment-btn" onclick="commentUpdate();">수정</button>
                         </div>
                     </div>
                 </form>
@@ -163,7 +161,7 @@
                                       method="post">
                                     <input type="hidden" name="informationBoardId"
                                            th:value="${informationBoard.id}"/>
-                                    <input type="hidden" name="informationBoardCommentId"
+                                    <input type="hidden" name="id"
                                            th:value="${comment.id}">
                                     <button class="comment-link-btn">수정</button>
                                 </form>
