@@ -1,5 +1,6 @@
 package com.example.cafeProject.member;
 
+import com.example.cafeProject.validation.AdminOnly;
 import com.example.cafeProject.validation.ManagementOnly;
 import com.example.cafeProject.validation.ValidationGroups;
 import com.example.exception.*;
@@ -144,7 +145,7 @@ public class MemberController {
      * 탈퇴 사유 페이지
      * - 유저가 탈퇴할 때 사유를 수집해 통계로 만들어 보여주는 페이지
      */
-    @ManagementOnly
+    @AdminOnly
     @GetMapping("/withdrawalReason")
     public String withdrawalReason(
             @RequestParam(name = "reason", required = false) ReasonType reason,

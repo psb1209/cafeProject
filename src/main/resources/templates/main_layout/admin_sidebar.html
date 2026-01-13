@@ -60,6 +60,7 @@
 
         <!-- 탈퇴 사유 통계 -->
         <a class="nav-link"
+           sec:authorize="hasAnyAuthority('ROLE_ADMIN')"
            th:classappend="${activeMenu == 'withdrawalReason'} ? ' active'"
            th:href="@{/member/withdrawalReason}">
             <span class="nav-emoji">📊</span>탈퇴 사유 통계
