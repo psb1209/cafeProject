@@ -59,7 +59,7 @@ public class NoticeBoardController {
             Model model,
             @RequestParam(required = false) String keyword,
             @RequestParam (required = false) String sort,
-            @PageableDefault(size = 7, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         /*====================================================== 공지글!! =======================================================*/
         List<NoticeBoard> subNoticeList = noticeBoardService.getSubNoticeList();
@@ -138,7 +138,7 @@ public class NoticeBoardController {
             Model model,
             NoticeBoardDTO noticeBoardDTO,
             Authentication authentication,
-            @PageableDefault(size=2, sort="id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         try {
             NoticeBoard noticeBoard = noticeBoardService.getSelectOneById(noticeBoardDTO);

@@ -66,7 +66,7 @@ public class CommunityBoardController {
             Model model,
             @RequestParam(required = false) String keyword,
             @RequestParam (required = false) String sort,
-            @PageableDefault(size = 2, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         /*====================================================== 공지글!! =======================================================*/
         List<CommunityBoard> subNoticeList = communityBoardService.getSubNoticeList();
@@ -147,7 +147,7 @@ public class CommunityBoardController {
             Model model,
             CommunityBoardDTO communityBoardDTO,
             Authentication authentication,
-            @PageableDefault(size=3, sort="id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         try {
             CommunityBoard communityBoard = communityBoardService.getSelectOneById(communityBoardDTO);

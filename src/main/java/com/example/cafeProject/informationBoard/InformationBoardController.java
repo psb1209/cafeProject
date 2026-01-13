@@ -142,7 +142,7 @@ public class InformationBoardController {
             Model model,
             InformationBoardDTO informationBoardDTO,
             Authentication authentication,
-            @PageableDefault(size=3, sort="id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         try {
             // 해당 게시글 존재여부 확인

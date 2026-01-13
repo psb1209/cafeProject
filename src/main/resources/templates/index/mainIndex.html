@@ -122,7 +122,10 @@
                         <div class="user-name">
                             <div class="greeting">환영합니다! 🎆</div>
                             <a class="username-link" href="/member/view"
-                               th:utext="${#authorization.expression('hasRole(''ADMIN'')')} ? '관리자님' : ${#authentication.name} + ' 회원님'">
+                               th:utext="${
+                                            #authorization.expression('hasRole(''ADMIN'')') ? '관리자님'
+                                            : #authorization.expression('hasRole(''MANAGER'')') ? '매니저님'
+                                            : #authentication.name + ' 회원님'}">
                             </a>
                         </div>
                     </div>
