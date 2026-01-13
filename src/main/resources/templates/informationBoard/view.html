@@ -159,7 +159,7 @@
                                 </form>
                                 <form th:action="@{/informationBoardComment/update}"
                                       method="post"
-                                      th:if="${#authentication.name == informationBoard.member.username}">
+                                      th:if="${#authentication.name == comment.member.username}">
                                     <input type="hidden" name="informationBoardId"
                                            th:value="${informationBoard.id}"/>
                                     <input type="hidden" name="id"
@@ -170,7 +170,7 @@
                                 <form th:action="@{/informationBoardComment/deleteProc}"
                                       method="post"
                                       onsubmit="return confirm('삭제하시겠습니까?');"
-                                      th:if="${#authentication.name == informationBoard.member.username}">
+                                      th:if="${#authentication.name == comment.member.username || #authorization.expression('hasAnyRole(''ROLE_ADMIN'', ''ROLE_MANAGER'')')}">
                                     <input type="hidden" name="informationBoardId"
                                            th:value="${informationBoard.id}"/>
                                     <input type="hidden" name="id"

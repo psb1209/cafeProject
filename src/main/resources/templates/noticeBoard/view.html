@@ -146,7 +146,7 @@
                                 </form>
                                 <form th:action="@{/noticeBoardComment/update}"
                                       method="post"
-                                      th:if="${#authentication.name == noticeBoard.member.username}">
+                                      th:if="${#authentication.name == comment.member.username}">
                                     <input type="hidden" name="noticeBoardId"
                                            th:value="${noticeBoard.id}"/>
                                     <input type="hidden" name="noticeBoardCommentId"
@@ -157,7 +157,7 @@
                                 <form th:action="@{/noticeBoardComment/deleteProc}"
                                       method="post"
                                       onsubmit="return confirm('삭제하시겠습니까?');"
-                                      th:if="${#authentication.name == noticeBoard.member.username}">
+                                      th:if="${#authentication.name == comment.member.username || #authorization.expression('hasAnyRole(''ROLE_ADMIN'', ''ROLE_MANAGER'')')}">
                                     <input type="hidden" name="noticeBoardId"
                                            th:value="${noticeBoard.id}"/>
                                     <input type="hidden" name="noticeBoardCommentId"
