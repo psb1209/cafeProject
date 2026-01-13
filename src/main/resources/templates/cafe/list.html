@@ -7,9 +7,6 @@
 
 <body>
 
-<h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
-<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
-
 <div layout:fragment="content">
 
     <link th:href="@{/css/board.css}" rel="stylesheet" />
@@ -29,6 +26,19 @@
             </div>
         </div>
 
+        <!-- 검색 -->
+        <div class="cafe-board-search">
+            <form class="cafe-search-form"
+                  method="get"
+                  th:action="@{/cafe/cafeList}">
+                <input type="search"
+                       name="keyword"
+                       placeholder="카페 검색"
+                       th:value="${keyword}">
+                <button type="submit">🔍</button>
+            </form>
+        </div>
+
         <!-- 테이블 -->
         <table class="cafe-board-table">
             <thead>
@@ -45,7 +55,10 @@
             <tr th:each="data, loop : ${list}"
                 th:onclick="|location.href='@{|/cafe/${data.code}|}'|">
                 <td class="td_underline" th:text="${loop.index + 1}"></td>
-                <td class="td_underline col-subject text-center" th:text="${data.name}"></td>
+                <td class="td_underline col-subject text-center">
+                    <span th:text="${data.name}"></span>
+                    <span class="badge text-bg-secondary ms-2" th:if="${!data.enabled}">비활성</span>
+                </td>
                 <td class="td_underline" th:text="${data.description}"></td>
                 <td class="td_underline" th:text="${data.username}"></td>
                 <td class="td_underline col-date"
@@ -61,7 +74,7 @@
             <!-- 이전 버튼 -->
             <a class="page-btn"
                th:classappend="${list.first} ? ' disabled'"
-               th:href="@{|/operationBoard/list?page=${list.number - 1}|}">이전</a>
+               th:href="@{/cafe/cafeList(page=${list.number - 1}, keyword=${keyword})}">이전</a>
 
             <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
             <th:block th:with="
@@ -72,13 +85,13 @@
                    th:each="page : ${#numbers.sequence(startPage, endPage)}"
                    th:text="${page + 1}"
                    th:classappend="${page == list.number} ? ' active'"
-                   th:href="@{|/operationBoard/list?page=${page}|}"></a>
+                   th:href="@{/cafe/cafeList(page=${page}, keyword=${keyword})}"></a>
             </th:block>
 
             <!-- 다음 버튼 -->
             <a class="page-btn"
                th:classappend="${list.last} ? ' disabled'"
-               th:href="@{|/operationBoard/list?page=${list.number + 1}|}">다음</a>
+               th:href="@{/cafe/cafeList(page=${list.number + 1}, keyword=${keyword})}">다음</a>
         </div>
 
     </div>

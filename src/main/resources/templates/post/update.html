@@ -9,8 +9,20 @@
                headerPosition='center center'">
 
 <body>
-<h1 layout:fragment="pageTitle" th:text="${board?.name} ?: 'My Cafe'">My Cafe</h1>
-<span layout:fragment="pageSubTitle" th:text="${board?.description} ?: 'first page'">first page</span>
+<h1 layout:fragment="pageTitle"
+    th:text="${board?.name} ?: 'My Cafe'"
+    th:onclick="${!#strings.isEmpty(cafeCode)}
+                ? |location.href='@{/cafe/{cafeCode}(cafeCode=${cafeCode})}'|
+                : (cafe != null && !#strings.isEmpty(cafe.code))
+                    ? |location.href='@{/cafe/{cafeCode}(cafeCode=${cafe.code})}'|
+                    : |location.href='/'|"
+    style="cursor: pointer;">My Cafe</h1>
+
+<span layout:fragment="pageSubTitle"
+      th:with="desc=${board?.description == null ? null : board.description.trim().replace('\r','')}"
+      th:text="${#strings.isEmpty(desc) ? 'first page' : desc.split('\n')[0]}">
+    first page
+</span>
 
 <div layout:fragment="content">
 

@@ -47,13 +47,13 @@
                 <!-- 카페 설명 -->
                 <div class="write-group">
                     <label for="description" class="write-label">카페 설명</label>
-                    <input type="text"
-                           id="description"
-                           th:field="*{description}"
-                           placeholder="카페 설명을 입력해주세요."
-                           class="write-title-input"
-                           th:classappend="${#fields.hasErrors('description')} ? ' error'"
-                           required>
+                    <textarea id="description"
+                              rows="8"
+                              class="cafe-comment-textarea"
+                              th:field="*{description}"
+                              placeholder="카페 설명을 입력해주세요."
+                              th:classappend="${#fields.hasErrors('description')} ? ' error'"
+                              required></textarea>
                     <div class="invalid-feedback d-block"
                          th:if="${#fields.hasErrors('description')}"
                          th:errors="*{description}">

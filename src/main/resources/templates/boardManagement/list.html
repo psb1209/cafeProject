@@ -3,13 +3,25 @@
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{main_layout/layout}"
-      th:with="headerImage=@{/assets/img/main.jpg},
+      th:with="headerImage=${#strings.isEmpty(cafe?.imgName)}
+                         ? @{/assets/img/post-sample-image.jpg}
+                         : @{|${imageUrlPrefix}${cafe.imgName}|},
                headerPosition='center center',
                sidebarKey='custom'">
 <body>
 
-<h1 layout:fragment="pageTitle" onclick="location.href='/healthCafe'" style="cursor: pointer;">헬 사 모</h1>
-<span layout:fragment="pageSubTitle">다 같이 길러보아요 근육!</span>
+<h1 layout:fragment="pageTitle"
+    th:text="${cafe?.name} ?: 'My Cafe'"
+    th:onclick="${cafe != null}
+                ? |location.href='@{/cafe/{cafeCode}(cafeCode=${cafe.code})}'|
+                : |location.href='/'|"
+    style="cursor: pointer;">카페 이름</h1>
+
+<span layout:fragment="pageSubTitle"
+      th:with="desc=${cafe?.description == null ? null : cafe.description.trim().replace('\r','')}"
+      th:text="${#strings.isEmpty(desc) ? 'description' : desc.split('\n')[0]}">
+    카페 설명
+</span>
 
 <div layout:fragment="content">
 

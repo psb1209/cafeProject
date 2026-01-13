@@ -3,12 +3,24 @@
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{main_layout/layout}"
-      th:with="headerImage=@{/assets/img/main.jpg},
+      th:with="headerImage=${#strings.isEmpty(cafe?.imgName)}
+                         ? @{/assets/img/post-sample-image.jpg}
+                         : @{|${imageUrlPrefix}${cafe.imgName}|},
                headerPosition='center center',
                sidebarKey='custom'">
 <body>
-<h1 layout:fragment="pageTitle">게시판 생성</h1>
-<span layout:fragment="pageSubTitle"></span>
+<h1 layout:fragment="pageTitle"
+    th:text="${cafe?.name} ?: 'My Cafe'"
+    th:onclick="${cafe != null}
+                ? |location.href='@{/cafe/{cafeCode}(cafeCode=${cafe.code})}'|
+                : |location.href='/'|"
+    style="cursor: pointer;">카페 이름</h1>
+
+<span layout:fragment="pageSubTitle"
+      th:with="desc=${cafe?.description == null ? null : cafe.description.trim().replace('\r','')}"
+      th:text="${#strings.isEmpty(desc) ? 'description' : desc.split('\n')[0]}">
+    카페 설명
+</span>
 
 <div layout:fragment="content">
     <!-- 본문 내용 시작 -->
@@ -43,21 +55,20 @@
                          th:errors="*{name}">
                     </div>
                 </div>
-
+                
                 <!-- 게시판 설명 -->
                 <div class="write-group">
                     <label for="description" class="write-label">게시판 설명</label>
-                    <input type="text"
-                           id="description"
-                           th:field="*{description}"
-                           placeholder="게시판 설명을 입력해주세요."
-                           class="write-title-input"
-                           th:classappend="${#fields.hasErrors('description')} ? ' error'"
-                           required>
+                    <textarea id="description"
+                              rows="8"
+                              class="cafe-comment-textarea"
+                              th:field="*{description}"
+                              placeholder="게시판 설명을 입력해주세요."
+                              th:classappend="${#fields.hasErrors('description')} ? ' error'"
+                              required></textarea>
                     <div class="invalid-feedback d-block"
                          th:if="${#fields.hasErrors('description')}"
-                         th:errors="*{description}">
-                    </div>
+                         th:errors="*{description}"></div>
                 </div>
 
                 <!-- 링크 코드 -->

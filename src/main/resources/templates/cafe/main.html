@@ -13,11 +13,16 @@
 
 <h1 layout:fragment="pageTitle"
     th:text="${cafe?.name} ?: 'My Cafe'"
-    onclick="location.href='/'"
+    th:onclick="${cafe != null}
+                ? |location.href='@{/cafe/{cafeCode}(cafeCode=${cafe.code})}'|
+                : |location.href='/'|"
     style="cursor: pointer;">카페 이름</h1>
 
 <span layout:fragment="pageSubTitle"
-      th:text="${cafe?.description} ?: 'description'">카페 설명</span>
+      th:with="desc=${cafe?.description == null ? null : cafe.description.trim().replace('\r','')}"
+      th:text="${#strings.isEmpty(desc) ? 'description' : desc.split('\n')[0]}">
+    카페 설명
+</span>
 
 <div layout:fragment="content">
 

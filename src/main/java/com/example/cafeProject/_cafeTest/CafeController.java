@@ -83,11 +83,11 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
             Authentication authentication,
             Model model
     ) {
-        Page<CafeDTO> list = cafeService.listVisibleDTO(pageable, keyword);
+        Page<CafeDTO> list = cafeService.listVisibleDTO(pageable, keyword, authentication);
         model.addAttribute("list", list);
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeMenu", "cafeList");
-        return super.basePath + "/list"; // ex) "memo/list"
+        return super.basePath + "/list";
     }
 
     // "/cafe/{code} 형식으로 오는 링크를 mainPage로 떠넘김

@@ -62,21 +62,38 @@ public class CafeService extends BaseImageService<Cafe, CafeDTO> {
     public Page<Cafe> listVisible(Pageable pageable) {
         return cafeRepository.findVisible(pageable);
     }
-    public Page<CafeDTO> listVisibleDTO(Pageable pageable, RoleType[] roles) {
+    public Page<CafeDTO> listVisibleDTO(Pageable pageable) {
         return listVisible(pageable).map(this::toDTO);
     }
 
-    public Page<Cafe> listVisible(Pageable pageable, String keyword) {
-        if (keyword == null || keyword.isBlank())
-            return cafeRepository.findVisible(pageable);
+    public Page<Cafe> listVisible(Pageable pageable, String keyword, Authentication authentication) {
+        RoleType[] roles = memberService.getEffectiveRoles(authentication);
+        boolean management = isManagerOrAbove(roles);
 
-        if (BaseUtility.isChosungQuery(keyword.trim()))
-            return cafeRepository.searchVisibleByChosung(BaseUtility.jaeumBreaker(keyword), pageable);
+        // keyword 없음
+        if (keyword == null || keyword.isBlank()) {
+            return management
+                    ? cafeRepository.findAll(pageable)      // MANAGER 이상: 전체
+                    : cafeRepository.findVisible(pageable); // 그 외: 활성만
+        }
 
-        return cafeRepository.searchVisible(keyword.trim(), pageable);
+        String kw = keyword.trim();
+
+        // 초성 검색
+        if (BaseUtility.isChosungQuery(kw)) {
+            String broken = BaseUtility.jaeumBreaker(kw);
+            return management
+                    ? cafeRepository.searchAllByChosung(broken, pageable)
+                    : cafeRepository.searchVisibleByChosung(broken, pageable);
+        }
+
+        // 일반 검색
+        return management
+                ? cafeRepository.searchAll(kw, pageable)
+                : cafeRepository.searchVisible(kw, pageable);
     }
-    public Page<CafeDTO> listVisibleDTO(Pageable pageable, String keyword) {
-        return listVisible(pageable, keyword).map(this::toDTO);
+    public Page<CafeDTO> listVisibleDTO(Pageable pageable, String keyword, Authentication authentication) {
+        return listVisible(pageable, keyword, authentication).map(this::toDTO);
     }
 
     /**

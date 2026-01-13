@@ -21,6 +21,7 @@ public interface CafeRepository extends JpaRepository<Cafe, Integer> {
     Page<Cafe> findAll(Pageable pageable);
 
     /** 활성화된 모든 카페를 출력 */
+    @EntityGraph(attributePaths = "member")
     @Query("""
         select c
         from Cafe c
@@ -28,25 +29,43 @@ public interface CafeRepository extends JpaRepository<Cafe, Integer> {
     """)
     Page<Cafe> findVisible(Pageable pageable);
 
-    /** 카페 검색 */
+    /** (일반) 활성 카페 검색 */
+    @EntityGraph(attributePaths = "member")
     @Query("""
         select c
         from Cafe c
         where c.enabled = true
           and lower(c.name) like lower(concat('%', :keyword, '%'))
     """)
-    Page<Cafe> searchVisible(@Param("keyword") String keyword,
-                             Pageable pageable);
+    Page<Cafe> searchVisible(@Param("keyword") String keyword, Pageable pageable);
 
-    /** 카페 초성 검색 */
+    /** (일반) 활성 카페 초성 검색 */
+    @EntityGraph(attributePaths = "member")
     @Query("""
         select c
         from Cafe c
         where c.enabled = true
           and c.nameKey like concat('%', :keyword, '%')
     """)
-    Page<Cafe> searchVisibleByChosung(@Param("keyword") String keyword,
-                                      Pageable pageable);
+    Page<Cafe> searchVisibleByChosung(@Param("keyword") String keyword, Pageable pageable);
+
+    /** (관리자/매니저) 전체 카페 검색 (활성/비활성 포함) */
+    @EntityGraph(attributePaths = "member")
+    @Query("""
+        select c
+        from Cafe c
+        where lower(c.name) like lower(concat('%', :keyword, '%'))
+    """)
+    Page<Cafe> searchAll(@Param("keyword") String keyword, Pageable pageable);
+
+    /** (관리자/매니저) 전체 카페 초성 검색 (활성/비활성 포함) */
+    @EntityGraph(attributePaths = "member")
+    @Query("""
+        select c
+        from Cafe c
+        where c.nameKey like concat('%', :keyword, '%')
+    """)
+    Page<Cafe> searchAllByChosung(@Param("keyword") String keyword, Pageable pageable);
 
     boolean existsByCode(String code);
     boolean existsByName(String name);

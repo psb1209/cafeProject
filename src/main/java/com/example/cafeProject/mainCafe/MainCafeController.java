@@ -40,7 +40,7 @@ public class MainCafeController {
         model.addAttribute("authentication", authentication);
         model.addAttribute("activeMenu", "main");       // 네비(사이드바/상단메뉴)용
         model.addAttribute("activeTab", "my");      // 카페탭 기본 선택
-        model.addAttribute("list", cafeService.listVisibleDTO(pageable, memberService.getEffectiveRoles(authentication)));
+        model.addAttribute("list", cafeService.listVisibleDTO(pageable));
         return "index/mainIndex";
     }
 
@@ -66,7 +66,7 @@ public class MainCafeController {
     ) {
         model.addAttribute("activeMenu", "main");
         model.addAttribute("activeTab", "my");
-        model.addAttribute("list", cafeService.listVisibleDTO(pageable, memberService.getEffectiveRoles(authentication)));
+        model.addAttribute("list", cafeService.listVisibleDTO(pageable));
         return "explore_cafes/my :: cafeList"; // explore_cafes/my의 cafeList 조각만 로딩
     }
 
