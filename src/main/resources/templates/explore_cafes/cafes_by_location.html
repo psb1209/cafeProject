@@ -19,34 +19,154 @@
 
                 <div class="cafe-topbar">
                     <div class="cafe-tabs">
-                        <button class="tab" type="button"
-                                onclick="loadMyCafe()"
-                                th:classappend="${activeTab == 'my'} ? ' active'">내 카페</button>
-
-                        <button class="tab" type="button"
-                                onclick="loadFavoriteCafe()"
-                                th:classappend="${activeTab == 'favorite'} ? ' active'">즐겨찾는 카페</button>
-                    </div>
-                    <div class="cafe-manage">
-                        <a href="#">⚙ 내 카페 관리</a>
+                        <button class="tab active" type="button">대전</button>
+                        <button class="tab" type="button">서울</button>
+                        <button class="tab" type="button">부산</button>
+                        <button class="tab" type="button">대구</button>
+                        <button class="tab" type="button">광주</button>
                     </div>
                 </div>
 
+
                 <div class="cafe-list">
-                    <div class="cafe-item">
+
+                    <!-- 1 -->
+                    <div class="cafe-item" onclick="location.href='/healthCafe'">
                         <div class="cafe-thumb">
-                            <img src="/assets/img/main.jpg" alt="헬사모">
+                            <img src="/assets/img/main.jpg" alt="대전 헬사모">
                         </div>
-                        <div class="cafe-content" th:onclick="|location.href='@{/healthCafe}'|">
-                            <div class="cafe-title">헬사모</div>
-                            <div class="cafe-desc">헬스를 사랑하는 사람들의 모임</div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">대전 헬사모</div>
+                            <div class="cafe-desc">대전 헬스 정보 공유 커뮤니티</div>
                             <div class="cafe-meta">
-                                <span>주제 | 건강/다이어트</span>
+                                <span>지역 | 대전</span>
                                 <span>👤 5,325</span>
                             </div>
                         </div>
                     </div>
+
+                    <!-- 2 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/goodTaste.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">대전 맛집 연구소</div>
+                            <div class="cafe-desc">대전 로컬 맛집 정보 공유</div>
+                            <div class="cafe-meta">
+                                <span>지역 | 대전</span>
+                                <span>👤 8,240</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/salaryman.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">대전 직장인 모임</div>
+                            <div class="cafe-desc">대전 직장인 소통 커뮤니티</div>
+                            <div class="cafe-meta">
+                                <span>지역 | 대전</span>
+                                <span>👤 6,410</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/hobby.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">대전 취미 생활</div>
+                            <div class="cafe-desc">운동 · 사진 · 공예 취미 공유</div>
+                            <div class="cafe-meta">
+                                <span>지역 | 대전</span>
+                                <span>👤 4,980</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/coding2.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">대전 IT 개발자 모임</div>
+                            <div class="cafe-desc">대전 개발자 정보 공유</div>
+                            <div class="cafe-meta">
+                                <span>지역 | 대전</span>
+                                <span>👤 7,300</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/soloLife.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">대전 자취생 카페</div>
+                            <div class="cafe-desc">자취 정보 · 생활 꿀팁</div>
+                            <div class="cafe-meta">
+                                <span>지역 | 대전</span>
+                                <span>👤 3,120</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/mom.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">대전 육아맘 카페</div>
+                            <div class="cafe-desc">대전 육아 정보 공유</div>
+                            <div class="cafe-meta">
+                                <span>지역 | 대전</span>
+                                <span>👤 9,050</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 8 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/pet.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">대전 반려동물 사랑</div>
+                            <div class="cafe-desc">반려동물 정보 · 모임</div>
+                            <div class="cafe-meta">
+                                <span>지역 | 대전</span>
+                                <span>👤 4,670</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 9 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/running.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">대전 산책 동호회</div>
+                            <div class="cafe-desc">산책 · 걷기 모임</div>
+                            <div class="cafe-meta">
+                                <span>지역 | 대전</span>
+                                <span>👤 2,540</span>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
+
             </div>
 
             <!-- 오른쪽 로그인/카페 만들기 -->

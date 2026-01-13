@@ -19,34 +19,154 @@
 
                 <div class="cafe-topbar">
                     <div class="cafe-tabs">
-                        <button class="tab" type="button"
-                                onclick="loadMyCafe()"
-                                th:classappend="${activeTab == 'my'} ? ' active'">내 카페</button>
-
-                        <button class="tab" type="button"
-                                onclick="loadFavoriteCafe()"
-                                th:classappend="${activeTab == 'favorite'} ? ' active'">즐겨찾는 카페</button>
-                    </div>
-                    <div class="cafe-manage">
-                        <a href="#">⚙ 내 카페 관리</a>
+                        <button class="tab active" type="button">운동</button>
+                        <button class="tab" type="button">여행</button>
+                        <button class="tab" type="button">IT · 개발</button>
+                        <button class="tab" type="button">요리</button>
+                        <button class="tab" type="button">취미</button>
                     </div>
                 </div>
 
+
                 <div class="cafe-list">
-                    <div class="cafe-item">
+
+                    <!-- 1 -->
+                    <div class="cafe-item" onclick="location.href='/healthCafe'">
                         <div class="cafe-thumb">
                             <img src="/assets/img/main.jpg" alt="헬사모">
                         </div>
-                        <div class="cafe-content" th:onclick="|location.href='@{/healthCafe}'|">
+                        <div class="cafe-content">
                             <div class="cafe-title">헬사모</div>
                             <div class="cafe-desc">헬스를 사랑하는 사람들의 모임</div>
                             <div class="cafe-meta">
-                                <span>주제 | 건강/다이어트</span>
+                                <span>주제 | 운동</span>
                                 <span>👤 5,325</span>
                             </div>
                         </div>
                     </div>
+
+                    <!-- 2 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/themed_health1.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">홈트의 정석</div>
+                            <div class="cafe-desc">집에서 하는 운동 루틴 공유</div>
+                            <div class="cafe-meta">
+                                <span>주제 | 운동</span>
+                                <span>👤 8,120</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/themed_health6.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">헬린이 탈출 클럽</div>
+                            <div class="cafe-desc">운동 초보자 가이드</div>
+                            <div class="cafe-meta">
+                                <span>주제 | 운동</span>
+                                <span>👤 6,540</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/themed_health3.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">근육 성장 연구소</div>
+                            <div class="cafe-desc">벌크업 · 근비대 정보 공유</div>
+                            <div class="cafe-meta">
+                                <span>주제 | 운동</span>
+                                <span>👤 9,230</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/themed_health4.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">바디프로필 준비반</div>
+                            <div class="cafe-desc">바프 준비 운동 & 식단</div>
+                            <div class="cafe-meta">
+                                <span>주제 | 운동</span>
+                                <span>👤 4,980</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/themed_health2.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">유산소 러닝 크루</div>
+                            <div class="cafe-desc">러닝 · 조깅 정보 공유</div>
+                            <div class="cafe-meta">
+                                <span>주제 | 운동</span>
+                                <span>👤 3,760</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/themed_health5.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">필라테스 & 요가</div>
+                            <div class="cafe-desc">스트레칭 · 체형 교정</div>
+                            <div class="cafe-meta">
+                                <span>주제 | 운동</span>
+                                <span>👤 7,410</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 8 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/themed_health7.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">운동 일기 공유방</div>
+                            <div class="cafe-desc">오늘의 운동 기록</div>
+                            <div class="cafe-meta">
+                                <span>주제 | 운동</span>
+                                <span>👤 2,890</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 9 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb">
+                            <img src="/assets/img/themed_health8.png">
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">체력단련 클럽</div>
+                            <div class="cafe-desc">기초 체력부터 근력까지</div>
+                            <div class="cafe-meta">
+                                <span>주제 | 운동</span>
+                                <span>👤 3,450</span>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
+
             </div>
 
             <!-- 오른쪽 로그인/카페 만들기 -->

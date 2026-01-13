@@ -17,7 +17,7 @@
 
                 <h4>카페 랭킹</h4>
 
-                <div class="cafe-topbar">
+                <!--<div class="cafe-topbar">
                     <div class="cafe-tabs">
                         <button class="tab" type="button"
                                 onclick="loadMyCafe()"
@@ -27,16 +27,25 @@
                                 onclick="loadFavoriteCafe()"
                                 th:classappend="${activeTab == 'favorite'} ? ' active'">즐겨찾는 카페</button>
                     </div>
-                    <div class="cafe-manage">
-                        <a href="#">⚙ 내 카페 관리</a>
-                    </div>
-                </div>
+                </div>-->
 
                 <div class="cafe-list">
+
+                    <!-- 1위 -->
                     <div class="cafe-item">
-                        <div class="cafe-thumb">
+                        <div class="cafe-thumb" style="position:relative;">
                             <img src="/assets/img/main.jpg" alt="헬사모">
+                            <span style="
+                                position:absolute;
+                                top:6px;
+                                left:6px;
+                                font-size:18px;
+                                line-height:1;
+                            ">
+                                🥇
+                            </span>
                         </div>
+
                         <div class="cafe-content" th:onclick="|location.href='@{/healthCafe}'|">
                             <div class="cafe-title">헬사모</div>
                             <div class="cafe-desc">헬스를 사랑하는 사람들의 모임</div>
@@ -46,6 +55,88 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 2위 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb" style="position:relative;">
+                            <img src="/assets/img/coding.png" alt="코딩하는 사람들">
+                            <span style="
+                                position:absolute;
+                                top:6px;
+                                left:6px;
+                                font-size:18px;
+                                line-height:1;
+                            ">
+                                🥈
+                            </span>
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">코딩하는 사람들</div>
+                            <div class="cafe-desc">개발자들의 정보 공유 공간</div>
+                            <div class="cafe-meta">
+                                <span>주제 | IT/개발</span>
+                                <span>👤 4,120</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3위 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb" style="position:relative;">
+                            <img src="/assets/img/soloEat.png" alt="혼밥러 모임">
+                            <span style="
+                                position:absolute;
+                                top:6px;
+                                left:6px;
+                                font-size:18px;
+                                line-height:1;
+                            ">
+                                🥉
+                            </span>
+                        </div>
+                        <div class="cafe-content">
+                            <div class="cafe-title">혼밥러 모임</div>
+                            <div class="cafe-desc">혼자 밥 먹는 사람들의 이야기</div>
+                            <div class="cafe-meta">
+                                <span>주제 | 일상/라이프</span>
+                                <span>👤 3,987</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 4위 -->
+                    <div class="cafe-item">
+                        <div class="cafe-thumb" style="position:relative;">
+                            <img src="/assets/img/GlobalTravel.png" alt="여행에 미치다">
+
+                            <span style="
+            position:absolute;
+            top:6px;
+            left:6px;
+            min-width:22px;
+            height:22px;
+            padding:0 6px;
+            border-radius:11px;
+            background:var(--blue-bg-soft);
+            border:1px solid var(--blue-border);
+            color:var(--blue-main);
+            font-size:12px;
+            font-weight:600;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        ">4</span>
+                        </div>
+
+                        <div class="cafe-content">
+                            <div class="cafe-title">여행에 미치다</div>
+                            <div class="cafe-desc">국내·해외 여행 정보 공유</div>
+                            <div class="cafe-meta">
+                                <span>주제 | 여행</span>
+                                <span>👤 3,210</span>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
