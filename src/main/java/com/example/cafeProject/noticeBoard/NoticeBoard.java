@@ -35,6 +35,7 @@ public class NoticeBoard {
 
     private int cnt;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean subNotice = false;
     

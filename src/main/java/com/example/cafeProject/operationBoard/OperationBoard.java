@@ -36,6 +36,7 @@ public class OperationBoard {
 
     private int cnt;
 /*=============================== 각 게시판 공지글 ===================================*/
+    @Builder.Default
     @Column(nullable = false)
     private boolean subNotice = false;
 /*=====================================================================================*/
