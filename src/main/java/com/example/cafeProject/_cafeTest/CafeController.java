@@ -116,13 +116,8 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
             @RequestParam(name = "c") String cafeCode,
             Model model
     ) {
-        // 템플릿에서 h1 onclick 등에 쓰는 값
         model.addAttribute("cafeCode", cafeCode);
-
-        // 사이드바/메뉴 하이라이트용(필요 없으면 제거 가능)
         model.addAttribute("activeMenu", "introduction");
-
-        // 여기서 "cafe"는 @ModelAttribute("cafe")가 이미 넣어줌 (c 파라미터 기반)
         return super.basePath + "/introduction"; // "cafe/introduction"
     }
 
