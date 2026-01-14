@@ -7,18 +7,16 @@
                         ? @{/assets/img/post-sample-image.jpg}
                         : @{|${imageUrlPrefix}${cafe.imgName}|},
           headerPosition='center center',
-          sidebarKey='cafe'
+          sidebarKey='custom'
       ">
 <body>
 
 <!-- 상단 헤더(레이아웃 fragment) -->
 <h1 layout:fragment="pageTitle"
     th:text="${cafe?.name} ?: 'My Cafe'"
-    th:onclick="${!#strings.isEmpty(cafeCode)}
-                ? |location.href='@{/cafe/{cafeCode}(cafeCode=${cafeCode})}'|
-                : (cafe != null && !#strings.isEmpty(cafe.code))
-                    ? |location.href='@{/cafe/{cafeCode}(cafeCode=${cafe.code})}'|
-                    : |location.href='/'|"
+    th:onclick="${cafe != null}
+                ? |location.href='@{/cafe/{cafeCode}(cafeCode=${cafe.code})}'|
+                : |location.href='/'|"
     style="cursor: pointer;">카페 이름</h1>
 
 <!-- 부제: 설명 첫 줄(없으면 기본 문구) -->

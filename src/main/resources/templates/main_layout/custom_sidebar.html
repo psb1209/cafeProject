@@ -66,7 +66,7 @@
         <!-- 소개 -->
         <a class="nav-link"
            th:classappend="${activeMenu == 'introduction'} ? ' active'"
-           th:href="@{/cafe/introduction(c=${cafeCode})}">
+           th:href="@{/cafe/introduction(c=${cafe.code})}">
             <span class="nav-emoji">ℹ️</span>카페 소개
         </a>
 
