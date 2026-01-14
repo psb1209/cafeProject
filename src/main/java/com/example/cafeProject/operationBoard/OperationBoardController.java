@@ -5,12 +5,9 @@ import com.example.cafeProject.board_view.Board_viewService;
 import com.example.cafeProject.like.LikeService;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
-import com.example.cafeProject.operationBoard.OperationBoard;
-import com.example.cafeProject.operationBoard.OperationBoardDTO;
-import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardComment;
 import com.example.cafeProject.operationBoardComment.OperationBoardCommentService;
-import com.example.cafeProject.validation.ManagementOnly;
+import com.example.validation.ManagementOnly;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -30,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RequestMapping("/operationBoard")

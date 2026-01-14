@@ -1,8 +1,8 @@
 package com.example.cafeProject.member;
 
-import com.example.cafeProject.validation.AdminOnly;
-import com.example.cafeProject.validation.ManagementOnly;
-import com.example.cafeProject.validation.ValidationGroups;
+import com.example.validation.AdminOnly;
+import com.example.validation.ManagementOnly;
+import com.example.validation.ValidationGroups;
 import com.example.exception.*;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;

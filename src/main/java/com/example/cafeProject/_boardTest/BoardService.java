@@ -111,11 +111,6 @@ public class BoardService extends BaseImageService<Board, BoardDTO> {
 
 
     @Override
-    public Integer getIdFromDTO(BoardDTO dto) {
-        return dto.getId(); // BaseDTO의 id 사용
-    }
-
-    @Override
     protected Board toEntity(BoardDTO dto) {
         Authentication authentication = memberService.getCurrentMember();
         if (memberService.isNotLogin(authentication)) throw new AccessDeniedException("현재 로그인 정보를 확인할 수 없습니다.");

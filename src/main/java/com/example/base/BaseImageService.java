@@ -27,22 +27,24 @@ public abstract class BaseImageService<E, D> extends BaseCrudService<E, D> {
         super(repository, modelMapper, entityClass, dtoClass);
     }
 
-    //서머노트관련
+    // 서머노트 관련
     protected List<String> extractImageUrls(String html) {
         List<String> urls = new ArrayList<>();
+        if (html == null || html.isBlank()) return urls;
 
         Document doc = Jsoup.parse(html);
         Elements imgs = doc.select("img");
 
         for (Element img : imgs) {
             String src = img.attr("src");
-            urls.add(src);
+            if (src != null && !src.isBlank()) urls.add(src);
         }
 
         return urls;
     }
 
     protected void deleteImageFiles(List<String> imageUrls) {
+        if (imageUrls == null || imageUrls.isEmpty()) return;
 
         for (String url : imageUrls) {
             try {
@@ -50,6 +52,7 @@ public abstract class BaseImageService<E, D> extends BaseCrudService<E, D> {
                 String fileName = Paths.get(url).getFileName().toString();
 
                 File file = Paths.get(imgPath, fileName).toFile();
+
                 if (file.exists()) {
                     if (file.delete()) {
                         log.info("[deleteImageFiles] 이미지 파일 삭제 성공 - fileName={}, path={}",

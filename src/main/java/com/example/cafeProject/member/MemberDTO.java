@@ -2,7 +2,7 @@ package com.example.cafeProject.member;
 
 import com.example.base.BaseUtility;
 import jakarta.validation.constraints.*;
-import com.example.cafeProject.validation.ValidationGroups;
+import com.example.validation.ValidationGroups;
 import lombok.*;
 import java.sql.Timestamp;
 

@@ -1,8 +1,8 @@
 package com.example.cafeProject.member.docs;
 
 import com.example.cafeProject.member.*;
-import com.example.cafeProject.validation.ManagementOnly;
-import com.example.cafeProject.validation.ValidationGroups;
+import com.example.validation.ManagementOnly;
+import com.example.validation.ValidationGroups;
 import com.example.exception.EntityNotFoundException;
 import com.example.exception.PermissionDeniedException;
 import com.example.exception.WrongPasswordException;

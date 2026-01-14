@@ -37,11 +37,6 @@ public class PostService extends BaseImageService<Post, PostDTO> {
         this.memberService = memberService;
     }
 
-    @Override
-    public Integer getIdFromDTO(PostDTO dto) {
-        return dto.getId();
-    }
-
     /**
      * 게시판 코드(code)에 속한 게시글 목록 조회 + 검색 지원
      * 1) keyword 없음/공백 -> 전체 목록(게시판 기준)
@@ -97,6 +92,7 @@ public class PostService extends BaseImageService<Post, PostDTO> {
     public PostDTO viewTrashDTO(int id) {
         return toDTO(viewTrash(id));
     }
+
 
     @Override
     protected Post toEntity(PostDTO dto) {

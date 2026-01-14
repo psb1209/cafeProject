@@ -1,16 +1,14 @@
 package com.example.cafeProject._boardTest;
 
 import com.example.base.BaseImageController;
-import com.example.cafeProject._cafeTest.Cafe;
 import com.example.cafeProject._cafeTest.CafeDTO;
 import com.example.cafeProject._cafeTest.CafeService;
 import com.example.cafeProject.member.RoleType;
-import com.example.cafeProject.validation.ManagementOnly;
-import com.example.cafeProject.validation.ValidationGroups;
+import com.example.validation.ManagementOnly;
+import com.example.validation.ValidationGroups;
 import com.example.exception.DuplicateValueException;
 import com.example.exception.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;

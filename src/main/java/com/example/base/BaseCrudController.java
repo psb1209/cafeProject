@@ -1,6 +1,6 @@
 package com.example.base;
 
-import com.example.cafeProject.validation.ValidationGroups;
+import com.example.validation.ValidationGroups;
 import com.example.exception.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +15,10 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 public abstract class BaseCrudController<E, D> {
-    protected final BaseCrudService<E, D> service; // CRUD 비즈니스 로직을 담당하는 서비스
-    protected final String basePath; // 기본으로 사용할 링크
 
-    // 로그 찍는 용도 그 이상도 그 이하도 아님. log.***은 전부 무시해도 됨!!
+    protected final BaseCrudService<E, D> service; // CRUD 비즈니스 로직을 담당하는 서비스
+    protected final String basePath; // 기본으로 사용할 링크 + view 폴더명 (기존 호환)
+
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     protected BaseCrudController(BaseCrudService<E, D> service, String basePath) {
@@ -45,16 +45,13 @@ public abstract class BaseCrudController<E, D> {
     ) {
         Page<D> list = service.listDTO(pageable);
         model.addAttribute("list", list);
-        return basePath + "/list"; // ex) "memo/list"
+        return basePath + "/list";
     }
 
     /** 상세 화면 */
     @GetMapping("/view/{id}")
-    public String view(
-            Model model,
-            @PathVariable int id
-    ) {
-        return loadPathOrRedirect(id, model, basePath+"/view");
+    public String view(Model model, @PathVariable int id) {
+        return loadPathOrRedirect(id, model, basePath + "/view");
     }
 
     /** 등록 폼 화면 */
@@ -66,28 +63,17 @@ public abstract class BaseCrudController<E, D> {
 
     /** 수정 폼 화면 */
     @GetMapping("/update/{id}")
-    public String update(
-            Model model,
-            @PathVariable int id
-    ) {
-        return loadPathOrRedirect(id, model, basePath+"/update");
+    public String update(Model model, @PathVariable int id) {
+        return loadPathOrRedirect(id, model, basePath + "/update");
     }
 
     /** 삭제 확인 화면 */
     @GetMapping("/delete/{id}")
-    public String delete(
-            Model model,
-            @PathVariable int id
-    ) {
-        return loadPathOrRedirect(id, model, basePath+"/delete");
+    public String delete(Model model, @PathVariable int id) {
+        return loadPathOrRedirect(id, model, basePath + "/delete");
     }
 
-    /**
-     * 등록 처리
-     * - @Validated로 DTO 검증
-     * - 실패 시: 다시 create 폼으로
-     * - 성공 시: 목록으로 redirect
-     */
+    /** 등록 처리 */
     @PostMapping("/createProc")
     public String createProc(
             @Validated(ValidationGroups.OnCreate.class) @ModelAttribute("data") D dto,
@@ -98,12 +84,7 @@ public abstract class BaseCrudController<E, D> {
         return "redirect:/" + basePath + "/list";
     }
 
-    /**
-     * 수정 처리
-     * - @Validated로 DTO 검증
-     * - 실패 시: update 폼으로
-     * - 성공 시: 상세보기로 redirect
-     */
+    /** 수정 처리 */
     @PostMapping("/updateProc")
     public String updateProc(
             @Validated(ValidationGroups.OnUpdate.class) @ModelAttribute("data") D dto,
@@ -114,12 +95,7 @@ public abstract class BaseCrudController<E, D> {
         return "redirect:/" + basePath + "/view/" + service.getIdFromDTO(dto);
     }
 
-    /**
-     * 삭제 처리
-     * - @Validated로 DTO 검증
-     * - 실패 시: delete 확인 화면으로
-     * - 성공 시: 목록으로 redirect
-     */
+    /** 삭제 처리 */
     @PostMapping("/deleteProc")
     public String deleteProc(
             @Validated(ValidationGroups.OnDelete.class) @ModelAttribute("data") D dto,
@@ -130,10 +106,7 @@ public abstract class BaseCrudController<E, D> {
         return "redirect:/" + basePath + "/list";
     }
 
-    /**
-     * 모든 POST 검증 실패 시 공통으로 사용하는 로깅 + 뷰 반환 메서드.
-     * action: 로그에 찍힐 작업 이름, viewName: 실패 시 다시 보여줄 뷰 경로.
-     */
+    /** 검증 실패 공통 로깅 + 뷰 반환 */
     protected String logValidationErrors(String action, String viewName, BindingResult bindingResult) {
         log.warn("[{} 검증 실패]", action);
         bindingResult.getFieldErrors().forEach(error ->
@@ -142,14 +115,11 @@ public abstract class BaseCrudController<E, D> {
                         error.getField(),
                         error.getRejectedValue(),
                         error.getDefaultMessage())
-        );  // 모든 검증 오류를 log.warn으로 출력
+        );
         return basePath + "/" + viewName;
     }
 
-    /**
-     * id로 Member를 조회해서 존재하면 model에 "data"로 담고 지정된 뷰로 이동.
-     * 대상이 없으면 경고 로그를 남기고 메인으로 redirect.
-     */
+    /** id로 조회해서 model에 담고 path로 이동, 없으면 redirect */
     protected String loadPathOrRedirect(int id, Model model, String path) {
         try {
             D dto = service.viewDTO(id);
@@ -160,15 +130,17 @@ public abstract class BaseCrudController<E, D> {
             return getNotFoundRedirectPath();
         }
     }
+
     /**
-     * 해당 메서드를 Override해서 view 결과가 존재하지 않을 경우 보낼 링크를 커스터마이징할 수 있습니다.
+     * view 결과가 없을 경우 보내는 redirect
+     * 필요하면 override 해서 커스터마이징
      */
     protected String getNotFoundRedirectPath() {
         // 기본값: 메인
         return "redirect:/";
     }
 
-    /** 들어오는 basePath 값을 정규화하는 메서드 */
+    /** 들어오는 basePath 값을 정규화 */
     private static String normalizeBasePath(String raw) throws IllegalArgumentException {
         if (raw == null) throw new IllegalArgumentException("basePath is null");
         String s = raw.trim().replaceAll("^/+", "").replaceAll("/+$", "");

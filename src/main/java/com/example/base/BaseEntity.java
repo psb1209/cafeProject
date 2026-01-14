@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class BaseEntity {
+public abstract class BaseEntity implements HasId<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +29,3 @@ public abstract class BaseEntity {
     @JoinColumn(name = "userid")
     private Member member;
 }
-

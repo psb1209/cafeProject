@@ -2,9 +2,8 @@ package com.example.cafeProject._postTest;
 
 import com.example.base.BaseDTO;
 import com.example.cafeProject.member.Grade;
-import com.example.cafeProject.validation.ValidationGroups;
+import com.example.validation.ValidationGroups;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

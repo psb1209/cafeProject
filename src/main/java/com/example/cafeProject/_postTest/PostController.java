@@ -2,19 +2,17 @@ package com.example.cafeProject._postTest;
 
 import com.example.cafeProject._boardTest.BoardDTO;
 import com.example.cafeProject._boardTest.BoardService;
-import com.example.cafeProject._boardTest.DefaultBoard;
 import com.example.cafeProject._cafeTest.CafeDTO;
 import com.example.cafeProject._cafeTest.CafeService;
-import com.example.cafeProject._commentTest.PostComment;
 import com.example.cafeProject._commentTest.PostCommentService;
 import com.example.cafeProject.board_view.Board_viewDTO;
 import com.example.cafeProject.board_view.Board_viewService;
 import com.example.cafeProject.like.LikeService;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
-import com.example.cafeProject.validation.AdminOnly;
-import com.example.cafeProject.validation.ManagementOnly;
-import com.example.cafeProject.validation.ValidationGroups;
+import com.example.validation.AdminOnly;
+import com.example.validation.ManagementOnly;
+import com.example.validation.ValidationGroups;
 import com.example.exception.EntityNotFoundException;
 import com.example.exception.PermissionDeniedException;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +34,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.util.*;
 
 @Controller
 @RequestMapping("/cafe/{cafeCode}/post")

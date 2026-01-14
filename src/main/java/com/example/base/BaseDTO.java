@@ -13,10 +13,9 @@ import java.sql.Timestamp;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class BaseDTO {
+public abstract class BaseDTO implements HasId<Integer> {
     private Integer id;
     private Timestamp createDate;
     private Integer memberId;
     private String username;
 }
-

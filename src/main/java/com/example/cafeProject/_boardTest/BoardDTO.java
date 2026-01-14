@@ -2,7 +2,7 @@ package com.example.cafeProject._boardTest;
 
 import com.example.base.BaseDTO;
 import com.example.cafeProject.member.RoleType;
-import com.example.cafeProject.validation.ValidationGroups;
+import com.example.validation.ValidationGroups;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

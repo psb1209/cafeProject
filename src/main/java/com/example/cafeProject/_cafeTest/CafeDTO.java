@@ -1,8 +1,7 @@
 package com.example.cafeProject._cafeTest;
 
 import com.example.base.BaseDTO;
-import com.example.cafeProject.member.RoleType;
-import com.example.cafeProject.validation.ValidationGroups;
+import com.example.validation.ValidationGroups;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -7,7 +7,7 @@ import com.example.cafeProject.informationBoardComment.InformationBoardCommentSe
 import com.example.cafeProject.like.LikeService;
 import com.example.cafeProject.member.Member;
 import com.example.cafeProject.member.MemberService;
-import com.example.cafeProject.validation.ManagementOnly;
+import com.example.validation.ManagementOnly;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;

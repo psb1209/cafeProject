@@ -1,4 +1,4 @@
-package com.example.cafeProject.validation;
+package com.example.validation;
 
 import jakarta.validation.groups.Default;
 

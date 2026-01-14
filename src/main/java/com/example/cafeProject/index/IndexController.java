@@ -8,7 +8,7 @@ import com.example.cafeProject.informationBoard.InformationBoardService;
 import com.example.cafeProject.member.MemberService;
 import com.example.cafeProject.noticeBoard.NoticeBoard;
 import com.example.cafeProject.noticeBoard.NoticeBoardService;
-import com.example.cafeProject.validation.ManagementOnly;
+import com.example.validation.ManagementOnly;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
