@@ -46,12 +46,17 @@ public class BoardPublicController {
             @RequestParam(name = "keyword", required = false) String keyword,
             @PageableDefault(size = 30, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             Authentication authentication,
-            Model model
+            Model model,
+            @RequestHeader(value = "X-Requested-With", required = false) String requestedWith
     ) {
         model.addAttribute("list", boardService.listVisibleDTO(cafeCode, pageable, memberService.getEffectiveRoles(authentication), keyword));
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeMenu", "all");
-        return "board/publicList";
+
+        boolean ajax = "XMLHttpRequest".equalsIgnoreCase(requestedWith);
+        return ajax
+                ? "board/publicList :: boardListArea"
+                : "board/publicList";
     }
 
     // "/cafe/{cafeCode}/board/{boardCode}" 형식으로 오는 링크를 post 컨트롤러에게 떠넘김

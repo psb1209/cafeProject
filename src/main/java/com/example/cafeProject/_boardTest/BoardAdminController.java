@@ -92,7 +92,9 @@ public class BoardAdminController extends BaseImageController<Board, BoardDTO> {
     ) {
         model.addAttribute("activeMenu", "boardManagement");
         model.addAttribute("list", boardService.listDTO(requireCafeCode(), pageable));
-        return basePath + "/list";
+        return super.isAjaxRequest()
+                ? basePath + "/list :: boardListArea"
+                : basePath + "/list";
     }
 
     @Override

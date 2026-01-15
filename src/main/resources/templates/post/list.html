@@ -58,118 +58,126 @@
                 </form>
             </div>
 
-            <!-- ================= 게시글 없음 ================= -->
-            <div th:if="${(noticeList == null or noticeList.isEmpty()) and list.totalElements == 0}"
-                 class="text-center"
-                 style="padding:40px; color:#888;">
-                등록된 게시글이 없습니다.
+            <div id="postListArea"
+                 data-ajax-area
+                 data-area-id="postListArea"
+                 data-link-selector=".cafe-pagination a.page-btn"
+                 data-form-selector=".cafe-search-form"
+                 th:fragment="postListArea">
+                <!-- ================= 게시글 없음 ================= -->
+                <div th:if="${(noticeList == null or noticeList.isEmpty()) and list.totalElements == 0}"
+                     class="text-center"
+                     style="padding:40px; color:#888;">
+                    등록된 게시글이 없습니다.
+                </div>
+
+                <!-- ================= 게시글 테이블 ================= -->
+                <table class="cafe-board-table"
+                       th:if="${(noticeList != null and !noticeList.isEmpty()) or list.totalElements > 0}">
+                    <thead>
+                    <tr>
+                        <th class="col-no">순번</th>
+                        <th class="col-subject">제목</th>
+                        <th class="col-writer">작성자</th>
+
+                        <th class="col-writer"
+                            th:text="${trash == true} ? '삭제일' : '회원등급'">회원등급</th>
+
+                        <th class="col-date">작성일</th>
+                    </tr>
+                    </thead>
+
+                    <!-- 공지글 -->
+                    <tbody th:if="${noticeList != null and !noticeList.isEmpty() and list.number == 0}">
+                    <tr th:each="notice : ${noticeList}" class="notice-row"
+                        th:onclick="|location.href='@{|/cafe/${cafe?.code}/post/${trash==true ? 'trash' : 'view'}/${notice.id}?b=${board?.code}|}'|">
+                        <td class="text-danger fw-bold text-center">공지</td>
+                        <td>
+                            📢 <span th:text="${notice.title ?: '(제목 없음)'}"></span>
+
+                            <!-- trash=true면 공지 토글 버튼 숨김 -->
+                            <form th:if="${trash != true and #authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
+                                  th:action="@{/cafe/{cafeCode}/post/toggleNotice/{id}(cafeCode=${cafe?.code}, id=${notice.id})}"
+                                  method="post" style="display:inline;">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <button type="submit" class="notice-btn">공지해제</button>
+                            </form>
+                        </td>
+                        <td class="td_underline" th:text="${notice.username}"></td>
+
+                        <td class="td_underline text-center"
+                            th:if="${trash == true}"
+                            th:text="${notice.deletedAt != null ? #dates.format(notice.deletedAt,'yyyy-MM-dd') : '-'}">-</td>
+                        <td class="td_underline text-center"
+                            th:unless="${trash == true}">운영진</td>
+
+                        <td class="td_underline text-center" th:text="${#dates.format(notice.createDate,'yyyy-MM-dd')}"></td>
+                    </tr>
+                    </tbody>
+
+                    <!-- 일반글 -->
+                    <tbody>
+                    <tr th:each="post, loop : ${list.content}"
+                        th:onclick="|location.href='@{|/cafe/${cafe?.code}/post/${trash==true ? 'trash' : 'view'}/${post.id}?b=${board?.code}|}'|"
+                        style="cursor:pointer;">
+                        <td class="td_underline text-center" th:text="${list.number * list.size + loop.index + 1}"></td>
+                        <td class="td_underline" style="text-align: left;">
+                            <span th:text="${post.title ?: '(제목 없음)'}"></span>
+
+                            <form th:if="${trash != true and #authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
+                                  th:action="@{/cafe/{cafeCode}/post/toggleNotice/{id}(cafeCode=${cafe?.code}, id=${post.id})}"
+                                  method="post" style="display:inline;">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <button type="submit" class="notice-btn">공지등록</button>
+                            </form>
+                        </td>
+                        <td class="td_underline text-center" th:text="${post.username ?: '알 수 없음'}"></td>
+
+                        <td class="td_underline text-center"
+                            th:if="${trash == true}"
+                            th:text="${post.deletedAt != null ? #dates.format(post.deletedAt,'yyyy-MM-dd') : '-'}">-</td>
+
+                        <td class="td_underline text-center"
+                            th:unless="${trash == true}"
+                            th:switch="${post.grade != null ? post.grade.name() : 'NONE'}">
+                            <span th:case="'USER'">일반🥉</span>
+                            <span th:case="'REGULAR'">성실🥈</span>
+                            <span th:case="'BEST'">우수🥇</span>
+                            <span th:case="'SPECIAL'">최우수🏆</span>
+                            <span th:case="'NONE'">-</span>
+                        </td>
+
+                        <td class="td_underline text-center" th:text="${#dates.format(post.createDate,'yyyy-MM-dd')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- ================= 페이징 ================= -->
+                <div class="cafe-pagination"
+                     th:if="${list.totalPages > 1}"
+                     th:with="
+                        cd=${#strings.isEmpty(board?.code) ? '' : '&b=' + board?.code},
+                        kw=${#strings.isEmpty(keyword) ? '' : '&keyword=' + keyword}">
+                    <a class="page-btn"
+                       th:classappend="${list.first} ? ' disabled'"
+                       th:href="@{|?page=${list.number-1}${cd}${kw}|}">이전</a>
+
+                    <a class="page-btn"
+                       th:each="page : ${#numbers.sequence(0, list.totalPages-1)}"
+                       th:if="${page >= (list.number/5)*5 and page <= (list.number/5)*5 + 4}"
+                       th:text="${page + 1}"
+                       th:classappend="${page == list.number} ? ' active'"
+                       th:href="@{|?page=${page}${cd}${kw}|}"></a>
+
+                    <a class="page-btn"
+                       th:classappend="${list.last} ? ' disabled'"
+                       th:href="@{|?page=${list.number+1}${cd}${kw}|}">다음</a>
+                </div>
             </div>
-
-            <!-- ================= 게시글 테이블 ================= -->
-            <table class="cafe-board-table"
-                   th:if="${(noticeList != null and !noticeList.isEmpty()) or list.totalElements > 0}">
-                <thead>
-                <tr>
-                    <th class="col-no">순번</th>
-                    <th class="col-subject">제목</th>
-                    <th class="col-writer">작성자</th>
-
-                    <th class="col-writer"
-                        th:text="${trash == true} ? '삭제일' : '회원등급'">회원등급</th>
-
-                    <th class="col-date">작성일</th>
-                </tr>
-                </thead>
-
-                <!-- 공지글 -->
-                <tbody th:if="${noticeList != null and !noticeList.isEmpty() and list.number == 0}">
-                <tr th:each="notice : ${noticeList}" class="notice-row"
-                    th:onclick="|location.href='@{|/cafe/${cafe?.code}/post/${trash==true ? 'trash' : 'view'}/${notice.id}?b=${board?.code}|}'|">
-                    <td class="text-danger fw-bold text-center">공지</td>
-                    <td>
-                        📢 <span th:text="${notice.title ?: '(제목 없음)'}"></span>
-
-                        <!-- trash=true면 공지 토글 버튼 숨김 -->
-                        <form th:if="${trash != true and #authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
-                              th:action="@{/cafe/{cafeCode}/post/toggleNotice/{id}(cafeCode=${cafe?.code}, id=${notice.id})}"
-                              method="post" style="display:inline;">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <button type="submit" class="notice-btn">공지해제</button>
-                        </form>
-                    </td>
-                    <td class="td_underline" th:text="${notice.username}"></td>
-
-                    <td class="td_underline text-center"
-                        th:if="${trash == true}"
-                        th:text="${notice.deletedAt != null ? #dates.format(notice.deletedAt,'yyyy-MM-dd') : '-'}">-</td>
-                    <td class="td_underline text-center"
-                        th:unless="${trash == true}">운영진</td>
-
-                    <td class="td_underline text-center" th:text="${#dates.format(notice.createDate,'yyyy-MM-dd')}"></td>
-                </tr>
-                </tbody>
-
-                <!-- 일반글 -->
-                <tbody>
-                <tr th:each="post, loop : ${list.content}"
-                    th:onclick="|location.href='@{|/cafe/${cafe?.code}/post/${trash==true ? 'trash' : 'view'}/${post.id}?b=${board?.code}|}'|"
-                    style="cursor:pointer;">
-                    <td class="td_underline text-center" th:text="${list.number * list.size + loop.index + 1}"></td>
-                    <td class="td_underline" style="text-align: left;">
-                        <span th:text="${post.title ?: '(제목 없음)'}"></span>
-
-                        <form th:if="${trash != true and #authorization.expression('hasAnyRole(''ROLE_ADMIN'',''ROLE_MANAGER'')')}"
-                              th:action="@{/cafe/{cafeCode}/post/toggleNotice/{id}(cafeCode=${cafe?.code}, id=${post.id})}"
-                              method="post" style="display:inline;">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <button type="submit" class="notice-btn">공지등록</button>
-                        </form>
-                    </td>
-                    <td class="td_underline text-center" th:text="${post.username ?: '알 수 없음'}"></td>
-
-                    <td class="td_underline text-center"
-                        th:if="${trash == true}"
-                        th:text="${post.deletedAt != null ? #dates.format(post.deletedAt,'yyyy-MM-dd') : '-'}">-</td>
-
-                    <td class="td_underline text-center"
-                        th:unless="${trash == true}"
-                        th:switch="${post.grade != null ? post.grade.name() : 'NONE'}">
-                        <span th:case="'USER'">일반🥉</span>
-                        <span th:case="'REGULAR'">성실🥈</span>
-                        <span th:case="'BEST'">우수🥇</span>
-                        <span th:case="'SPECIAL'">최우수🏆</span>
-                        <span th:case="'NONE'">-</span>
-                    </td>
-
-                    <td class="td_underline text-center" th:text="${#dates.format(post.createDate,'yyyy-MM-dd')}"></td>
-                </tr>
-                </tbody>
-            </table>
-
-            <!-- ================= 페이징 ================= -->
-            <div class="cafe-pagination"
-                 th:if="${list.totalPages > 1}"
-                 th:with="
-                    cd=${#strings.isEmpty(board?.code) ? '' : '&b=' + board?.code},
-                    kw=${#strings.isEmpty(keyword) ? '' : '&keyword=' + keyword}">
-                <a class="page-btn"
-                   th:classappend="${list.first} ? ' disabled'"
-                   th:href="@{|?page=${list.number-1}${cd}${kw}|}">이전</a>
-
-                <a class="page-btn"
-                   th:each="page : ${#numbers.sequence(0, list.totalPages-1)}"
-                   th:if="${page >= (list.number/5)*5 and page <= (list.number/5)*5 + 4}"
-                   th:text="${page + 1}"
-                   th:classappend="${page == list.number} ? ' active'"
-                   th:href="@{|?page=${page}${cd}${kw}|}"></a>
-
-                <a class="page-btn"
-                   th:classappend="${list.last} ? ' disabled'"
-                   th:href="@{|?page=${list.number+1}${cd}${kw}|}">다음</a>
-            </div>
-
         </div>
     </div>
+
+    <script th:src="@{/js/listAjax.js}" defer></script>
 </div>
 
 </body>

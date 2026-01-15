@@ -76,13 +76,17 @@ public class CafeController extends BaseImageController<Cafe, CafeDTO> {
             @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false) String keyword,
             Authentication authentication,
-            Model model
+            Model model,
+            @RequestHeader(value = "X-Requested-With", required = false) String requestedWith
     ) {
-        Page<CafeDTO> list = cafeService.listVisibleDTO(pageable, keyword, authentication);
-        model.addAttribute("list", list);
+        model.addAttribute("list", cafeService.listVisibleDTO(pageable, keyword, authentication));
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeMenu", "cafeList");
-        return super.basePath + "/list";
+
+        boolean ajax = "XMLHttpRequest".equalsIgnoreCase(requestedWith);
+        return ajax
+                ? super.basePath + "/list :: cafeListArea"
+                : super.basePath + "/list";
     }
 
     // "/cafe/{code} 형식으로 오는 링크를 mainPage로 떠넘김

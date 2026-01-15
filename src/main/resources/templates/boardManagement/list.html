@@ -41,61 +41,69 @@
             </div>
         </div>
 
-        <!-- 테이블 -->
-        <table class="cafe-board-table">
-            <thead>
-            <tr>
-                <th>번호</th>
-                <th>제목</th>
-                <th>설명</th>
-                <th>만든이</th>
-                <th>작성권한</th>
-                <th>개설일</th>
-            </tr>
-            </thead>
+        <div id="boardListArea"
+             data-ajax-area
+             data-area-id="boardListArea"
+             data-link-selector=".cafe-pagination a.page-btn"
+             th:fragment="boardListArea">
+            <!-- 테이블 -->
+            <table class="cafe-board-table">
+                <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>설명</th>
+                    <th>만든이</th>
+                    <th>작성권한</th>
+                    <th>개설일</th>
+                </tr>
+                </thead>
 
-            <tbody>
-            <tr th:each="data, loop : ${list}"
-                th:onclick="|location.href='@{/boardManagement/view/{id}(id=${data.id}, c=${cafeCode})}'|">
-                <td class="td_underline" th:text="${loop.index + 1}"></td>
-                <td class="td_underline col-subject text-center" th:text="${data.name}"></td>
-                <td class="td_underline" th:text="${data.description}"></td>
-                <td class="td_underline" th:text="${data.username}"></td>
-                <td class="td_underline" th:text="${data.writeRole}"></td>
-                <td class="td_underline col-date"
-                    th:text="${#dates.format(data.createDate, 'yyyy-MM-dd')}">
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                <tbody>
+                <tr th:each="data, loop : ${list}"
+                    th:onclick="|location.href='@{/boardManagement/view/{id}(id=${data.id}, c=${cafeCode})}'|">
+                    <td class="td_underline" th:text="${loop.index + 1}"></td>
+                    <td class="td_underline col-subject text-center" th:text="${data.name}"></td>
+                    <td class="td_underline" th:text="${data.description}"></td>
+                    <td class="td_underline" th:text="${data.username}"></td>
+                    <td class="td_underline" th:text="${data.writeRole}"></td>
+                    <td class="td_underline col-date"
+                        th:text="${#dates.format(data.createDate, 'yyyy-MM-dd')}">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
 
-        <!-- 페이지네이션 -->
-        <div class="cafe-pagination" th:if="${!list.isEmpty()}">
+            <!-- 페이지네이션 -->
+            <div class="cafe-pagination" th:if="${!list.isEmpty()}">
 
-            <!-- 이전 버튼 -->
-            <a class="page-btn"
-               th:classappend="${list.first} ? ' disabled'"
-               th:href="@{/boardManagement/list(c=${cafeCode}, page=${list.number - 1})}">이전</a>
-
-            <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
-            <th:block th:with="
-                            startPage=${list.number - 2 > 0 ? list.number - 2 : 0},
-                            endPage=${list.number + 2 < list.totalPages - 1 ? list.number + 2 : list.totalPages - 1}">
-
+                <!-- 이전 버튼 -->
                 <a class="page-btn"
-                   th:each="page : ${#numbers.sequence(startPage, endPage)}"
-                   th:text="${page + 1}"
-                   th:classappend="${page == list.number} ? ' active'"
-                   th:href="@{/boardManagement/list(c=${cafeCode}, page=${page})}"></a>
-            </th:block>
+                   th:classappend="${list.first} ? ' disabled'"
+                   th:href="@{/boardManagement/list(c=${cafeCode}, page=${list.number - 1})}">이전</a>
 
-            <!-- 다음 버튼 -->
-            <a class="page-btn"
-               th:classappend="${list.last} ? ' disabled'"
-               th:href="@{/boardManagement/list(c=${cafeCode}, page=${list.number + 1})}">다음</a>
+                <!-- 페이지 번호 버튼: 현재 페이지 기준 +-2 -->
+                <th:block th:with="
+                                startPage=${list.number - 2 > 0 ? list.number - 2 : 0},
+                                endPage=${list.number + 2 < list.totalPages - 1 ? list.number + 2 : list.totalPages - 1}">
+
+                    <a class="page-btn"
+                       th:each="page : ${#numbers.sequence(startPage, endPage)}"
+                       th:text="${page + 1}"
+                       th:classappend="${page == list.number} ? ' active'"
+                       th:href="@{/boardManagement/list(c=${cafeCode}, page=${page})}"></a>
+                </th:block>
+
+                <!-- 다음 버튼 -->
+                <a class="page-btn"
+                   th:classappend="${list.last} ? ' disabled'"
+                   th:href="@{/boardManagement/list(c=${cafeCode}, page=${list.number + 1})}">다음</a>
+            </div>
+
         </div>
-
     </div>
+
+    <script th:src="@{/js/listAjax.js}" defer></script>
 </div>
 
 </body>

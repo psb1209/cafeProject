@@ -40,7 +40,13 @@
     </div>
 
     <!-- 게시판 카드 영역 -->
-    <div class="cafe-board-wrap">
+    <div class="cafe-board-wrap"
+         id="boardListArea"
+         th:fragment="boardListArea"
+         data-ajax-area
+         data-area-id="boardListArea"
+         data-link-selector=".cafe-pagination a.page-btn"
+         data-form-selector=".cafe-search-form">
 
         <!-- 카드형 게시판 (CSS 미정 영역 → 구조 유지) -->
         <div class="board-grid">
@@ -94,6 +100,8 @@
         </div>
 
     </div>
+
+    <script th:src="@{/js/listAjax.js}" defer></script>
 </div>
 
 

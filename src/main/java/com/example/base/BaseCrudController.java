@@ -2,6 +2,7 @@ package com.example.base;
 
 import com.example.validation.ValidationGroups;
 import com.example.exception.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 public abstract class BaseCrudController<E, D> {
 
@@ -138,6 +141,17 @@ public abstract class BaseCrudController<E, D> {
     protected String getNotFoundRedirectPath() {
         // 기본값: 메인
         return "redirect:/";
+    }
+
+    /** 지금의 요청이 Ajax 요청인지 판별하는 메서드 */
+    protected boolean isAjaxRequest() {
+        ServletRequestAttributes attrs =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attrs == null) return false;
+
+        HttpServletRequest req = attrs.getRequest();
+        String requestedWith = req.getHeader("X-Requested-With");
+        return "XMLHttpRequest".equalsIgnoreCase(requestedWith);
     }
 
     /** 들어오는 basePath 값을 정규화 */

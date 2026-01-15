@@ -122,6 +122,7 @@ public class PostController {
             @ModelAttribute("board") BoardDTO board,
             @RequestParam(required = false) String keyword,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestHeader(value = "X-Requested-With", required = false) String requestedWith,
             Model model
     ) {
         try {
@@ -131,7 +132,9 @@ public class PostController {
             model.addAttribute("list", postService.listByBoardIdDTO(boardId, keyword, pageable));
             model.addAttribute("keyword", keyword);
             model.addAttribute("activeMenu", boardService.isDefault(boardCode) ? boardCode : "all");
-            return "post/list";
+
+            boolean ajax = "XMLHttpRequest".equalsIgnoreCase(requestedWith);
+            return ajax ? "post/list :: postListArea" : "post/list";
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -191,12 +194,15 @@ public class PostController {
             @RequestParam(name="b") String boardCode,
             @ModelAttribute("board") BoardDTO board,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestHeader(value = "X-Requested-With", required = false) String requestedWith,
             Model model
     ) {
         try {
             model.addAttribute("list", postService.trashListByBoardIdDTO(board.getId(), pageable));
             model.addAttribute("trash", true);
-            return "post/list";
+
+            boolean ajax = "XMLHttpRequest".equalsIgnoreCase(requestedWith);
+            return ajax ? "post/list :: postListArea" : "post/list";
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
